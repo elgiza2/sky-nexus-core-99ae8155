@@ -21,7 +21,7 @@ interface Props {
 export default function MobilePricingScreen({ isYearly, onToggleYearly, onSubscribe, loadingTier, onMenuClick }: Props) {
   const isAr = useUserLang() === "ar-eg";
   const navigate = useNavigate();
-  const artwork = useMemo(() => [artAura, artSky, artCar, artCoat, artGallery][Math.floor(Math.random() * 5)], []);
+  const artwork = useMemo(() => [artAura, artCar][Math.floor(Math.random() * 2)], []);
   const { plan } = useUserPlan();
   const subscribed = plan === "pro" || plan === "max" || plan === "elite";
   const pro = getPlan("pro");
