@@ -339,19 +339,6 @@ const PricingPage = () => {
             />
           </div>
         </div>
-        <Suspense fallback={null}>
-          {customCard && (
-            <CustomCardForm
-              open
-              tier={customCard.tier}
-              interval={customCard.interval}
-              onClose={() => {
-                setCustomCard(null);
-                setLoadingTier(null);
-              }}
-            />
-          )}
-        </Suspense>
       </>
     );
   }
@@ -409,19 +396,6 @@ const PricingPage = () => {
               {settled && (
                 <Suspense fallback={null}>
                   <LandingFooter />
-                </Suspense>
-              )}
-              {customCard !== null && (
-                <Suspense fallback={null}>
-                  <CustomCardForm
-                    open
-                    tier={customCard.tier}
-                    interval={customCard.interval}
-                    onClose={() => {
-                      setCustomCard(null);
-                      setLoadingTier(null);
-                    }}
-                  />
                 </Suspense>
               )}
             </div>
