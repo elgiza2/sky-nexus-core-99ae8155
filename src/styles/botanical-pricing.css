@@ -91,5 +91,5 @@ html .botanical-pricing button::before, html .botanical-pricing button::after { 
 .botanical-pricing[data-art="aura"] .botanical-benefits li { text-shadow: 0 1px 2px oklch(0 0 0 / .65), 0 0 14px oklch(0 0 0 / .45); }
 /* Car: bright band behind the list — heavier soft halo, no edges. */
 .botanical-pricing[data-art="car"] .botanical-benefits li { font-weight: 620; text-shadow: 0 1px 2px oklch(0 0 0 / .9), 0 0 10px oklch(0 0 0 / .75), 0 0 24px oklch(0 0 0 / .6); }
-.botanical-pricing[data-art="car"] .botanical-benefits { position: relative; }
+.botanical-pricing[data-art="car"] .botanical-benefits { position: relative; isolation: isolate; }
 .botanical-pricing[data-art="car"] .botanical-benefits::before { content: ""; position: absolute; inset: -24px -32px; z-index: -1; pointer-events: none; background: radial-gradient(ellipse at center, oklch(0 0 0 / .42), transparent 70%); }
