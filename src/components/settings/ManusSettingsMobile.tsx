@@ -139,7 +139,8 @@ const ManusSettingsMobile = () => {
       icon: HelpCircle,
       tone: "help",
       label: "Contact Support",
-      path: "/settings/support",
+      external: true,
+      onClick: () => window.open("https://help.megsyai.com", "_blank", "noopener"),
     },
     {
       icon: Info,
@@ -154,7 +155,7 @@ const ManusSettingsMobile = () => {
     const Icon = row.icon;
     const Chevron = isAr ? ChevronLeft : ChevronRight;
     return (
-      <div key={row.label} className={`ms-row${idx > 0 ? " ms-row-div" : ""}`}>
+      <div key={row.label} className={`${row.control ? "ms-row" : "ms-row-container"}${idx > 0 ? " ms-row-div" : ""}`}>
         {row.control ? <>
           <span className={`ms-icon-tile ms-tone-${row.tone || "account"}`}><Icon className="ms-row-icon" /></span>
           <span className="ms-row-label">{tx(row.label)}</span>
