@@ -1,8 +1,10 @@
-/** @doc Credits — gradient balance hero, daily allowance, today's use and credit history. */
+/** @doc Billing — plan status, renewal, credit top-ups, cancel subscription and credit history. */
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
+  BadgeCheck,
+  CalendarClock,
   Clapperboard,
   FileText,
   Gift,
@@ -15,12 +17,25 @@ import {
   Search,
   Sparkles,
   Wand2,
+  XCircle,
   Zap,
 } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { invokeFunction } from "@/lib/supabaseFunction";
 import { claimDailyCredits, fetchCreditOverview, type CreditOverview } from "@/lib/creditsSystem";
-import { useUserLang } from "@/lib/authI18n";
+import { translateExactText, useUserLang } from "@/lib/authI18n";
 import CreditPacks from "@/components/billing/CreditPacks";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type Tx = {
   id: string;
@@ -76,17 +91,21 @@ export default function UsagePage() {
   const lang = useUserLang();
   const ar = lang === "ar-eg";
   const loc = ar ? "ar-EG" : "en-US";
+  const t = (s: string) => translateExactText(s, lang);
   const [ov, setOv] = useState<CreditOverview | null>(null);
   const [rows, setRows] = useState<Tx[]>([]);
   const [loading, setLoading] = useState(true);
   const [signedOut, setSignedOut] = useState(false);
+  const [confirmCancel, setConfirmCancel] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelled, setCancelled] = useState(false);
 
   useEffect(() => {
-    let cancelled = false;
+    let dead = false;
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        if (!cancelled) {
+        if (!dead) {
           setSignedOut(true);
           setLoading(false);
         }
@@ -102,13 +121,13 @@ export default function UsagePage() {
           .order("created_at", { ascending: false })
           .limit(80),
       ]);
-      if (cancelled) return;
+      if (dead) return;
       setOv(o);
       setRows((tx.data as Tx[]) ?? []);
       setLoading(false);
     })();
     return () => {
-      cancelled = true;
+      dead = true;
     };
   }, []);
 
@@ -135,6 +154,26 @@ export default function UsagePage() {
     return Array.from(map.entries());
   }, [rows, loc]);
 
+  const cancelSubscription = async () => {
+    setCancelling(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error(t("Sign in again to continue."));
+      const { error } = await invokeFunction("kashier-checkout", {
+        body: { kind: "cancel-subscription" },
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      if (error) throw error;
+      setCancelled(true);
+      setConfirmCancel(false);
+      toast.success(t("Subscription cancelled. Your plan stays active until the end of the billing period."));
+    } catch (e: any) {
+      toast.error(e?.message || t("Could not cancel right now. Please contact support."));
+    } finally {
+      setCancelling(false);
+    }
+  };
+
   return (
     <div dir={ar ? "rtl" : "ltr"} className="min-h-[100dvh] bg-background text-foreground">
       <div className="mx-auto w-full max-w-xl px-5 pb-24 pt-[calc(env(safe-area-inset-top,0px)+12px)]">
@@ -147,33 +186,57 @@ export default function UsagePage() {
           >
             <ArrowLeft className={`h-5 w-5 ${ar ? "rotate-180" : ""}`} />
           </button>
-          <span className="rounded-full bg-muted px-3.5 py-1.5 text-[12px] font-bold uppercase tracking-wider text-foreground">
-            {paid ? plan : ar ? "مجاني" : "Free"}
-          </span>
+          <h1 className="text-[17px] font-bold">{ar ? "الفاتورة" : "Billing"}</h1>
+          <span className="w-10" />
         </div>
 
-        {/* Balance hero */}
-        <section className="relative mt-6 rounded-[32px] bg-foreground px-6 pb-7 pt-8 text-center text-background">
-          <p className="text-[13px] font-medium opacity-80">
-            {ar ? "رصيدك" : "Your credits"}
-          </p>
-          <p className="mt-2 text-[56px] font-bold leading-none tracking-tight tabular-nums">
+        {/* Plan status */}
+        <section className="mt-6 rounded-[32px] bg-foreground px-6 pb-7 pt-8 text-background">
+          <div className="flex items-center justify-between">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-background/15 px-3.5 py-1.5 text-[12px] font-bold uppercase tracking-wider">
+              <BadgeCheck className="h-3.5 w-3.5" />
+              {paid ? plan : ar ? "مجاني" : "Free"}
+            </span>
+            {!cancelled && paid && (
+              <span className="inline-flex items-center gap-1.5 text-[12px] opacity-80">
+                <CalendarClock className="h-3.5 w-3.5" />
+                {ar ? "يتجدد تلقائيًا" : "Auto-renews"}
+              </span>
+            )}
+          </div>
+          <p className="mt-6 text-[13px] font-medium opacity-80">{ar ? "رصيدك الحالي" : "Current balance"}</p>
+          <p className="mt-1 text-[56px] font-bold leading-none tracking-tight tabular-nums">
             {ov ? fmt(ov.credits) : "—"}
           </p>
-          <button
-            type="button"
-            onClick={() => navigate("/pricing")}
-            className="mt-6 inline-flex h-11 items-center gap-2 rounded-full bg-background px-6 text-[14px] font-bold text-foreground transition-transform hover:scale-[1.03] active:scale-95"
-          >
-            <Sparkles className="h-4 w-4" />
-            {paid ? (ar ? "إدارة الاشتراك" : "Manage plan") : ar ? "ترقية" : "Upgrade"}
-          </button>
+          <p className="mt-2 text-[12.5px] opacity-70">
+            {cancelled
+              ? ar
+                ? "الاشتراك اتلغى — الباقة شغالة لآخر المدة المدفوعة"
+                : "Cancelled — your plan stays active until the paid period ends"
+              : paid
+                ? ar
+                  ? "اشتراكك شغال ومفيش أي مشكلة في الدفع"
+                  : "Your subscription is active and payments are up to date"
+                : ar
+                  ? "أنت على الخطة المجانية"
+                  : "You're on the free plan"}
+          </p>
+          {!paid && (
+            <button
+              type="button"
+              onClick={() => navigate("/pricing")}
+              className="mt-6 inline-flex h-11 items-center gap-2 rounded-full bg-background px-6 text-[14px] font-bold text-foreground transition-transform hover:scale-[1.03] active:scale-95"
+            >
+              <Sparkles className="h-4 w-4" />
+              {ar ? "ترقية" : "Upgrade"}
+            </button>
+          )}
         </section>
 
         {/* Today */}
         <section className="mt-4 rounded-[28px] bg-card p-5 ring-1 ring-border/60">
           <div className="flex items-baseline justify-between">
-            <p className="text-[14px] font-semibold">{ar ? "النهارده" : "Today"}</p>
+            <p className="text-[14px] font-semibold">{ar ? "استخدام النهارده" : "Today's usage"}</p>
             <p className="text-[13px] tabular-nums text-muted-foreground">
               {ov ? `${fmt(ov.spentToday)} / ${fmt(ov.dailyAllowance)}` : "—"}
             </p>
@@ -192,7 +255,7 @@ export default function UsagePage() {
         </section>
 
         {/* Balance breakdown */}
-        <section className="mt-4 grid grid-cols-2 gap-2 rounded-[28px] bg-card p-5 ring-1 ring-border/60 text-center sm:grid-cols-4">
+        <section className="mt-4 grid grid-cols-2 gap-2 rounded-[28px] bg-card p-5 text-center ring-1 ring-border/60 sm:grid-cols-4">
           <Stat label={ar ? "يومي" : "Daily"} value={ov ? fmt(ov.dailyCredits) : "—"} />
           <Stat label={ar ? "هدايا" : "Bonus"} value={ov ? fmt(ov.bonusCredits) : "—"} />
           <Stat label={ar ? "الباقة" : "Plan"} value={ov ? fmt(ov.planCredits) : "—"} />
@@ -201,6 +264,17 @@ export default function UsagePage() {
 
         {!signedOut && <CreditPacks isPro={paid} />}
 
+        {/* Cancel subscription */}
+        {paid && !cancelled && !signedOut && (
+          <button
+            type="button"
+            onClick={() => setConfirmCancel(true)}
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-[24px] bg-card py-4 text-[14px] font-semibold text-destructive ring-1 ring-border/60 transition-colors hover:bg-destructive/5"
+          >
+            <XCircle className="h-4.5 w-4.5" />
+            {ar ? "إلغاء الاشتراك" : "Cancel subscription"}
+          </button>
+        )}
 
         {/* History */}
         <h2 className="mb-3 mt-10 px-1 text-[12px] font-semibold uppercase tracking-wider text-muted-foreground">
@@ -239,9 +313,7 @@ export default function UsagePage() {
                             {new Date(it.created_at).toLocaleTimeString(loc, { hour: "numeric", minute: "2-digit" })}
                           </span>
                         </span>
-                        <span
-                          className="text-[14px] font-bold tabular-nums text-foreground"
-                        >
+                        <span className="text-[14px] font-bold tabular-nums text-foreground">
                           {grant ? "+" : "−"}
                           {fmt(Math.abs(amount))}
                         </span>
@@ -254,6 +326,32 @@ export default function UsagePage() {
           </div>
         )}
       </div>
+
+      <AlertDialog open={confirmCancel} onOpenChange={setConfirmCancel}>
+        <AlertDialogContent dir={ar ? "rtl" : "ltr"}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{ar ? "إلغاء الاشتراك؟" : "Cancel subscription?"}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {ar
+                ? "هتفضل على الباقة المدفوعة لآخر المدة الحالية، وبعدها هترجع للخطة المجانية. الكريدت المشترى مش بيتمسح."
+                : "You'll keep your paid plan until the end of the current period, then switch to the free plan. Purchased credits are kept."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={cancelling}>{ar ? "رجوع" : "Keep plan"}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                cancelSubscription();
+              }}
+              disabled={cancelling}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {cancelling ? <Loader2 className="h-4 w-4 animate-spin" /> : ar ? "إلغاء الاشتراك" : "Cancel subscription"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
