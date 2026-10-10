@@ -288,6 +288,7 @@
 ## Current authentication and checkout refinement (October 10, 2026)
 - [ ] Replace auth buttons in place with email entry and account-aware password flow; bring agents closer with eight distinct blink timings.
 - [ ] Keep the center subtitle to exactly two clean lines and slightly increase the character spacing.
+- [ ] Add soft button-press feedback and polished transitions between auth steps.
 - [x] Match the Grok reference with eight slow circular agents, Google/email buttons and entrance/navigation animation; verified phone/desktop screenshots, orbit movement, reduced motion and email/password/back navigation; routing test passed. Real OAuth and account creation not exercised.
 - [x] Refine auth branding weight, provider controls and spacing to match the re-uploaded reference; phone/desktop, email/password/recovery and routing test verified, preserving configured providers and account flow. Apple remains hidden until configured; no invented SSO.
 - [x] Redesign sign-in and registration presentation to match the supplied white reference; verify email, password and recovery presentation.
