@@ -85,9 +85,10 @@ html body .megsy-auth-screen.megsy-auth-extras button.megsy-auth-primary { backg
 .megsy-auth-entry .megsy-auth-legal { margin-top: 0; padding-top: 12px; font-size: 11px; }
 .megsy-auth-entry .megsy-auth-pill { min-height: 48px; margin-bottom: 10px; font-size: 15px; animation: auth-button-in .65s cubic-bezier(.22,1,.36,1) both; animation-delay: .18s; }
 .megsy-auth-entry .megsy-auth-pill:nth-of-type(2) { animation-delay: .28s; }
-.auth-agent-orbit { position: absolute; left: 50%; top: 50%; width: calc(100% + 50px); aspect-ratio: 1; transform: translate(-50%, -50%); pointer-events: none; direction: ltr; }
-.auth-agent-satellite { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(var(--auth-angle)); animation: auth-orbit 88s linear infinite; }
-.auth-agent-satellite .ag-orb { position: absolute; top: 0; left: calc(50% - 34px); transform: rotate(calc(-1 * var(--auth-angle))); animation: auth-orbit-upright 88s linear infinite; animation-delay: inherit; }
+@property --auth-travel { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+.auth-agent-orbit { --auth-rx: calc((min(100vw, 680px) - 76px) / 2); --auth-ry: min(30dvh, 330px); position: absolute; inset: 0; pointer-events: none; direction: ltr; }
+.auth-agent-satellite { position: absolute; left: 50%; top: 50%; width: 68px; height: 68px; transform: translate(calc(cos(var(--auth-angle)) * var(--auth-rx)), calc(sin(var(--auth-angle)) * var(--auth-ry))) translate(-50%, -50%); animation: auth-orbit 72s linear infinite; }
+.auth-agent-satellite .ag-orb { position: relative; transform: none; animation: none; }
 .auth-agent-satellite-0 { --auth-angle: -45deg; --auth-agent-fill: var(--auth-agent-green); }
 .auth-agent-satellite-1 { --auth-angle: 0deg; --auth-agent-fill: var(--auth-agent-pink); }
 .auth-agent-satellite-2 { --auth-angle: 45deg; --auth-agent-fill: var(--auth-agent-brown); }
@@ -97,18 +98,23 @@ html body .megsy-auth-screen.megsy-auth-extras button.megsy-auth-primary { backg
 .auth-agent-satellite-6 { --auth-angle: 225deg; --auth-agent-fill: var(--auth-agent-blue); }
 .auth-agent-satellite-7 { --auth-angle: 270deg; --auth-agent-fill: var(--auth-agent-purple); }
 .auth-agent-orbit .ag-orb__body { background: var(--auth-agent-fill); box-shadow: none; animation: none; }
-.auth-agent-orbit .ag-orb__eyes { top: 53%; transform: translate(-50%,-50%) rotate(12deg); }
-.auth-agent-orbit .ag-orb__eye { width: 7px; height: 19px; }
+.auth-agent-orbit .ag-orb__eyes { top: 53%; transform: translate(-50%,-50%) rotate(12deg); animation: auth-agent-glance 9s ease-in-out infinite; }
+.auth-agent-orbit .ag-orb__eye { width: 7px; height: 19px; animation: auth-agent-blink 5.6s infinite; }
+.auth-agent-satellite:nth-child(2n) .ag-orb__eye { animation-delay: -1.8s; }
+.auth-agent-satellite:nth-child(3n) .ag-orb__eye { animation-delay: -3.4s; }
+.auth-agent-satellite:nth-child(2n) .ag-orb__eyes { animation-delay: -4s; }
+.auth-agent-satellite:nth-child(3n) .ag-orb__eyes { animation-delay: -7s; }
 .auth-agent-satellite-0 .ag-orb__body { border-radius: 38%; clip-path: polygon(0 35%,12% 25%,12% 10%,35% 0,55% 8%,76% 3%,90% 20%,90% 38%,100% 55%,92% 82%,70% 90%,50% 100%,30% 91%,10% 90%,0 70%); }
 .auth-agent-satellite-5 .ag-orb__body { border-radius: 22%; clip-path: polygon(50% 0,95% 24%,100% 75%,50% 100%,0 76%,5% 25%); }
 .auth-agent-satellite-6 .ag-orb__body { border-radius: 25%; transform: rotate(9deg); }
 .auth-agent-satellite-7 .ag-orb__body { border-radius: 48% 52% 38% 62%; }
-@keyframes auth-orbit { from { transform: rotate(var(--auth-angle)); } to { transform: rotate(calc(var(--auth-angle) + 360deg)); } }
-@keyframes auth-orbit-upright { from { transform: rotate(calc(-1 * var(--auth-angle))); } to { transform: rotate(calc(-1 * var(--auth-angle) - 360deg)); } }
+@keyframes auth-orbit { from { --auth-travel: 0deg; transform: translate(calc(cos(calc(var(--auth-angle) + var(--auth-travel))) * var(--auth-rx)), calc(sin(calc(var(--auth-angle) + var(--auth-travel))) * var(--auth-ry))) translate(-50%, -50%); } to { --auth-travel: 360deg; transform: translate(calc(cos(calc(var(--auth-angle) + var(--auth-travel))) * var(--auth-rx)), calc(sin(calc(var(--auth-angle) + var(--auth-travel))) * var(--auth-ry))) translate(-50%, -50%); } }
+@keyframes auth-agent-blink { 0%,42%,48%,88%,94%,100% { transform: scaleY(1); } 45%,91% { transform: scaleY(.12); } }
+@keyframes auth-agent-glance { 0%,100% { transform: translate(-50%,-50%) rotate(12deg); } 35%,55% { transform: translate(-42%,-48%) rotate(-6deg); } }
 @keyframes auth-button-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes auth-copy-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .megsy-auth-expanded .megsy-auth-brand-copy { display: flex; flex-direction: column; align-items: center; }
 @layer properties { html body .megsy-auth-entry .megsy-auth-lockup h1 { font-weight: 600 !important; } }
 @media(min-width:768px) { .megsy-auth-entry { min-height: 740px; } .megsy-auth-entry .megsy-auth-brand { flex: 1; max-height: 900px; margin: auto; min-height: 560px; } .megsy-auth-entry .megsy-auth-lockup h1 { font-size: 48px; } .megsy-auth-entry .megsy-auth-tagline { font-size: 20px; } .auth-agent-orbit { width: 100%; } }
-@media(max-height:740px) and (max-width:767px) { .megsy-auth-entry { min-height: 620px; padding-bottom: 12px; } .megsy-auth-entry .megsy-auth-brand { min-height: 420px; } .auth-agent-satellite { scale: .82; } }
-@media(prefers-reduced-motion:reduce) { .auth-agent-satellite, .auth-agent-satellite .ag-orb { animation: none; } .auth-agent-orbit .ag-orb__eye, .megsy-auth-entry .megsy-auth-pill, .megsy-auth-entry .megsy-auth-brand-copy { animation: none; } }
+@media(max-height:740px) and (max-width:767px) { .megsy-auth-entry { min-height: 620px; padding-bottom: 12px; } .megsy-auth-entry .megsy-auth-brand { min-height: 420px; } .auth-agent-orbit { --auth-ry: 190px; } }
+@media(prefers-reduced-motion:reduce) { .auth-agent-satellite { animation-duration: 160s; } .auth-agent-orbit .ag-orb__eyes, .megsy-auth-entry .megsy-auth-pill, .megsy-auth-entry .megsy-auth-brand-copy { animation: none; } }
