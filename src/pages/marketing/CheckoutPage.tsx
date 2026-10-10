@@ -21,7 +21,10 @@ const CheckoutPage = () => {
   const BRAND = getZoneBrand();
 
   // The payment page needs a signed-in session; guests go to sign-in first.
+  // ?preview=1 skips the guard so the design can be reviewed without a session.
+  const preview = params.get("preview") === "1";
   useEffect(() => {
+    if (preview) return;
     let cancelled = false;
     (async () => {
       let {
@@ -40,7 +43,7 @@ const CheckoutPage = () => {
     return () => {
       cancelled = true;
     };
-  }, [navigate]);
+  }, [navigate, preview]);
 
   return (
     <>
