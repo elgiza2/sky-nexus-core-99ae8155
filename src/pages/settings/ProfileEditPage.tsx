@@ -228,17 +228,17 @@ const ProfileEditPage = () => {
   // ============================== DESKTOP ==============================
   return (
     <SubShell
-      title="Profile"
-      subtitle="Changes are saved automatically."
+      title={tx("Account")}
+      subtitle={tx("Changes are saved automatically.")}
       backTo="/settings"
       action={
         <span className="inline-flex items-center gap-1.5 text-[12px] text-muted-foreground">
-          {saveState === "saving" && (<><Loader2 className="w-3.5 h-3.5 animate-spin" /> Saving…</>)}
-          {saveState === "saved" && (<><Check className="w-3.5 h-3.5 text-primary" /> Saved</>)}
+          {saveState === "saving" && (<><Loader2 className="w-3.5 h-3.5 animate-spin" /> {tx("Saving…")}</>)}
+          {saveState === "saved" && (<><Check className="w-3.5 h-3.5 text-primary" /> {tx("Saved")}</>)}
         </span>
       }
     >
-      <SubSection title="Photo" description="Shown across Megsy.">
+      <SubSection title={tx("Photo")} description={tx("Shown across Megsy.")}>
         <SubCard>
           <div className="flex items-center gap-4">
             <button
@@ -246,12 +246,12 @@ const ProfileEditPage = () => {
               onClick={pickAvatar}
               disabled={avatarBusy}
               className="relative w-16 h-16 rounded-full overflow-hidden border border-border/70 bg-muted grid place-items-center text-[22px] font-medium text-foreground"
-              aria-label="Change profile photo"
+              aria-label={tx("Change profile photo")}
             >
               {avatarUrl ? (
                 <img src={avatarUrl} alt="" className="w-full h-full object-cover" />
               ) : (
-                (nickname || fullName || email || "U").trim().charAt(0).toUpperCase()
+                (fullName || "U").trim().charAt(0).toUpperCase()
               )}
               {avatarBusy && (
                 <span className="absolute inset-0 grid place-items-center bg-background/60">
