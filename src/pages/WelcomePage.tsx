@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useUserLang } from "@/lib/authI18n";
-import welcomeArtwork from "@/assets/phone-aura.jpg.asset.json";
-import img2 from "@/assets/welcome-2.jpg";
-import img3 from "@/assets/welcome-3.jpg";
+import artSky from "@/assets/Explore_Desktop_01-1.avif.asset.json";
+import artStorm from "@/assets/Explore_Desktop_03-1.avif.asset.json";
+import artEmber from "@/assets/desktop-nano-banana-pro-inspiration-gallery-img-6.avif.asset.json";
 
 export const WELCOME_SEEN_KEY = "megsy_welcome_seen_v1";
 
@@ -20,7 +20,9 @@ const SLIDES = {
     { t: "وكيلك\nدايمًا جنبك.", d: "ميغسي كمبيوتر بيخلّص الشغل المتعب وانت ركّز في المهم." },
   ],
 };
-const IMAGES = [welcomeArtwork.url, img2, img3];
+// Every visit rotates the pool: a random image starts, then the rest follow in order.
+const POOL = [artSky.url, artStorm.url, artEmber.url];
+const IMAGES = POOL.map((_, k) => POOL[(Math.floor(Math.random() * POOL.length) + k) % POOL.length]);
 
 export default function WelcomePage() {
   const lang = useUserLang();
@@ -110,9 +112,7 @@ export default function WelcomePage() {
       <motion.img
         key={i}
         src={IMAGES[i]}
-        alt={i === 0 ? "Person using a phone surrounded by luminous light" : ""}
-        width={1024}
-        height={1536}
+        alt=""
         initial={{ opacity: 0, scale: 1.04 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0 }}

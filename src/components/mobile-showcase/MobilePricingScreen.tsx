@@ -1,11 +1,14 @@
 /** Immersive subscription screen. Prices and checkout stay in the shared catalogue and parent. */
+import { useMemo } from "react";
 import { Check, ChevronRight, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useUserLang } from "@/lib/authI18n";
 import { useUserPlan } from "@/hooks/useUserPlan";
 import { getDisplayPrice, getPlan, type PlanTier } from "@/data/pricingData";
-import artwork from "@/assets/phone-aura.jpg.asset.json";
+import artSky from "@/assets/Explore_Desktop_01-1.avif.asset.json";
+import artStorm from "@/assets/Explore_Desktop_03-1.avif.asset.json";
+import artEmber from "@/assets/desktop-nano-banana-pro-inspiration-gallery-img-6.avif.asset.json";
 import MobileSidebarButton from "@/components/shared/MobileSidebarButton";
 
 interface Props {
@@ -19,6 +22,7 @@ interface Props {
 export default function MobilePricingScreen({ isYearly, onToggleYearly, onSubscribe, loadingTier, onMenuClick }: Props) {
   const isAr = useUserLang() === "ar-eg";
   const navigate = useNavigate();
+  const artwork = useMemo(() => [artSky, artStorm, artEmber][Math.floor(Math.random() * 3)], []);
   const { plan } = useUserPlan();
   const subscribed = plan === "pro" || plan === "max" || plan === "elite";
   const pro = getPlan("pro");
@@ -36,7 +40,7 @@ export default function MobilePricingScreen({ isYearly, onToggleYearly, onSubscr
   return (
     <section className="botanical-pricing" dir={isAr ? "rtl" : "ltr"} aria-label={isAr ? "اشتراك Megsy Pro" : "Megsy Pro subscription"}>
       <div className="botanical-art" aria-hidden="true">
-        <img src={artwork.url} alt="" width={309} height={203} fetchPriority="high" />
+        <img src={artwork.url} alt="" fetchPriority="high" />
       </div>
       <div className="botanical-scrim" aria-hidden="true" />
       <div className="botanical-content">
