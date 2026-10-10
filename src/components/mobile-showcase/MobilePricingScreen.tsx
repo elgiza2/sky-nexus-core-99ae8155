@@ -23,6 +23,7 @@ export default function MobilePricingScreen({ isYearly, onToggleYearly, onSubscr
   const isAr = useUserLang() === "ar-eg";
   const navigate = useNavigate();
   const artwork = useMemo(() => [artSky, artStorm, artEmber][Math.floor(Math.random() * 3)], []);
+  const { plan } = useUserPlan();
   const subscribed = plan === "pro" || plan === "max" || plan === "elite";
   const pro = getPlan("pro");
   if (!pro) return null;
