@@ -1,7 +1,7 @@
 /** @doc Profile editor — full name, photo, delete account. Autosaves the name. */
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Check, Camera, ChevronLeft, ChevronRight, Loader2, Trash2 } from "lucide-react";
+import { Check, Camera, Loader2, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { sanitizeErrorMessage } from "@/lib/sanitizeError";
@@ -153,7 +153,6 @@ const ProfileEditPage = () => {
   // ============================== MOBILE ==============================
   if (isMobile) {
     const initial = (fullName || "U").trim().charAt(0).toUpperCase();
-    const BackChevron = isAr ? ChevronRight : ChevronLeft;
     return (
       <div className="pep-root" dir={isAr ? "rtl" : "ltr"}>
         <style>{pepCss}</style>
@@ -161,8 +160,8 @@ const ProfileEditPage = () => {
         {/* Sheet — opens as a stacked layer over the settings page */}
         <div className="pep-sheet">
         <header className="pep-topbar">
-          <button className="pep-icon-btn" aria-label={tx("Back")} onClick={goBack}>
-            <BackChevron className="pep-chev" />
+          <button className="pep-icon-btn" aria-label={tx("Close")} onClick={goBack}>
+            <X className="pep-chev" strokeWidth={1.9} />
           </button>
           <h1 className="pep-title">{tx("Account")}</h1>
           {saveState !== "idle" && (
@@ -325,7 +324,7 @@ const ProfileEditPage = () => {
   );
 };
 
-const pepCss = `
+export const pepCss = `
 /* Account editor — same glass canvas as the settings home so it reads as an
    open section of that page. Reuses the settings-home tokens. */
 .pep-root {

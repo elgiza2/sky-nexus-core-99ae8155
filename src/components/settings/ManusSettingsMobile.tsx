@@ -6,7 +6,7 @@ import {
   ChevronRight,
   Brain,
   CreditCard,
-  Gem,
+  Zap,
   SlidersHorizontal,
   Database,
   PanelBottom,
@@ -116,7 +116,7 @@ const ManusSettingsMobile = () => {
 
   const accountRows: Row[] = [
     { icon: CreditCard, tone: "wallet", label: "Subscription", trailing: planLabel, path: "/pricing" },
-    { icon: Gem, tone: "wallet", label: "Credits", trailing: String(credits ?? 0), path: "/usage" },
+    { icon: Zap, tone: "wallet", label: "Credits", trailing: String(credits ?? 0), path: "/usage" },
   ];
 
   const langLabel = AVAILABLE_LANGS.find((l) => l.code === lang)?.native ?? "English";
