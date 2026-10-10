@@ -37,6 +37,7 @@ export default function CustomCardForm({ open, tier, interval, onClose }: Props)
   const [orderId, setOrderId] = useState<string | null>(null);
   const [result, setResult] = useState<"idle" | "processing" | "success">("idle");
   const [stage, setStage] = useState<"main" | "wallet">("main");
+  const [method, setMethod] = useState<TileId>("visa");
   const [hostedUrl, setHostedUrl] = useState<string | null>(null);
   const [hostedLabel, setHostedLabel] = useState<string>("");
   const [phone, setPhone] = useState("");
@@ -200,9 +201,7 @@ export default function CustomCardForm({ open, tier, interval, onClose }: Props)
                 ? "Confirm your payment"
                 : hostedUrl
                   ? `Pay with ${hostedLabel}`
-                  : stage === "wallet"
-                    ? "Vodafone Cash"
-                    : "Payment"}
+                  : "Payment"}
           </h1>
           {hostedUrl && result !== "success" ? (
             <div className="mt-6 flex-1">
@@ -223,93 +222,62 @@ export default function CustomCardForm({ open, tier, interval, onClose }: Props)
               </div>
               <Button variant="ghost" type="button" className="megsy-pay-cta" onClick={onClose}>Continue</Button>
             </div>
-          ) : stage === "wallet" ? (
-            <form onSubmit={submitWallet} className="mt-6 flex flex-1 flex-col" autoComplete="off">
-              {walletWaiting ? (
-                <div className="flex flex-1 flex-col items-center justify-center py-12 text-center">
-                  <Loader2 className="h-10 w-10 animate-spin" />
-                  <h2 className="checkout-subtitle mt-6 text-xl font-semibold">Open your phone and approve the payment</h2>
-                  <p className="checkout-note mt-3">We sent a payment request to <span dir="ltr">{phone}</span>.</p>
-                  <ol className="checkout-steps mt-6 w-full">
-                    <li>1. Open the “Ana Vodafone” app or dial <span dir="ltr" className="font-semibold">*9#</span></li>
-                    <li>2. Go to “Payment requests” and approve it</li>
-                    <li>3. Enter your wallet PIN — this page continues on its own</li>
-                  </ol>
-                  <Button variant="ghost" type="button" onClick={cancelWallet} className="megsy-pay-quiet mt-6">Change number or cancel</Button>
-                </div>
-              ) : (
-                <div>
-                  <p className="checkout-note">Enter the number linked to your wallet. We’ll send a payment request to approve on your phone.</p>
-                  <div className="wallet-identity"><TileLogo id="vodafone" /><span>Vodafone Cash</span></div>
-                  <label className="checkout-field mt-7">
-                    <span>Wallet phone number</span>
-                    <div className="checkout-input-wrap wallet-input">
-                      <span className="wallet-prefix">+20</span>
-                      <input inputMode="tel" autoComplete="tel-national" dir="ltr" aria-label="Vodafone Cash wallet number" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 11))} placeholder="010 0000 0000" />
-                    </div>
-                  </label>
-                </div>
-              )}
-              {error && <ErrorBox text={error} />}
-              <div className="min-h-8 flex-1" />
-              {!walletWaiting && (
-                <Button variant="ghost" type="submit" data-plain disabled={busy} className="megsy-pay-cta mt-8">
-                  {busy ? <><Loader2 className="h-5 w-5 animate-spin" /> Sending…</> : "Send payment request"}
-                </Button>
-              )}
-            </form>
           ) : (
             <div className="checkout-allinone">
-              <form onSubmit={submitCard} className="checkout-card-form" autoComplete="off">
-                <label className="checkout-field">
-                  <span>Card Holder Name</span>
-                  <div className="checkout-input-wrap">
-                    <input autoComplete="cc-name" dir="ltr" value={name} onChange={(e) => setName(e.target.value)} placeholder="Full name" aria-required="true" />
-                  </div>
-                </label>
-                <div className="grid grid-cols-2 gap-4">
-                  <label className="checkout-field">
-                    <span>CVV</span>
-                    <div className="checkout-input-wrap">
-                      <input type="password" inputMode="numeric" autoComplete="cc-csc" value={cvv} onChange={(e) => setCvv(e.target.value.replace(/\D/g, "").slice(0, 4))} placeholder="222" aria-required="true" />
-                    </div>
-                  </label>
-                  <label className="checkout-field">
-                    <span>Expire Date</span>
-                    <div className="checkout-input-wrap">
-                      <input inputMode="numeric" autoComplete="cc-exp" value={month ? `${month}${month.length === 2 ? " / " : ""}${year}` : ""} onChange={(e) => { const digits = e.target.value.replace(/\D/g, "").slice(0, 4); setMonth(digits.slice(0, 2)); setYear(digits.slice(2)); }} placeholder="09 / 29" aria-required="true" />
-                    </div>
-                  </label>
-                </div>
-                <label className="checkout-field">
-                  <span>Card Number</span>
-                  <div className="checkout-input-wrap">
-                    <input inputMode="numeric" autoComplete="cc-number" dir="ltr" value={formatCardNumber(number)} onChange={(e) => setNumber(e.target.value)} placeholder="1234 1234 1234 1234" aria-required="true" />
-                  </div>
-                </label>
-                {error && <ErrorBox text={error} />}
-                <Button variant="ghost" type="submit" data-plain disabled={busy} className="megsy-pay-cta">
-                  {busy ? <><Loader2 className="h-5 w-5 animate-spin" /> Processing…</> : "Add & Pay"}
-                </Button>
-              </form>
-
-              <p className="checkout-or">Or Payment Option</p>
-              <div className="megsy-pay-list">
-                {ALT_METHODS.map((m) => (
-                  <Button
-                    variant="ghost"
-                    key={m.id}
-                    type="button"
-                    disabled={busy}
-                    onClick={() => (m.id === "vodafone" ? (setError(null), setStage("wallet")) : void openHostedCheckout(m.method, m.label))}
-                    className="megsy-pay-row"
-                  >
-                    <span className="megsy-pay-mark checkout-logo" dir="ltr">
-                      <TileLogo id={m.id} />
-                    </span>
-                    <span className="megsy-pay-copy"><span className="megsy-pay-name">{m.label}</span></span>
-                  </Button>
+              <div className="checkout-methods" role="tablist" aria-label="Payment method">
+                {METHODS.map((m) => (
+                  <button key={m.id} type="button" role="tab" aria-selected={method === m.id} data-selected={method === m.id} disabled={busy || walletWaiting} onClick={() => { setError(null); setMethod(m.id); }} className="checkout-method">
+                    <TileLogo id={m.id} />
+                    <span>{m.label}</span>
+                  </button>
                 ))}
+              </div>
+              <div key={method} className="checkout-panel">
+                {method === "visa" ? (
+                  <form onSubmit={submitCard} className="checkout-card-form" autoComplete="off">
+                    <Field label="Card number"><input inputMode="numeric" autoComplete="cc-number" dir="ltr" value={formatCardNumber(number)} onChange={(e) => setNumber(e.target.value)} placeholder="1234 5678 9012 3456" /></Field>
+                    <Field label="Name on card"><input autoComplete="cc-name" dir="ltr" value={name} onChange={(e) => setName(e.target.value)} placeholder="Full name" /></Field>
+                    <div className="grid grid-cols-2 gap-3">
+                      <Field label="Expiry"><input inputMode="numeric" autoComplete="cc-exp" value={month ? `${month}${month.length === 2 ? " / " : ""}${year}` : ""} onChange={(e) => { const d = e.target.value.replace(/\D/g, "").slice(0, 4); setMonth(d.slice(0, 2)); setYear(d.slice(2)); }} placeholder="MM / YY" /></Field>
+                      <Field label="CVV"><input type="password" inputMode="numeric" autoComplete="cc-csc" value={cvv} onChange={(e) => setCvv(e.target.value.replace(/\D/g, "").slice(0, 4))} placeholder="•••" /></Field>
+                    </div>
+                    {error && <ErrorBox text={error} />}
+                    <Button variant="ghost" type="submit" data-plain disabled={busy} className="megsy-pay-cta">
+                      {busy ? <><Loader2 className="h-5 w-5 animate-spin" /> Processing…</> : "Pay now"}
+                    </Button>
+                  </form>
+                ) : method === "vodafone" ? (
+                  <form onSubmit={submitWallet} className="checkout-card-form" autoComplete="off">
+                    {walletWaiting ? (
+                      <div className="flex flex-col items-center py-6 text-center">
+                        <Loader2 className="h-9 w-9 animate-spin" />
+                        <h2 className="checkout-subtitle mt-4 text-lg font-semibold">Approve the payment on your phone</h2>
+                        <p className="checkout-note mt-2">Request sent to <span dir="ltr">+20 {phone}</span>. Open Ana Vodafone or dial *9#, then enter your PIN.</p>
+                        <Button variant="ghost" type="button" onClick={cancelWallet} className="megsy-pay-quiet mt-4">Change number or cancel</Button>
+                      </div>
+                    ) : (
+                      <>
+                        <Field label="Wallet number">
+                          <span className="wallet-prefix">+20</span>
+                          <input inputMode="tel" autoComplete="tel-national" dir="ltr" aria-label="Vodafone Cash wallet number" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 11))} placeholder="10 0000 0000" />
+                        </Field>
+                        <p className="checkout-note">We'll send a payment request to approve on your phone.</p>
+                        {error && <ErrorBox text={error} />}
+                        <Button variant="ghost" type="submit" data-plain disabled={busy} className="megsy-pay-cta">
+                          {busy ? <><Loader2 className="h-5 w-5 animate-spin" /> Sending…</> : "Send payment request"}
+                        </Button>
+                      </>
+                    )}
+                  </form>
+                ) : (
+                  <div className="checkout-card-form">
+                    <p className="checkout-note">Pay securely with {method === "apple_pay" ? "Apple Pay" : "Google Pay"} — no card details needed.</p>
+                    {error && <ErrorBox text={error} />}
+                    <button type="button" disabled={busy} onClick={() => void openHostedCheckout("card", method === "apple_pay" ? "Apple Pay" : "Google Pay")} className="wallet-pay-btn">
+                      {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : <>{method === "apple_pay" ? <TileLogo id="apple_pay" /> : <TileLogo id="google_pay" />}<span>Pay</span></>}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -320,15 +288,21 @@ export default function CustomCardForm({ open, tier, interval, onClose }: Props)
 }
 
 type TileId = "visa" | "mastercard" | "apple_pay" | "google_pay" | "vodafone";
-const ALT_METHODS: Array<{
-  id: TileId;
-  label: string;
-  method: PaymentMethod;
-}> = [
-  { id: "apple_pay", label: "Apple Pay", method: "card" },
-  { id: "google_pay", label: "Google Pay", method: "card" },
-  { id: "vodafone", label: "Vodafone Cash", method: "wallet" },
+const METHODS: Array<{ id: TileId; label: string }> = [
+  { id: "visa", label: "Card" },
+  { id: "apple_pay", label: "Apple Pay" },
+  { id: "google_pay", label: "Google Pay" },
+  { id: "vodafone", label: "Vodafone" },
 ];
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <label className="checkout-field">
+      <span>{label}</span>
+      <div className="checkout-input-wrap">{children}</div>
+    </label>
+  );
+}
 
 function TileLogo({ id }: { id: TileId }) {
   switch (id) {
