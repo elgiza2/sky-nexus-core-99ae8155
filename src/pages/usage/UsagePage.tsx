@@ -1,12 +1,11 @@
-/** @doc Billing — plan status, renewal, credit top-ups, cancel subscription and credit history. */
+/** @doc Billing — plan status, credit top-ups, cancel subscription and history, as a glass sheet over settings. */
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft,
   BadgeCheck,
   CalendarClock,
+  ChevronLeft,
   Clapperboard,
-  FileText,
   Gift,
   Globe,
   Image as ImageIcon,
@@ -15,7 +14,6 @@ import {
   Presentation,
   RefreshCw,
   Search,
-  Sparkles,
   Wand2,
   XCircle,
   Zap,
@@ -26,6 +24,7 @@ import { invokeFunction } from "@/lib/supabaseFunction";
 import { claimDailyCredits, fetchCreditOverview, type CreditOverview } from "@/lib/creditsSystem";
 import { translateExactText, useUserLang } from "@/lib/authI18n";
 import CreditPacks from "@/components/billing/CreditPacks";
+import { pepCss } from "@/pages/settings/ProfileEditPage";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -175,40 +174,40 @@ export default function UsagePage() {
   };
 
   return (
-    <div dir={ar ? "rtl" : "ltr"} className="min-h-[100dvh] bg-background text-foreground">
-      <div className="mx-auto w-full max-w-xl px-5 pb-24 pt-[calc(env(safe-area-inset-top,0px)+12px)]">
-        <div className="flex items-center justify-between">
+    <div className="pep-root" dir={ar ? "rtl" : "ltr"}>
+      <style>{pepCss}</style>
+      <style>{billCss}</style>
+      <div className="pep-sheet">
+        <header className="pep-topbar">
           <button
             type="button"
-            aria-label="Back"
+            aria-label={t("Back")}
             onClick={() => navigate("/settings", { replace: true })}
-            className="grid h-10 w-10 place-items-center rounded-full text-foreground/80 transition-colors hover:bg-muted"
+            className="pep-icon-btn"
           >
-            <ArrowLeft className={`h-5 w-5 ${ar ? "rotate-180" : ""}`} />
+            <ChevronLeft className="pep-chev" strokeWidth={2.1} />
           </button>
-          <h1 className="text-[17px] font-bold">{ar ? "الفاتورة" : "Billing"}</h1>
-          <span className="w-10" />
-        </div>
+          <h1 className="pep-title">{ar ? "الفاتورة" : "Billing"}</h1>
+          <span className="pep-icon-btn" style={{ visibility: "hidden" }} />
+        </header>
 
         {/* Plan status */}
-        <section className="mt-6 rounded-[32px] bg-foreground px-6 pb-7 pt-8 text-background">
-          <div className="flex items-center justify-between">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-background/15 px-3.5 py-1.5 text-[12px] font-bold uppercase tracking-wider">
+        <section className="pep-card bill-status">
+          <div className="bill-status-top">
+            <span className="bill-plan">
               <BadgeCheck className="h-3.5 w-3.5" />
               {paid ? plan : ar ? "مجاني" : "Free"}
             </span>
-            {!cancelled && paid && (
-              <span className="inline-flex items-center gap-1.5 text-[12px] opacity-80">
+            {paid && !cancelled && (
+              <span className="bill-renew">
                 <CalendarClock className="h-3.5 w-3.5" />
                 {ar ? "يتجدد تلقائيًا" : "Auto-renews"}
               </span>
             )}
           </div>
-          <p className="mt-6 text-[13px] font-medium opacity-80">{ar ? "رصيدك الحالي" : "Current balance"}</p>
-          <p className="mt-1 text-[56px] font-bold leading-none tracking-tight tabular-nums">
-            {ov ? fmt(ov.credits) : "—"}
-          </p>
-          <p className="mt-2 text-[12.5px] opacity-70">
+          <p className="bill-balance-label">{ar ? "رصيدك الحالي" : "Current balance"}</p>
+          <p className="bill-balance">{ov ? fmt(ov.credits) : "—"}</p>
+          <p className="bill-status-note">
             {cancelled
               ? ar
                 ? "الاشتراك اتلغى — الباقة شغالة لآخر المدة المدفوعة"
@@ -221,33 +220,21 @@ export default function UsagePage() {
                   ? "أنت على الخطة المجانية"
                   : "You're on the free plan"}
           </p>
-          {!paid && (
-            <button
-              type="button"
-              onClick={() => navigate("/pricing")}
-              className="mt-6 inline-flex h-11 items-center gap-2 rounded-full bg-background px-6 text-[14px] font-bold text-foreground transition-transform hover:scale-[1.03] active:scale-95"
-            >
-              <Sparkles className="h-4 w-4" />
-              {ar ? "ترقية" : "Upgrade"}
-            </button>
-          )}
         </section>
 
         {/* Today */}
-        <section className="mt-4 rounded-[28px] bg-card p-5 ring-1 ring-border/60">
-          <div className="flex items-baseline justify-between">
-            <p className="text-[14px] font-semibold">{ar ? "استخدام النهارده" : "Today's usage"}</p>
-            <p className="text-[13px] tabular-nums text-muted-foreground">
-              {ov ? `${fmt(ov.spentToday)} / ${fmt(ov.dailyAllowance)}` : "—"}
-            </p>
+        <section className="pep-card bill-pad">
+          <div className="bill-row-between">
+            <p className="bill-sec-label">{ar ? "استخدام النهارده" : "Today's usage"}</p>
+            <p className="bill-sec-val">{ov ? `${fmt(ov.spentToday)} / ${fmt(ov.dailyAllowance)}` : "—"}</p>
           </div>
-          <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-muted">
+          <div className="bill-bar">
             <div
-              className="h-full rounded-full bg-foreground transition-all"
+              className="bill-bar-fill"
               style={{ width: `${Math.max(usedPct, ov && ov.spentToday > 0 ? 3 : 0)}%` }}
             />
           </div>
-          <div className="mt-5 grid grid-cols-3 gap-2 text-center">
+          <div className="bill-stats">
             <Stat label={ar ? "مهام" : "Tasks"} value={ov ? fmt(ov.tasksToday) : "—"} />
             <Stat label={ar ? "الشهر ده" : "This month"} value={ov ? fmt(ov.spentThisMonth) : "—"} />
             <Stat label={ar ? "التجديد" : "Refresh"} value={refreshIn ?? "—"} />
@@ -255,47 +242,44 @@ export default function UsagePage() {
         </section>
 
         {/* Balance breakdown */}
-        <section className="mt-4 grid grid-cols-2 gap-2 rounded-[28px] bg-card p-5 text-center ring-1 ring-border/60 sm:grid-cols-4">
-          <Stat label={ar ? "يومي" : "Daily"} value={ov ? fmt(ov.dailyCredits) : "—"} />
-          <Stat label={ar ? "هدايا" : "Bonus"} value={ov ? fmt(ov.bonusCredits) : "—"} />
-          <Stat label={ar ? "الباقة" : "Plan"} value={ov ? fmt(ov.planCredits) : "—"} />
-          <Stat label={ar ? "مشترى" : "Purchased"} value={ov ? fmt(ov.purchasedCredits) : "—"} />
+        <section className="pep-card bill-pad">
+          <div className="bill-stats bill-stats-4">
+            <Stat label={ar ? "يومي" : "Daily"} value={ov ? fmt(ov.dailyCredits) : "—"} />
+            <Stat label={ar ? "هدايا" : "Bonus"} value={ov ? fmt(ov.bonusCredits) : "—"} />
+            <Stat label={ar ? "الباقة" : "Plan"} value={ov ? fmt(ov.planCredits) : "—"} />
+            <Stat label={ar ? "مشترى" : "Purchased"} value={ov ? fmt(ov.purchasedCredits) : "—"} />
+          </div>
         </section>
 
-        {!signedOut && <CreditPacks isPro={paid} />}
+        {!signedOut && (
+          <div className="bill-packs">
+            <CreditPacks isPro={paid} />
+          </div>
+        )}
 
-        {/* Cancel subscription */}
         {paid && !cancelled && !signedOut && (
-          <button
-            type="button"
-            onClick={() => setConfirmCancel(true)}
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-[24px] bg-card py-4 text-[14px] font-semibold text-destructive ring-1 ring-border/60 transition-colors hover:bg-destructive/5"
-          >
-            <XCircle className="h-4.5 w-4.5" />
+          <button className="pep-danger" type="button" onClick={() => setConfirmCancel(true)}>
+            <XCircle className="pep-danger-ico" strokeWidth={1.7} />
             {ar ? "إلغاء الاشتراك" : "Cancel subscription"}
           </button>
         )}
 
         {/* History */}
-        <h2 className="mb-3 mt-10 px-1 text-[12px] font-semibold uppercase tracking-wider text-muted-foreground">
-          {ar ? "السجل" : "History"}
-        </h2>
+        <h2 className="bill-hist-title">{ar ? "السجل" : "History"}</h2>
         {loading ? (
           <div className="grid h-32 place-items-center">
-            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            <Loader2 className="h-5 w-5 animate-spin" style={{ color: "var(--settings-muted)" }} />
           </div>
         ) : signedOut ? (
-          <p className="py-10 text-center text-sm text-muted-foreground">
-            {ar ? "سجّل دخولك عشان تشوف رصيدك" : "Sign in to see your credits"}
-          </p>
+          <p className="bill-empty">{ar ? "سجّل دخولك عشان تشوف رصيدك" : "Sign in to see your credits"}</p>
         ) : groups.length === 0 ? (
-          <p className="py-10 text-center text-sm text-muted-foreground">{ar ? "لسه مفيش استخدام" : "No usage yet"}</p>
+          <p className="bill-empty">{ar ? "لسه مفيش استخدام" : "No usage yet"}</p>
         ) : (
           <div className="space-y-6">
             {groups.map(([day, items]) => (
               <div key={day}>
-                <p className="mb-2 px-1 text-[12.5px] font-medium text-muted-foreground">{day}</p>
-                <div className="divide-y divide-border/60 overflow-hidden rounded-[24px] bg-card ring-1 ring-border/60">
+                <p className="bill-day">{day}</p>
+                <div className="pep-card bill-hist">
                   {items.map((it) => {
                     const amount = Number(it.amount) || 0;
                     const grant = amount < 0; // grants are stored as negatives
@@ -303,17 +287,17 @@ export default function UsagePage() {
                     const Icon = ICONS[kind];
                     const label = LABELS[kind][ar ? 1 : 0];
                     return (
-                      <div key={it.id} className="flex items-center gap-3 px-4 py-3">
-                        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-muted text-foreground">
+                      <div key={it.id} className="bill-tx">
+                        <span className="bill-tx-ico">
                           <Icon className="h-4 w-4" />
                         </span>
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate text-[14px] font-medium">{label}</span>
-                          <span className="block text-[12px] text-muted-foreground">
+                        <span className="bill-tx-main">
+                          <span className="bill-tx-label">{label}</span>
+                          <span className="bill-tx-time">
                             {new Date(it.created_at).toLocaleTimeString(loc, { hour: "numeric", minute: "2-digit" })}
                           </span>
                         </span>
-                        <span className="text-[14px] font-bold tabular-nums text-foreground">
+                        <span className="bill-tx-amt">
                           {grant ? "+" : "−"}
                           {fmt(Math.abs(amount))}
                         </span>
@@ -325,6 +309,7 @@ export default function UsagePage() {
             ))}
           </div>
         )}
+        <div className="pep-spacer" />
       </div>
 
       <AlertDialog open={confirmCancel} onOpenChange={setConfirmCancel}>
@@ -358,9 +343,73 @@ export default function UsagePage() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-muted/60 px-2 py-3">
-      <p className="text-[15px] font-bold tabular-nums">{value}</p>
-      <p className="mt-0.5 text-[11.5px] text-muted-foreground">{label}</p>
+    <div className="bill-stat">
+      <p className="bill-stat-val">{value}</p>
+      <p className="bill-stat-label">{label}</p>
     </div>
   );
 }
+
+const billCss = `
+.pep-root .pep-title { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+.pep-root .bill-status { padding: 22px; }
+.pep-root .bill-status-top { display: flex; align-items: center; justify-content: space-between; }
+.pep-root .bill-plan {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 999px;
+  background: var(--settings-ink); color: var(--settings-surface);
+  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+}
+.pep-root .bill-renew {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12px; color: var(--settings-muted);
+}
+.pep-root .bill-balance-label { margin-top: 20px; font-size: 13px; font-weight: 500; color: var(--settings-muted); }
+.pep-root .bill-balance {
+  margin-top: 4px; font-size: 52px; font-weight: 700; line-height: 1;
+  letter-spacing: -0.03em; font-variant-numeric: tabular-nums; color: var(--settings-ink);
+}
+.pep-root .bill-status-note { margin-top: 10px; font-size: 12.5px; color: var(--settings-muted); }
+.pep-root .bill-pad { padding: 18px; }
+.pep-root .bill-row-between { display: flex; align-items: baseline; justify-content: space-between; }
+.pep-root .bill-sec-label { font-size: 14px; font-weight: 600; color: var(--settings-ink); }
+.pep-root .bill-sec-val { font-size: 13px; font-variant-numeric: tabular-nums; color: var(--settings-muted); }
+.pep-root .bill-bar {
+  margin-top: 12px; height: 10px; border-radius: 999px; overflow: hidden;
+  background: var(--settings-line);
+}
+.pep-root .bill-bar-fill { height: 100%; border-radius: 999px; background: var(--settings-ink); transition: width .4s ease; }
+.pep-root .bill-stats { margin-top: 16px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
+.pep-root .bill-stats-4 { margin-top: 0; grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 640px) { .pep-root .bill-stats-4 { grid-template-columns: repeat(4, 1fr); } }
+.pep-root .bill-stat { border-radius: 16px; background: var(--settings-line); padding: 12px 8px; }
+.pep-root .bill-stat-val { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--settings-ink); }
+.pep-root .bill-stat-label { margin-top: 2px; font-size: 11.5px; color: var(--settings-muted); }
+.pep-root .bill-packs .py-10 { padding-top: 0; padding-bottom: 0; }
+.pep-root .bill-packs h2 { color: var(--settings-ink); }
+.pep-root .bill-packs p { color: var(--settings-muted); }
+.pep-root .bill-packs button {
+  background: var(--settings-surface); border-color: var(--settings-glass-edge) !important;
+  color: var(--settings-ink); border-radius: 20px;
+}
+.pep-root .bill-hist-title {
+  margin: 28px 4px 12px; font-size: 12px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .08em; color: var(--settings-muted);
+}
+.pep-root .bill-day { margin: 0 4px 8px; font-size: 12.5px; font-weight: 500; color: var(--settings-muted); }
+.pep-root .bill-hist { padding: 0; overflow: hidden; }
+.pep-root .bill-tx {
+  display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+  border-bottom: 1px solid var(--settings-line);
+}
+.pep-root .bill-tx:last-child { border-bottom: 0; }
+.pep-root .bill-tx-ico {
+  display: grid; place-items: center; width: 36px; height: 36px; flex-shrink: 0;
+  border-radius: 12px; background: var(--settings-line); color: var(--settings-ink);
+}
+.pep-root .bill-tx-main { min-width: 0; flex: 1; }
+.pep-root .bill-tx-label { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; font-weight: 500; color: var(--settings-ink); }
+.pep-root .bill-tx-time { display: block; font-size: 12px; color: var(--settings-muted); }
+.pep-root .bill-tx-amt { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--settings-ink); }
+.pep-root .bill-empty { padding: 40px 0; text-align: center; font-size: 14px; color: var(--settings-muted); }
+`;
