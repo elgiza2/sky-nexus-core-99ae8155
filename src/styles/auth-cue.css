@@ -31,6 +31,9 @@
 .megsy-auth-legal a:hover { color: var(--auth-ink); text-decoration: underline; text-underline-offset: 4px; }
 .megsy-auth-form { display: flex; flex-direction: column; gap: 14px; }
 .megsy-auth-form h2 { font-size: 22px; line-height: 1.4; font-weight: 600; text-align: center; margin: 0 0 8px; }
+.megsy-auth-email-summary { margin: -8px 0 0; text-align: center; color: var(--auth-muted); font-size: 14px; overflow-wrap: anywhere; }
+.megsy-auth-entry:has(.megsy-auth-form) .megsy-auth-brand { min-height: 350px; }
+.megsy-auth-entry .megsy-auth-form .megsy-auth-pill { margin-bottom: 0; animation: none; }
 .megsy-auth-screen .megsy-auth-input { width: 100%; min-width: 0; height: 54px; background: var(--auth-control); color: var(--auth-ink); border: 1px solid transparent; border-radius: 999px; padding: 0 22px; outline: none; font-size: 16px; }
 .megsy-auth-input::placeholder { color: var(--auth-muted); opacity: 1; }
 .megsy-auth-input:focus { border-color: var(--auth-focus); }
@@ -86,22 +89,20 @@ html body .megsy-auth-screen.megsy-auth-extras button.megsy-auth-primary { backg
 .megsy-auth-entry .megsy-auth-pill { min-height: 48px; margin-bottom: 10px; font-size: 15px; animation: auth-button-in .65s cubic-bezier(.22,1,.36,1) both; animation-delay: .18s; }
 .megsy-auth-entry .megsy-auth-pill:nth-of-type(2) { animation-delay: .28s; }
 @property --auth-travel { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
-.auth-agent-orbit { --auth-rx: calc((min(100vw, 680px) - 76px) / 2); --auth-ry: min(30dvh, 330px); position: absolute; inset: 0; pointer-events: none; direction: ltr; }
+.auth-agent-orbit { --auth-rx: calc((min(100vw, 620px) - 86px) / 2); --auth-ry: min(23dvh, 250px); position: absolute; inset: 0; pointer-events: none; direction: ltr; }
 .auth-agent-satellite { position: absolute; left: 50%; top: 50%; width: 68px; height: 68px; transform: translate(calc(cos(var(--auth-angle)) * var(--auth-rx)), calc(sin(var(--auth-angle)) * var(--auth-ry))) translate(-50%, -50%); animation: auth-orbit 72s linear infinite; }
 .auth-agent-satellite .ag-orb { position: relative; transform: none; animation: none; }
-.auth-agent-satellite-0 { --auth-angle: -45deg; --auth-agent-fill: var(--auth-agent-green); }
-.auth-agent-satellite-1 { --auth-angle: 0deg; --auth-agent-fill: var(--auth-agent-pink); }
-.auth-agent-satellite-2 { --auth-angle: 45deg; --auth-agent-fill: var(--auth-agent-brown); }
-.auth-agent-satellite-3 { --auth-angle: 90deg; --auth-agent-fill: var(--auth-agent-red); }
-.auth-agent-satellite-4 { --auth-angle: 135deg; --auth-agent-fill: var(--auth-agent-teal); }
-.auth-agent-satellite-5 { --auth-angle: 180deg; --auth-agent-fill: var(--auth-agent-orange); }
-.auth-agent-satellite-6 { --auth-angle: 225deg; --auth-agent-fill: var(--auth-agent-blue); }
-.auth-agent-satellite-7 { --auth-angle: 270deg; --auth-agent-fill: var(--auth-agent-purple); }
+.auth-agent-satellite-0 { --auth-angle: -45deg; --auth-blink-delay: -.2s; --auth-agent-fill: var(--auth-agent-green); }
+.auth-agent-satellite-1 { --auth-angle: 0deg; --auth-blink-delay: -.9s; --auth-agent-fill: var(--auth-agent-pink); }
+.auth-agent-satellite-2 { --auth-angle: 45deg; --auth-blink-delay: -1.6s; --auth-agent-fill: var(--auth-agent-brown); }
+.auth-agent-satellite-3 { --auth-angle: 90deg; --auth-blink-delay: -2.3s; --auth-agent-fill: var(--auth-agent-red); }
+.auth-agent-satellite-4 { --auth-angle: 135deg; --auth-blink-delay: -3s; --auth-agent-fill: var(--auth-agent-teal); }
+.auth-agent-satellite-5 { --auth-angle: 180deg; --auth-blink-delay: -3.7s; --auth-agent-fill: var(--auth-agent-orange); }
+.auth-agent-satellite-6 { --auth-angle: 225deg; --auth-blink-delay: -4.4s; --auth-agent-fill: var(--auth-agent-blue); }
+.auth-agent-satellite-7 { --auth-angle: 270deg; --auth-blink-delay: -5.1s; --auth-agent-fill: var(--auth-agent-purple); }
 .auth-agent-orbit .ag-orb__body { background: var(--auth-agent-fill); box-shadow: none; animation: none; }
 .auth-agent-orbit .ag-orb__eyes { top: 53%; transform: translate(-50%,-50%) rotate(12deg); animation: auth-agent-glance 9s ease-in-out infinite; }
-.auth-agent-orbit .ag-orb__eye { width: 7px; height: 19px; animation: auth-agent-blink 5.6s infinite; }
-.auth-agent-satellite:nth-child(2n) .ag-orb__eye { animation-delay: -1.8s; }
-.auth-agent-satellite:nth-child(3n) .ag-orb__eye { animation-delay: -3.4s; }
+.auth-agent-orbit .ag-orb__eye { width: 7px; height: 19px; animation: auth-agent-blink 5.6s infinite; animation-delay: var(--auth-blink-delay); }
 .auth-agent-satellite:nth-child(2n) .ag-orb__eyes { animation-delay: -4s; }
 .auth-agent-satellite:nth-child(3n) .ag-orb__eyes { animation-delay: -7s; }
 .auth-agent-satellite-0 .ag-orb__body { border-radius: 38%; clip-path: polygon(0 35%,12% 25%,12% 10%,35% 0,55% 8%,76% 3%,90% 20%,90% 38%,100% 55%,92% 82%,70% 90%,50% 100%,30% 91%,10% 90%,0 70%); }
@@ -109,7 +110,7 @@ html body .megsy-auth-screen.megsy-auth-extras button.megsy-auth-primary { backg
 .auth-agent-satellite-6 .ag-orb__body { border-radius: 25%; transform: rotate(9deg); }
 .auth-agent-satellite-7 .ag-orb__body { border-radius: 48% 52% 38% 62%; }
 @keyframes auth-orbit { from { --auth-travel: 0deg; transform: translate(calc(cos(calc(var(--auth-angle) + var(--auth-travel))) * var(--auth-rx)), calc(sin(calc(var(--auth-angle) + var(--auth-travel))) * var(--auth-ry))) translate(-50%, -50%); } to { --auth-travel: 360deg; transform: translate(calc(cos(calc(var(--auth-angle) + var(--auth-travel))) * var(--auth-rx)), calc(sin(calc(var(--auth-angle) + var(--auth-travel))) * var(--auth-ry))) translate(-50%, -50%); } }
-@keyframes auth-agent-blink { 0%,42%,48%,88%,94%,100% { transform: scaleY(1); } 45%,91% { transform: scaleY(.12); } }
+@keyframes auth-agent-blink { 0%,42%,48%,100% { transform: scaleY(1); } 45% { transform: scaleY(.08); } }
 @keyframes auth-agent-glance { 0%,100% { transform: translate(-50%,-50%) rotate(12deg); } 35%,55% { transform: translate(-42%,-48%) rotate(-6deg); } }
 @keyframes auth-button-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes auth-copy-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
@@ -117,4 +118,4 @@ html body .megsy-auth-screen.megsy-auth-extras button.megsy-auth-primary { backg
 @layer properties { html body .megsy-auth-entry .megsy-auth-lockup h1 { font-weight: 600 !important; } }
 @media(min-width:768px) { .megsy-auth-entry { min-height: 740px; } .megsy-auth-entry .megsy-auth-brand { flex: 1; max-height: 900px; margin: auto; min-height: 560px; } .megsy-auth-entry .megsy-auth-lockup h1 { font-size: 48px; } .megsy-auth-entry .megsy-auth-tagline { font-size: 20px; } .auth-agent-orbit { width: 100%; } }
 @media(max-height:740px) and (max-width:767px) { .megsy-auth-entry { min-height: 620px; padding-bottom: 12px; } .megsy-auth-entry .megsy-auth-brand { min-height: 420px; } .auth-agent-orbit { --auth-ry: 190px; } }
-@media(prefers-reduced-motion:reduce) { .auth-agent-satellite { animation: auth-orbit 160s linear infinite !important; } .auth-agent-orbit .ag-orb__eye { animation: auth-agent-blink 8s infinite !important; } .auth-agent-orbit .ag-orb__eyes, .megsy-auth-entry .megsy-auth-pill, .megsy-auth-entry .megsy-auth-brand-copy { animation: none; } }
+@media(prefers-reduced-motion:reduce) { .auth-agent-satellite { animation: auth-orbit 160s linear infinite !important; } .auth-agent-orbit .ag-orb__eye { animation: auth-agent-blink 5.6s infinite var(--auth-blink-delay) !important; } .auth-agent-orbit .ag-orb__eyes, .megsy-auth-entry .megsy-auth-pill, .megsy-auth-entry .megsy-auth-brand-copy { animation: none; } }
