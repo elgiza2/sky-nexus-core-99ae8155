@@ -43,6 +43,7 @@ type Step =
   | "intro1"
   | "email"
   | "password"
+  | "create-password"
   | "otp-signup"
   | "set-password"
   | "otp-2fa"
@@ -60,8 +61,7 @@ const AuthPage = () => {
   // so the first authenticated navigation is instant.
   usePrefetchOnIdle(["/chat", "/library"], 2000);
   const [email, setEmail] = useState("");
-  // No manual signup/signin toggle: we always try sign-in first and fall back
-  // to OTP signup automatically when the account doesn't exist.
+  // Account intent comes from the existing public auth lookup, never a manual switch.
   const authMode = "signin" as const;
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -77,7 +77,7 @@ const AuthPage = () => {
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mobileError, setMobileError] = useState<string | null>(null);
-  const mobileIntroSteps: Step[] = ["intro1", "email", "password"];
+  const mobileIntroSteps: Step[] = ["intro1", "email", "password", "create-password"];
   const isMobileIntroStep = (s: Step) => mobileIntroSteps.includes(s);
 
   // Auth errors are shown inline (next to the form) on every viewport — a
@@ -193,15 +193,15 @@ const AuthPage = () => {
     setIsSubmitting(true);
 
     try {
-      if (authMode === "signin") {
-        setUserExists(false);
-        setHas2FA(false);
-        setStep("password");
-      } else {
-        setUserExists(false);
-        await sendOTP(normalizedEmail, true);
-        setStep("otp-signup");
-      }
+      const { data, error } = await invokeAuth({ action: "check-email", email: normalizedEmail });
+      if (error) throw new Error(error.message);
+      if (typeof data?.exists !== "boolean") throw new Error(data?.error || "Could not check your email. Please try again.");
+      setEmail(normalizedEmail);
+      setUserExists(data.exists);
+      setHas2FA(data.two_factor_enabled === true);
+      setPassword("");
+      setNewPassword("");
+      setStep(data.exists ? "password" : "create-password");
     } catch (e: any) {
       notifyMobileIntroError(translateAuthError(e, "couldNotSendCode"));
     } finally {
@@ -292,6 +292,23 @@ const AuthPage = () => {
       }
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleSignupPassword = async () => {
+    if (isSubmitting) return;
+    clearMobileError();
+    const parsed = passwordSchema.safeParse(newPassword);
+    if (!parsed.success) {
+      notifyMobileIntroError(firstError(parsed) ?? authT("passwordMinLength"));
+      return;
+    }
+    try {
+      await sendOTP(email, true);
+      setOtpValues(["", "", "", "", "", ""]);
+      setStep("otp-signup");
+    } catch (error) {
+      notifyMobileIntroError(translateAuthError(error, "couldNotSendCode"));
     }
   };
 
@@ -457,7 +474,8 @@ const AuthPage = () => {
         setVerifiedResetCode(code);
         setStep("reset-password");
       } else {
-        setStep("set-password");
+        if (newPassword) await handleCreateAccount(true);
+        else setStep("set-password");
       }
     } catch (e: any) {
       toast.error(translateAuthError(e, "verificationFailed"));
@@ -468,8 +486,8 @@ const AuthPage = () => {
     }
   };
 
-  const handleCreateAccount = async () => {
-    if (isSubmitting) return;
+  const handleCreateAccount = async (afterVerification = false) => {
+    if (isSubmitting && !afterVerification) return;
     const pwParsed = passwordSchema.safeParse(newPassword);
     const pwErr = firstError(pwParsed);
     if (pwErr || !pwParsed.success) {
@@ -663,6 +681,10 @@ const AuthPage = () => {
       total: 2,
       label: authT("signIn"),
     },
+    "create-password": {
+      title: authT("setPasswordTitle"), sub: authT("atLeast8"),
+      index: 2, total: 3, label: authT("createAccount"),
+    },
     "otp-signup": {
       title: authT("verifyEmailTitle"),
       sub: authTf("otpSubTemplate", { email }),
@@ -737,29 +759,30 @@ const AuthPage = () => {
     "flex h-12 w-full items-center justify-center gap-2.5 rounded-[10px] border border-foreground/20 bg-foreground/[0.04] px-4 text-[14px] font-semibold text-foreground transition-[transform,border-color,background-color] duration-200 hover:border-foreground/35 hover:bg-foreground/[0.08] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/30";
 
   // ─── Mobile intro — inline expandable email/password flow ──
-  if (step === "intro1" || step === "email" || step === "password") {
-    const isExpanded = step === "email" || step === "password";
+  if (isMobileIntroStep(step)) {
+    const creatingPassword = step === "create-password";
+    const isExpanded = step !== "intro1";
     return (
       <>
         <SEOHead title={authT("seoTitle")} description={authT("seoDesc")} path="/auth" noindex />
         <MobileAuthIntro
-          authMode={authMode}
+          authMode={creatingPassword ? "signup" : "signin"}
           onGoogle={handleGoogleLogin}
           onClose={() => navigate("/welcome")}
-          onBack={() => setStep(step === "password" ? "email" : "intro1")}
+          onBack={() => { if (!isSubmitting) setStep(step === "password" || creatingPassword ? "email" : "intro1"); }}
           onEmail={() => setStep("email")}
           onTelegram={undefined}
           expanded={isExpanded}
-          showPasswordField={step === "password"}
+          showPasswordField={step === "password" || creatingPassword}
           email={email}
           setEmail={setEmailClear}
-          password={password}
-          setPassword={setPasswordClear}
-          showPassword={showPassword}
-          setShowPassword={setShowPassword}
+          password={creatingPassword ? newPassword : password}
+          setPassword={creatingPassword ? value => { setNewPassword(value); clearMobileError(); } : setPasswordClear}
+          showPassword={creatingPassword ? showNewPassword : showPassword}
+          setShowPassword={creatingPassword ? setShowNewPassword : setShowPassword}
           isSubmitting={isSubmitting}
           onSubmitEmail={handleCheckEmail}
-          onSubmitPassword={handlePasswordLogin}
+          onSubmitPassword={creatingPassword ? handleSignupPassword : handlePasswordLogin}
           onForgotPassword={() => setStep("forgot-password")}
           error={mobileError}
         />
@@ -793,7 +816,7 @@ const AuthPage = () => {
           isSubmitting={isSubmitting}
           countdown={countdown}
           onResendOtp={() => void sendOTP(undefined, false)}
-          onSubmitSetPassword={handleCreateAccount}
+          onSubmitSetPassword={() => handleCreateAccount()}
           onSubmitResetPassword={handleResetPassword}
           onSubmitForgotPassword={handleForgotPassword}
           onBack={handleBack}
@@ -1158,7 +1181,7 @@ const AuthPage = () => {
                         </button>
                       </div>
                       <button
-                        onClick={handleCreateAccount}
+                        onClick={() => handleCreateAccount()}
                         disabled={isSubmitting || newPassword.length < 8}
                         className={btnCls(!!newPassword.trim())}
                       >
