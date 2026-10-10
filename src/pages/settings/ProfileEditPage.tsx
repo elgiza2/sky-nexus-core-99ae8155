@@ -153,106 +153,73 @@ const ProfileEditPage = () => {
 
   // ============================== MOBILE ==============================
   if (isMobile) {
-    const initial = (nickname || fullName || email || "U").trim().charAt(0).toUpperCase();
+    const initial = (fullName || "U").trim().charAt(0).toUpperCase();
+    const BackChevron = isAr ? ChevronRight : ChevronLeft;
     return (
-      <div className="pep-root">
+      <div className="pep-root" dir={isAr ? "rtl" : "ltr"}>
         <style>{pepCss}</style>
 
-        {/* Topbar */}
+        {/* Topbar — same glass header language as the settings home */}
         <header className="pep-topbar">
-          <button className="pep-icon-btn" aria-label="Back" onClick={goBack}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
+          <button className="pep-icon-btn" aria-label={tx("Back")} onClick={goBack}>
+            <BackChevron className="pep-chev" />
           </button>
-          <h1 className="pep-title">Account</h1>
-          <span className="pep-icon-btn" aria-live="polite">{statusIcon}</span>
+          <h1 className="pep-title">{tx("Account")}</h1>
+          <span className="pep-save" aria-live="polite">{statusIcon}</span>
         </header>
 
-        <section className="pep-main">
-          <div className="pep-avatar-wrap">
-            <button
-              type="button"
-              className="pep-avatar-btn"
-              onClick={pickAvatar}
-              disabled={avatarBusy}
-              aria-label="Change profile photo"
-            >
-              {avatarUrl ? (
-                <img src={avatarUrl} alt="" className="pep-avatar-img" />
-              ) : (
-                <span className="pep-avatar">{initial}</span>
-              )}
-              <span className="pep-avatar-badge">
-                {avatarBusy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
+        <main className="pep-main">
+          <section className="pep-card">
+            <button type="button" className="pep-row pep-row-btn" onClick={pickAvatar} disabled={avatarBusy}>
+              <span className="pep-avatar">
+                {avatarUrl ? <img src={avatarUrl} alt="" className="pep-avatar-img" /> : initial}
+              </span>
+              <span className="pep-row-label">{tx("Profile photo")}</span>
+              <span className="pep-row-trailing">
+                {avatarBusy ? (
+                  <Loader2 className="pep-spin animate-spin" />
+                ) : (
+                  <Camera className="pep-row-ico" strokeWidth={1.7} />
+                )}
+                {avatarBusy ? tx("Uploading…") : tx("Change")}
               </span>
             </button>
-            <p className="pep-avatar-hint">{avatarBusy ? "Uploading…" : "Tap to change photo"}</p>
-          </div>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/*"
-            hidden
-            onChange={handleAvatarFile}
-          />
+          </section>
 
           <section className="pep-card">
             <div className="pep-row">
-              <label htmlFor="pep-full" className="pep-row-label">Name</label>
+              <label htmlFor="pep-full" className="pep-row-label">{tx("Full name")}</label>
               <input
                 id="pep-full"
                 className="pep-row-input"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                placeholder="Your name"
+                placeholder={tx("Your name")}
                 autoComplete="name"
               />
             </div>
-            <div className="pep-divider" />
-            <div className="pep-row">
-              <span className="pep-row-label">Email</span>
-              <span className="pep-row-value">{email || "—"}</span>
-            </div>
-            <div className="pep-divider" />
-            <div className="pep-row">
-              <span className="pep-row-label">User ID</span>
-              <span className="pep-row-value pep-row-value-mono">{userId ?? "—"}</span>
-            </div>
           </section>
+          <p className="pep-hint">{tx("Megsy calls you by this name in chat.")}</p>
 
-          <button className="pep-flat" type="button" onClick={() => setLogoutOpen(true)}>
-            Log out
-          </button>
-
-          <button className="pep-flat pep-flat-danger" onClick={openDelete} type="button">
-            Delete account
+          <button className="pep-danger" type="button" onClick={openDelete}>
+            <Trash2 className="pep-danger-ico" strokeWidth={1.7} />
+            <span>{tx("Delete account")}</span>
           </button>
 
           <div className="pep-spacer" />
-        </section>
+        </main>
+
+        <input ref={fileRef} type="file" accept="image/*" hidden onChange={handleAvatarFile} />
 
         <ConfirmDialog
           open={confirmOpen}
           tone="danger"
-          title="Delete account"
-          description="This permanently removes your account, chats and files. This cannot be undone."
-          confirmLabel="Delete"
+          title={tx("Delete account")}
+          description={tx("This permanently removes your account, chats and files. This cannot be undone.")}
+          confirmLabel={tx("Delete")}
           onConfirm={confirmDelete}
           onCancel={() => setConfirmOpen(false)}
         />
-
-        <ConfirmDialog
-          open={logoutOpen}
-          title="Log out"
-          description="You'll need to sign in again to access your chats."
-          confirmLabel="Log out"
-          loading={loggingOut}
-          icon={<LogOut size={20} strokeWidth={1.8} />}
-          onConfirm={handleLogout}
-          onCancel={() => setLogoutOpen(false)}
-        />
-
       </div>
     );
   }
