@@ -36,7 +36,6 @@ export default function MobileAuthIntro(p: Props) {
         {p.showPasswordField && <Button variant="ghost" type="button" className="megsy-auth-forgot" onClick={p.onForgotPassword}>{ar ? "نسيت كلمة المرور؟" : "Forgot password?"}</Button>}
         <Button variant="ghost" type="submit" className="megsy-auth-pill megsy-auth-primary" disabled={p.isSubmitting || !(p.showPasswordField ? p.password?.trim() : p.email?.trim())}>{p.isSubmitting ? (ar ? "لحظة…" : "Please wait…") : ar ? (p.showPasswordField ? "تسجيل الدخول" : "متابعة") : (p.showPasswordField ? "Sign in" : "Continue")}</Button>
       </form>}
-      <footer className="megsy-auth-legal"><a href="/privacy">{ar ? "سياسة الخصوصية" : "Privacy policy"}</a><a href="/terms">{ar ? "شروط الخدمة" : "Terms of service"}</a></footer>
     </section>
   </motion.main></AnimatePresence>;
 }
