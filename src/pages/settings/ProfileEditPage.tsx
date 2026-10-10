@@ -159,13 +159,16 @@ const ProfileEditPage = () => {
       <div className="pep-root" dir={isAr ? "rtl" : "ltr"}>
         <style>{pepCss}</style>
 
-        {/* Topbar — same glass header language as the settings home */}
+        {/* Sheet — opens as a stacked layer over the settings page */}
+        <div className="pep-sheet">
         <header className="pep-topbar">
           <button className="pep-icon-btn" aria-label={tx("Back")} onClick={goBack}>
             <BackChevron className="pep-chev" />
           </button>
           <h1 className="pep-title">{tx("Account")}</h1>
-          <span className="pep-save" aria-live="polite">{statusIcon}</span>
+          {saveState !== "idle" && (
+            <span className="pep-save" aria-live="polite">{statusIcon}</span>
+          )}
         </header>
 
         <main className="pep-main">
@@ -208,6 +211,7 @@ const ProfileEditPage = () => {
 
           <div className="pep-spacer" />
         </main>
+        </div>
 
         <input ref={fileRef} type="file" accept="image/*" hidden onChange={handleAvatarFile} />
 
