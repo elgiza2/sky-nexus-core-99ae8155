@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useUserLang } from "@/lib/authI18n";
-import welcomeArtwork from "@/assets/phone-aura.jpg.asset.json";
-import img2 from "@/assets/welcome-2.jpg";
-import img3 from "@/assets/welcome-3.jpg";
+import artSky from "@/assets/Explore_Desktop_01-1.avif.asset.json";
+import artStorm from "@/assets/Explore_Desktop_03-1.avif.asset.json";
+import artEmber from "@/assets/desktop-nano-banana-pro-inspiration-gallery-img-6.avif.asset.json";
 
 export const WELCOME_SEEN_KEY = "megsy_welcome_seen_v1";
 
