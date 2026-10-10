@@ -284,3 +284,7 @@
 ## Checkout separation (October 10, 2026)
 - [x] Split checkout from pricing: Subscribe now navigates to /checkout (dedicated page, CustomCardForm fullscreen), pricing page no longer hosts the payment overlay.
 - [x] Redesign the checkout page completely: full match of the pricing design language (full-bleed photo, glass rows, iOS-style motion, theme-following CTA).
+
+## Current authentication and checkout refinement (October 10, 2026)
+- [x] Redesign sign-in and registration presentation to match the supplied white reference; verify email, password and recovery presentation.
+- [ ] Make checkout inputs and payment-method selectors clean frosted glass; verify the result.
