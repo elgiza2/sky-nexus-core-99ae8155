@@ -3,7 +3,6 @@ import { ArrowLeft, Eye, EyeOff, Mail } from "lucide-react";
 import { AgentOrb } from "@/components/agent/AgentOrb";
 import AppleSignInButton from "@/components/auth/AppleSignInButton";
 import { useUserLang } from "@/lib/authI18n";
-import { Button } from "@/components/ui/button";
 
 interface Props {
   onGoogle: () => void; onMicrosoft?: () => void; onEmail: () => void; onBack?: () => void; onTelegram?: () => void;

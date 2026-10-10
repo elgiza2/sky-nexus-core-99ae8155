@@ -744,16 +744,6 @@ const AuthPage = () => {
         <SEOHead title={authT("seoTitle")} description={authT("seoDesc")} path="/auth" noindex />
         <MobileAuthIntro
           authMode={authMode}
-          onAuthModeChange={(mode) => {
-            if (isSubmitting) return;
-            setAuthMode(mode);
-            setUserExists(false);
-            setPassword("");
-            setNewPassword("");
-            setOtpValues(["", "", "", "", "", ""]);
-            clearMobileError();
-            if (step !== "intro1") setStep("email");
-          }}
           onGoogle={handleGoogleLogin}
           onBack={() => setStep(step === "password" ? "email" : "intro1")}
           onEmail={() => setStep("email")}
