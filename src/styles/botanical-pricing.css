@@ -40,6 +40,27 @@
 .botanical-pricing .botanical-subscribe { margin-top: 17px; width: 100%; height: 50px; border: 0; border-radius: 999px; background: var(--paywall-accent); color: var(--paywall-ink); font-weight: 600; font-size: 15px; box-shadow: none; }
 .botanical-pricing .botanical-subscribe:hover { background: var(--paywall-accent); filter: brightness(1.08); }
 .botanical-pricing .botanical-subscribe svg { display: block; height: 19px; width: 19px; }
+/* Legacy theme button rules are important; keep the exception inside this screen. */
+html .botanical-pricing button.botanical-option {
+  background: var(--paywall-pane) !important;
+  background-image: none !important;
+  color: var(--paywall-fg) !important;
+  border: 1px solid var(--paywall-border) !important;
+  box-shadow: none !important;
+  border-radius: 8px !important;
+}
+html .botanical-pricing button.botanical-option[data-selected="true"] {
+  color: var(--paywall-accent) !important;
+  border-color: var(--paywall-accent) !important;
+}
+html .botanical-pricing button.botanical-subscribe {
+  background: var(--paywall-accent) !important;
+  background-image: none !important;
+  color: var(--paywall-ink) !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+}
+html .botanical-pricing button::before, html .botanical-pricing button::after { display: none !important; }
 .botanical-fine { font-size: 11px; line-height: 1.5; color: var(--paywall-muted); margin-top: 25px; margin-bottom: 0; }
 .botanical-desktop .botanical-pricing, .botanical-desktop .botanical-content { min-height: min(900px,100dvh); }
 .botanical-desktop .botanical-art { left: 50%; transform: translateX(-50%); width: min(100%,720px); height: 78%; max-height: 760px; }
