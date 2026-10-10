@@ -4,7 +4,10 @@ import { useNavigate } from "react-router-dom";
 import {
   ChevronLeft,
   ChevronRight,
-  Lightbulb,
+  Brain,
+  CreditCard,
+  Coins,
+  SlidersHorizontal,
   Database,
   PanelBottom,
   Puzzle,
@@ -103,7 +106,7 @@ const ManusSettingsMobile = () => {
   const mainRows: Row[] = [
     // Mail is hidden until its UI is reworked.
     // { icon: MailIcon, label: "Mail", trailing: "@megsyai.com", path: "/mail" },
-    { icon: Lightbulb, tone: "memory", label: "Memory", path: "/settings/memory" },
+    { icon: Brain, tone: "memory", label: "Memory", path: "/settings/memory" },
     { icon: PanelBottom, tone: "browser", label: "Cloud browser", path: "/settings/cloud-browser" },
 
     { icon: Puzzle, tone: "skills", label: "Skills", path: "/settings/skills" },
@@ -114,15 +117,15 @@ const ManusSettingsMobile = () => {
 
   const accountRows: Row[] = [
     { icon: UserRound, label: "Account Settings", path: "/settings/profile/edit" },
-    { icon: Wallet, tone: "wallet", label: "Payment", trailing: planLabel, path: "/pricing" },
-    { icon: Wallet, tone: "wallet", label: "Credits", trailing: String(credits ?? 0), path: "/usage" },
+    { icon: CreditCard, tone: "wallet", label: "Payment", trailing: planLabel, path: "/pricing" },
+    { icon: Coins, tone: "wallet", label: "Credits", trailing: String(credits ?? 0), path: "/usage" },
   ];
 
   const langLabel = AVAILABLE_LANGS.find((l) => l.code === lang)?.native ?? "English";
 
   const appearanceRows: Row[] = [
     { icon: ShieldCheck, tone: "privacy", label: "Privacy & Data", path: "/settings/privacy" },
-    { icon: Palette, tone: "appearance", label: "Appearance", chevron: "none", control: "switch" },
+    { icon: SlidersHorizontal, tone: "appearance", label: "Appearance", chevron: "none", control: "switch" },
     { icon: Languages, tone: "language", label: "Language", trailing: langLabel, path: "/settings/language" },
   ];
 
