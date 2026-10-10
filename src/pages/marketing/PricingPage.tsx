@@ -276,7 +276,7 @@ const PricingPage = () => {
     if (loadingTier) return;
     const interval: "monthly" | "yearly" = opts.interval ?? (isYearly ? "yearly" : "monthly");
 
-    // Ensure signed in before opening the picker.
+    // Ensure signed in before the checkout page opens.
     let {
       data: { session },
     } = await supabase.auth.getSession();
@@ -291,7 +291,7 @@ const PricingPage = () => {
       return;
     }
 
-    setCustomCard({ tier, interval });
+    navigate("/checkout", { state: { tier, interval } });
   };
 
   const scrollTo = (id: string) => {
