@@ -6,9 +6,11 @@ import { Button } from "@/components/ui/button";
 import { useUserLang } from "@/lib/authI18n";
 import { useUserPlan } from "@/hooks/useUserPlan";
 import { getDisplayPrice, getPlan, type PlanTier } from "@/data/pricingData";
-import artSky from "@/assets/Explore_Desktop_01-1.avif.asset.json";
-import artStorm from "@/assets/Explore_Desktop_03-1.avif.asset.json";
-import artEmber from "@/assets/desktop-nano-banana-pro-inspiration-gallery-img-6.avif.asset.json";
+import artAura from "@/assets/phone-aura-full.jpg.asset.json";
+import artSky from "@/assets/sky-fly-full.jpg.asset.json";
+import artCar from "@/assets/car-girl-full.jpg.asset.json";
+import artCoat from "@/assets/orange-coat-full.jpg.asset.json";
+import artGallery from "@/assets/gallery-7-full.jpg.asset.json";
 import MobileSidebarButton from "@/components/shared/MobileSidebarButton";
 
 interface Props {
@@ -22,7 +24,7 @@ interface Props {
 export default function MobilePricingScreen({ isYearly, onToggleYearly, onSubscribe, loadingTier, onMenuClick }: Props) {
   const isAr = useUserLang() === "ar-eg";
   const navigate = useNavigate();
-  const artwork = useMemo(() => [artSky, artStorm, artEmber][Math.floor(Math.random() * 3)], []);
+  const artwork = useMemo(() => [artAura, artSky, artCar, artCoat, artGallery][Math.floor(Math.random() * 5)], []);
   const { plan } = useUserPlan();
   const subscribed = plan === "pro" || plan === "max" || plan === "elite";
   const pro = getPlan("pro");
@@ -40,7 +42,7 @@ export default function MobilePricingScreen({ isYearly, onToggleYearly, onSubscr
   return (
     <section className="botanical-pricing" dir={isAr ? "rtl" : "ltr"} aria-label={isAr ? "اشتراك Megsy Pro" : "Megsy Pro subscription"}>
       <div className="botanical-art" aria-hidden="true">
-        <img src={artwork.url} alt="" fetchPriority="high" />
+        <img src={artwork.url} alt="" fetchPriority="high" width={1024} height={1920} />
       </div>
       <div className="botanical-scrim" aria-hidden="true" />
       <div className="botanical-content">
