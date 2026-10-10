@@ -1,4 +1,4 @@
-/** @doc Profile editor — full name, photo, delete account. Autosaves the name. */
+/** @doc Profile editor — full name, photo, delete account. Manual save pill lights up when the name changes. */
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Check, ChevronLeft, Camera, Loader2, Trash2 } from "lucide-react";
@@ -63,39 +63,35 @@ const ProfileEditPage = () => {
     return () => { cancelled = true; };
   }, []);
 
-  // Debounced autosave
-  useEffect(() => {
-    if (loading || !userId) return;
-    const dirtyName = fullName.trim() !== savedRef.current.fullName.trim();
-    if (!dirtyName) return;
+  // Manual save — the pill stays pale until there are unsaved edits.
+  const dirty = !loading && userId != null && fullName.trim() !== savedRef.current.fullName.trim();
 
+  const handleSave = async () => {
+    if (!userId || !dirty || saveState === "saving") return;
     setSaveState("saving");
-    const timer = setTimeout(async () => {
-      try {
-        const results = await Promise.all([
-          Promise.resolve(
-            supabase.rpc("update_profile_safe", {
-              p_user_id: userId,
-              p_display_name: fullName.trim(),
-            }),
-          ),
-          supabase.auth.updateUser({ data: { full_name: fullName.trim() } }),
-        ]);
-        const err = results.find((r: any) => r?.error)?.error;
-        if (err) throw err;
+    try {
+      const results = await Promise.all([
+        Promise.resolve(
+          supabase.rpc("update_profile_safe", {
+            p_user_id: userId,
+            p_display_name: fullName.trim(),
+          }),
+        ),
+        supabase.auth.updateUser({ data: { full_name: fullName.trim() } }),
+      ]);
+      const err = results.find((r: any) => r?.error)?.error;
+      if (err) throw err;
 
-        const { invalidateOwnProfile } = await import("@/lib/ownProfile");
-        invalidateOwnProfile();
-        savedRef.current = { fullName };
-        setSaveState("saved");
-        setTimeout(() => setSaveState("idle"), 1400);
-      } catch (err: any) {
-        setSaveState("idle");
-        toast.error(sanitizeErrorMessage(err, "Failed to save"));
-      }
-    }, 650);
-    return () => clearTimeout(timer);
-  }, [fullName, loading, userId]);
+      const { invalidateOwnProfile } = await import("@/lib/ownProfile");
+      invalidateOwnProfile();
+      savedRef.current = { fullName };
+      setSaveState("saved");
+      setTimeout(() => setSaveState("idle"), 1400);
+    } catch (err: any) {
+      setSaveState("idle");
+      toast.error(sanitizeErrorMessage(err, "Failed to save"));
+    }
+  };
 
   const goBack = () => navigate("/settings");
 
@@ -143,12 +139,6 @@ const ProfileEditPage = () => {
     navigate("/settings/delete-account");
   };
 
-  const statusIcon =
-    saveState === "saving" ? (
-      <Loader2 className="pep-spin animate-spin" />
-    ) : saveState === "saved" ? (
-      <Check strokeWidth={2.2} />
-    ) : null;
 
   // ============================== MOBILE ==============================
   if (isMobile) {
@@ -164,9 +154,21 @@ const ProfileEditPage = () => {
             <ChevronLeft className="pep-chev" strokeWidth={2.1} />
           </button>
           <h1 className="pep-title">{tx("Account")}</h1>
-          {saveState !== "idle" && (
-            <span className="pep-save" aria-live="polite">{statusIcon}</span>
-          )}
+          <button
+            type="button"
+            className={`pep-save${dirty || saveState !== "idle" ? " pep-save-live" : ""}`}
+            aria-live="polite"
+            disabled={!dirty || saveState === "saving"}
+            onClick={handleSave}
+          >
+            {saveState === "saving" ? (
+              <Loader2 className="pep-spin animate-spin" />
+            ) : saveState === "saved" ? (
+              <Check strokeWidth={2.4} />
+            ) : (
+              tx("Save")
+            )}
+          </button>
         </header>
 
         <main className="pep-main">
@@ -234,10 +236,20 @@ const ProfileEditPage = () => {
       subtitle={tx("Changes are saved automatically.")}
       backTo="/settings"
       action={
-        <span className="inline-flex items-center gap-1.5 text-[12px] text-muted-foreground">
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={!dirty || saveState === "saving"}
+          className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[12.5px] font-medium border transition-all duration-300 ${
+            dirty || saveState !== "idle"
+              ? "bg-foreground text-background border-foreground"
+              : "bg-muted/50 text-muted-foreground border-border/60"
+          }`}
+        >
           {saveState === "saving" && (<><Loader2 className="w-3.5 h-3.5 animate-spin" /> {tx("Saving…")}</>)}
-          {saveState === "saved" && (<><Check className="w-3.5 h-3.5 text-primary" /> {tx("Saved")}</>)}
-        </span>
+          {saveState === "saved" && (<><Check className="w-3.5 h-3.5" /> {tx("Saved")}</>)}
+          {saveState === "idle" && tx("Save")}
+        </button>
       }
     >
       <SubSection title={tx("Photo")} description={tx("Shown across Megsy.")}>
@@ -364,7 +376,7 @@ export const pepCss = `
 }
 .pep-topbar {
   position: sticky; top: 0; z-index: 5;
-  display: grid; grid-template-columns: 46px 1fr 46px;
+  display: grid; grid-template-columns: 46px 1fr auto;
   align-items: center;
   padding: max(20px, env(safe-area-inset-top)) 20px 16px;
 }
@@ -392,15 +404,35 @@ export const pepCss = `
 [dir="rtl"] .pep-chev { transform: scaleX(-1); }
 
 .pep-save {
-  width: 40px; height: 40px;
   justify-self: end;
-  display: inline-grid; place-items: center;
-  border-radius: 50%;
+  min-width: 46px;
+  height: 46px;
+  padding: 0 17px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 999px;
   background: var(--settings-surface);
   border: 1px solid var(--settings-glass-edge);
   box-shadow: var(--settings-shadow);
   backdrop-filter: var(--settings-frost);
-  color: var(--settings-ink);
+  color: var(--settings-muted);
+  font: inherit;
+  font-size: 14.5px; font-weight: 600;
+  cursor: pointer;
+  opacity: .8;
+  transition: background .3s ease, color .3s ease, opacity .3s ease, border-color .3s ease, transform .25s cubic-bezier(.22,1,.36,1);
+}
+.pep-save:disabled { cursor: default; }
+.pep-save:not(:disabled):active { transform: scale(.94); }
+.pep-save-live {
+  background: var(--settings-ink);
+  border-color: var(--settings-ink);
+  color: var(--settings-backdrop);
+  opacity: 1;
+  animation: pep-save-pop .35s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes pep-save-pop {
+  from { transform: scale(.9); }
+  to   { transform: scale(1); }
 }
 .pep-save svg { width: 18px; height: 18px; }
 .pep-spin { width: 18px; height: 18px; }
@@ -516,8 +548,8 @@ export const pepCss = `
 .pep-spacer { height: max(24px, env(safe-area-inset-bottom)); }
 
 @media (prefers-reduced-motion: reduce) {
-  .pep-card, .pep-root::before, .pep-root .pep-sheet { animation: none; }
-  .pep-root .pep-icon-btn, .pep-root .pep-danger, .pep-root .pep-row-btn { transition: none; }
+  .pep-card, .pep-root::before, .pep-root .pep-sheet, .pep-root .pep-save-live { animation: none; }
+  .pep-root .pep-icon-btn, .pep-root .pep-danger, .pep-root .pep-row-btn, .pep-root .pep-save { transition: none; }
 }
 `;
 
