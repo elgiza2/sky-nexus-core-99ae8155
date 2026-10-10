@@ -98,8 +98,8 @@ html.dark .megsy-checkout {
 .checkout-fields { margin-top: 28px; display: grid; gap: 20px; }
 .checkout-field { min-width: 0; display: block; }
 .checkout-field > span { display: block; margin-bottom: 9px; color: var(--checkout-text); font-size: 13px; font-weight: 500; }
-.checkout-input-wrap { height: 56px; display: flex; align-items: center; border: 1px solid var(--checkout-line); border-radius: 12px; background: var(--checkout-surface); transition: border-color .2s ease, box-shadow .2s ease; }
-.checkout-input-wrap:focus-within { border-color: var(--checkout-text); box-shadow: 0 0 0 1px var(--checkout-text); }
+.checkout-input-wrap { height: 56px; display: flex; align-items: center; border: 1px solid var(--checkout-line); border-radius: 12px; background: var(--checkout-input); -webkit-backdrop-filter: blur(16px) saturate(1.15); backdrop-filter: blur(16px) saturate(1.15); transition: border-color .2s ease, box-shadow .2s ease; }
+.checkout-input-wrap:focus-within { border-color: oklch(1 0 0 / .85); box-shadow: 0 0 0 1px oklch(1 0 0 / .85); }
 .checkout-input-wrap input { width: 100%; min-width: 0; height: 100%; padding: 0 16px; outline: none; border: 0; border-radius: inherit; background: transparent; color: var(--checkout-text); font-size: 16px; font-weight: 400; letter-spacing: 0; font-variant-numeric: tabular-nums; box-shadow: none; }
 .checkout-input-wrap input:focus { outline: none; box-shadow: none; }
 .checkout-input-wrap input::placeholder { color: var(--checkout-muted); }
