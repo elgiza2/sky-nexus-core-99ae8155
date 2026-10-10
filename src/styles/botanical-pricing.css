@@ -52,21 +52,22 @@ html .botanical-pricing .botanical-benefits { color: var(--paywall-fg) !importan
 .botanical-pricing .botanical-subscribe svg { display: block; height: 19px; width: 19px; }
 /* Legacy theme button rules are important; keep the exception inside this screen. */
 html .botanical-pricing button.botanical-option {
-  background: var(--paywall-pane) !important;
+  background: oklch(1 0 0 / .14) !important;
   background-image: none !important;
-  color: var(--paywall-fg) !important;
-  border: 1px solid var(--paywall-border) !important;
-  box-shadow: none !important;
-  border-radius: 8px !important;
+  backdrop-filter: blur(16px) saturate(1.15);
+  color: oklch(1 0 0) !important;
+  border: 1px solid oklch(1 0 0 / .38) !important;
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / .25) !important;
+  border-radius: 14px !important;
 }
 html .botanical-pricing button.botanical-option[data-selected="true"] {
-  color: var(--paywall-accent) !important;
-  border-color: var(--paywall-accent) !important;
+  background: oklch(1 0 0 / .22) !important;
+  border-color: oklch(1 0 0 / .85) !important;
 }
 html .botanical-pricing .botanical-option-label,
 html .botanical-pricing .botanical-price,
-html .botanical-pricing .botanical-option-detail { color: inherit !important; -webkit-text-fill-color: currentColor !important; }
-html .botanical-pricing .botanical-option-note { color: var(--paywall-muted) !important; -webkit-text-fill-color: var(--paywall-muted) !important; }
+html .botanical-pricing .botanical-option-detail { color: oklch(1 0 0) !important; -webkit-text-fill-color: oklch(1 0 0) !important; text-shadow: 0 1px 3px oklch(0 0 0 / .5); }
+html .botanical-pricing .botanical-option-note { color: oklch(1 0 0 / .78) !important; -webkit-text-fill-color: oklch(1 0 0 / .78) !important; text-shadow: 0 1px 2px oklch(0 0 0 / .5); }
 html .botanical-pricing button.botanical-subscribe {
   background: var(--paywall-accent) !important;
   background-image: none !important;
