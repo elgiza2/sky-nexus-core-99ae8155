@@ -118,7 +118,7 @@ const ManusSettingsMobile = () => {
   const accountRows: Row[] = [
     { icon: UserRound, label: "Account Settings", path: "/settings/profile/edit" },
     { icon: CreditCard, tone: "wallet", label: "Payment", trailing: planLabel, path: "/pricing" },
-    { icon: Coins, tone: "wallet", label: "Credits", trailing: String(credits ?? 0), path: "/usage" },
+    { icon: Sparkles, tone: "wallet", label: "Credits", trailing: String(credits ?? 0), path: "/usage" },
   ];
 
   const langLabel = AVAILABLE_LANGS.find((l) => l.code === lang)?.native ?? "English";
