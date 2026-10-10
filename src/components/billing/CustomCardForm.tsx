@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { BrandMark, CardPreview } from "./CardPreview";
+import { BrandMark } from "./CardPreview";
 import artCoat from "@/assets/orange-coat.png.asset.json";
 
 import {
@@ -292,8 +292,6 @@ export default function CustomCardForm({ open, tier, interval, onClose }: Props)
                   {busy ? <><Loader2 className="h-5 w-5 animate-spin" /> Processing…</> : "Add & Pay"}
                 </Button>
               </form>
-
-              <CardPreview number={number} name={name} month={month} year={year} fallbackBrand="visa" />
 
               <p className="checkout-or">Or Payment Option</p>
               <div className="megsy-pay-list">
