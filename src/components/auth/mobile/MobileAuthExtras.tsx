@@ -2,6 +2,7 @@
 import { m as motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { useRef } from "react";
+import { Button } from "@/components/ui/button";
 import { AgentOrb } from "@/components/agent/AgentOrb";
 import { t as authT, tf as authTf, useUserLang } from "@/lib/authI18n";
 
@@ -44,19 +45,19 @@ const FONT_SANS = 'Inter, -apple-system, "SF Pro Text", system-ui, sans-serif';
 
 const TopBar = ({ onBack }: { onBack: () => void }) => (
   <div className="relative z-10 px-6 pt-8 flex items-center justify-between safe-top">
-    <button
+    <Button variant="ghost"
       onClick={onBack}
       aria-label={authT("back")}
       className="mt-4 w-9 h-9 rounded-full grid place-items-center text-foreground/85 active:scale-95 transition-transform"
       style={{
-        background: "#ffffff",
+        background: "var(--auth-control)",
         border: "1px solid var(--overlay-white-12)",
         backdropFilter: "blur(10px)",
         WebkitBackdropFilter: "blur(10px)",
       }}
     >
       <ArrowLeft className="w-4 h-4" strokeWidth={1.9} />
-    </button>
+    </Button>
     <div className="w-9 h-9" />
   </div>
 );
@@ -127,8 +128,8 @@ export default function MobileAuthExtras(p: Props) {
   };
 
   const fieldStyle = {
-    background: "#ffffff",
-    border: "1px solid #e9e9eb",
+    background: "var(--auth-control)",
+    border: "1px solid var(--auth-border)",
     backdropFilter: "blur(10px)",
     WebkitBackdropFilter: "blur(10px)",
   } as const;
@@ -163,7 +164,7 @@ export default function MobileAuthExtras(p: Props) {
                   fontWeight: 300,
                   fontSize: "42px",
                   lineHeight: "1.08",
-                  letterSpacing: "0.2px",
+                  letterSpacing: "0",
                   textShadow: "none",
                 }}
               >
@@ -242,14 +243,14 @@ export default function MobileAuthExtras(p: Props) {
                     autoFocus
                       className="auth-input-white flex-1 bg-transparent outline-none text-[15px] !text-foreground placeholder:!text-foreground/65"
                   />
-                  <button
+                  <Button variant="ghost"
                     type="button"
                     onClick={() => p.setShowNewPassword(!p.showNewPassword)}
                     className="text-foreground/50 hover:text-foreground/80 transition-colors"
                     aria-label="toggle password"
                   >
                     {p.showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
+                  </Button>
                 </div>
               )}
 
@@ -268,7 +269,7 @@ export default function MobileAuthExtras(p: Props) {
               )}
 
               {!isOtp && (
-                <button
+                <Button variant="ghost"
                   type="submit"
                   disabled={p.isSubmitting}
                   className={`w-full h-[52px] rounded-full flex items-center justify-center gap-2 active:scale-[0.985] transition-colors duration-300 disabled:opacity-50 ${
@@ -276,7 +277,7 @@ export default function MobileAuthExtras(p: Props) {
                       ? "megsy-auth-primary"
                       : "bg-transparent text-foreground border border-foreground/30"
                   }`}
-                  style={{ fontSize: "15px", fontWeight: 600, letterSpacing: "0.1px" }}
+                  style={{ fontSize: "15px", fontWeight: 600, letterSpacing: "0" }}
                 >
                   {p.isSubmitting ? (
                     <Spinner dark={hasTypedValue} />
@@ -286,24 +287,24 @@ export default function MobileAuthExtras(p: Props) {
                       <ArrowRight className="w-4 h-4" strokeWidth={2} />
                     </>
                   )}
-                </button>
+                </Button>
               )}
 
               {isOtp && (
                 <div className="text-center pt-3">
                   {p.countdown > 0 ? (
-                    <p className="text-[12px]" style={{ color: "#777777" }}>
+                    <p className="text-[12px]" style={{ color: "var(--auth-muted)" }}>
                       {authTf("resendInSecondsTemplate", { n: p.countdown })}
                     </p>
                   ) : (
-                    <button
+                    <Button variant="ghost"
                       type="button"
                       onClick={p.onResendOtp}
                       disabled={p.isSubmitting}
                       className="text-[13px] text-foreground/85 underline underline-offset-4 decoration-foreground/25 disabled:opacity-50"
                     >
                       {authT("resendCode")}
-                    </button>
+                    </Button>
                   )}
                   {p.isSubmitting && (
                     <div className="mt-3 flex justify-center">

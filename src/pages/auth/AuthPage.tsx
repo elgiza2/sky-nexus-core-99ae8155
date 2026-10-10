@@ -745,6 +745,7 @@ const AuthPage = () => {
         <MobileAuthIntro
           authMode={authMode}
           onGoogle={handleGoogleLogin}
+          onClose={() => navigate("/welcome")}
           onBack={() => setStep(step === "password" ? "email" : "intro1")}
           onEmail={() => setStep("email")}
           onTelegram={undefined}

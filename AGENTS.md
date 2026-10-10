@@ -57,6 +57,7 @@ used, `FOR UPDATE SKIP LOCKED`).
 <!-- LOVABLE:END -->
 
 - Media runs require a live paid-plan check in both authenticated media routes and signed MCP tools; Higgsfield clones only a configured Hypit template, never substitutes a harness. Why: UI locks alone do not prevent free media spending or misrepresent the requested agent.
+- Auth presentation shares the scoped auth-cue.css reference palette and stacked Megsy lockup across entry, OTP and recovery; keep provider availability checks. Why: consistent account screens without inventing sign-in providers.
 - Auth reuses existing handlers; Chat aliases use ProtectedRoute with guest Welcome before mount. Why: prevent guest chat exposure.
 
 - Agent pages and guided creation use original ChatPage/AppSidebar; see src/lib/agentsky/AGENTS.md. Why: one transcript and explicit approval.
