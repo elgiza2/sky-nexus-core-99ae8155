@@ -40,7 +40,7 @@ export default function MobilePricingScreen({ isYearly, onToggleYearly, onSubscr
   return (
     <section className="botanical-pricing" dir={isAr ? "rtl" : "ltr"} aria-label={isAr ? "اشتراك Megsy Pro" : "Megsy Pro subscription"}>
       <div className="botanical-art" aria-hidden="true">
-        <img src={artwork.url} alt="" width={309} height={203} fetchPriority="high" />
+        <img src={artwork.url} alt="" fetchPriority="high" />
       </div>
       <div className="botanical-scrim" aria-hidden="true" />
       <div className="botanical-content">
