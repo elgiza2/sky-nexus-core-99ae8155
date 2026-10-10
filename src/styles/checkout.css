@@ -131,25 +131,24 @@
 .card-caption { display: block; font-size: 10px; line-height: 1.4; color: var(--checkout-muted); }
 .card-holder { margin: 5px 0 0; font-size: 12px; line-height: 1.4; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* Fields: the same frosted glass as the method rows. */
+/* Fields: clean white pills with dark ink, readable on the photo in both themes. */
 .checkout-fields { margin-top: 28px; display: grid; gap: 18px; }
 .checkout-field { min-width: 0; display: block; }
-.checkout-field > span { display: block; margin-bottom: 9px; color: oklch(1 0 0); font-size: 13px; font-weight: 500; text-shadow: 0 1px 2px oklch(0 0 0 / .7); }
+.checkout-field > span { display: block; margin-bottom: 8px; color: oklch(1 0 0); font-size: 12.5px; font-weight: 600; letter-spacing: .01em; text-shadow: 0 1px 2px oklch(0 0 0 / .7); }
 .checkout-input-wrap {
-  height: 54px; display: flex; align-items: center; border: 1px solid var(--checkout-line); border-radius: 14px;
-  background: var(--checkout-fill);
-  -webkit-backdrop-filter: blur(16px) saturate(1.15);
-  backdrop-filter: blur(16px) saturate(1.15);
-  box-shadow: inset 0 1px 0 oklch(1 0 0 / .25);
+  height: 52px; display: flex; align-items: center; border: 1px solid oklch(1 0 0 / .55); border-radius: 14px;
+  background: oklch(1 0 0 / .92);
+  box-shadow: 0 4px 18px oklch(0 0 0 / .18), inset 0 1px 0 oklch(1 0 0);
   transition: border-color .25s cubic-bezier(.32,.72,.35,1), box-shadow .25s cubic-bezier(.32,.72,.35,1), background .25s ease;
 }
-.checkout-input-wrap:focus-within { border-color: oklch(1 0 0 / .85); background: var(--checkout-fill-on); }
+.checkout-input-wrap:focus-within { border-color: oklch(1 0 0); background: oklch(1 0 0); box-shadow: 0 4px 22px oklch(0 0 0 / .24), 0 0 0 3px oklch(1 0 0 / .35); }
 .checkout-input-wrap input {
   width: 100%; min-width: 0; height: 100%; padding: 0 16px; outline: none; border: 0; border-radius: inherit;
-  background: transparent; color: oklch(1 0 0); font-size: 16px; font-weight: 400; letter-spacing: 0;
+  background: transparent; color: oklch(.22 0 0); font-size: 15.5px; font-weight: 500; letter-spacing: 0;
   font-variant-numeric: tabular-nums; box-shadow: none;
 }
-.checkout-input-wrap input::placeholder { color: var(--checkout-muted); }
+.checkout-input-wrap input::placeholder { color: oklch(.55 0 0 / .8); font-weight: 400; }
+.wallet-prefix { color: oklch(.35 0 0); }
 .wallet-identity { display: flex; align-items: center; gap: 12px; margin-top: 28px; font-weight: 500; }
 .wallet-identity svg { width: 36px; height: 36px; }
 .wallet-input { height: 60px; }
