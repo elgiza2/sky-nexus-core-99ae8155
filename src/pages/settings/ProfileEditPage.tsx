@@ -266,9 +266,9 @@ const ProfileEditPage = () => {
                 disabled={avatarBusy}
                 className="px-3.5 py-2 rounded-lg text-[13px] font-medium bg-background/60 border border-border/70 hover:border-foreground/40 transition-colors inline-flex items-center gap-2"
               >
-                <Camera className="w-3.5 h-3.5" /> Upload photo
+                <Camera className="w-3.5 h-3.5" /> {tx("Upload photo")}
               </button>
-              <p className="mt-2 text-[12px] text-muted-foreground">PNG or JPG, up to 5MB.</p>
+              <p className="mt-2 text-[12px] text-muted-foreground">{tx("PNG or JPG, up to 5MB.")}</p>
             </div>
           </div>
           <input ref={fileRef} type="file" accept="image/*" hidden onChange={handleAvatarFile} />
