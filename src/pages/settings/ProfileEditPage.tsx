@@ -1,32 +1,30 @@
-/** @doc Profile editor — full name, nickname, AI instructions. Autosaves. */
+/** @doc Profile editor — full name, photo, delete account. Autosaves the name. */
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Check, Camera, Loader2, LogOut, Trash2 } from "lucide-react";
+import { Check, Camera, ChevronLeft, ChevronRight, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { sanitizeErrorMessage } from "@/lib/sanitizeError";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SubShell, SubSection, SubCard, DangerCallout } from "@/components/settings/SubShell";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import { signOutEverywhere } from "@/lib/signOutEverywhere";
+import { translateExactText, useUserLang } from "@/lib/authI18n";
 
 const ProfileEditPage = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const lang = useUserLang();
+  const isAr = lang === "ar-eg";
+  const tx = (text: string) => translateExactText(text, lang);
 
   const [userId, setUserId] = useState<string | null>(null);
-  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(true);
 
   const [fullName, setFullName] = useState("");
-  const [nickname, setNickname] = useState("");
-  const [instructions, setInstructions] = useState("");
 
-  const savedRef = useRef({ fullName: "", nickname: "", instructions: "" });
+  const savedRef = useRef({ fullName: "" });
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [logoutOpen, setLogoutOpen] = useState(false);
-  const [loggingOut, setLoggingOut] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarBusy, setAvatarBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement | null>(null);
@@ -41,13 +39,13 @@ const ProfileEditPage = () => {
         return;
       }
       setUserId(user.id);
-      setEmail(user.email ?? "");
       setAvatarUrl(user.user_metadata?.avatar_url ?? null);
 
-      const [profileRes, persRes] = await Promise.all([
-        supabase.from("profiles").select("display_name, avatar_url").eq("id", user.id).maybeSingle(),
-        supabase.from("ai_personalization").select("call_name, custom_instructions").eq("user_id", user.id).maybeSingle(),
-      ]);
+      const profileRes = await supabase
+        .from("profiles")
+        .select("display_name, avatar_url")
+        .eq("id", user.id)
+        .maybeSingle();
       if (cancelled) return;
 
       if ((profileRes.data as any)?.avatar_url) setAvatarUrl((profileRes.data as any).avatar_url);
@@ -57,17 +55,9 @@ const ProfileEditPage = () => {
         user.user_metadata?.full_name ||
         user.email?.split("@")[0] ||
         "";
-      const initialNick = (persRes.data as any)?.call_name || initialFull;
-      const initialInstr = (persRes.data as any)?.custom_instructions || "";
 
       setFullName(initialFull);
-      setNickname(initialNick);
-      setInstructions(initialInstr);
-      savedRef.current = {
-        fullName: initialFull,
-        nickname: initialNick,
-        instructions: initialInstr,
-      };
+      savedRef.current = { fullName: initialFull };
       setLoading(false);
     })();
     return () => { cancelled = true; };
@@ -77,44 +67,24 @@ const ProfileEditPage = () => {
   useEffect(() => {
     if (loading || !userId) return;
     const dirtyName = fullName.trim() !== savedRef.current.fullName.trim();
-    const dirtyNick = nickname !== savedRef.current.nickname;
-    const dirtyInstr = instructions !== savedRef.current.instructions;
-    if (!dirtyName && !dirtyNick && !dirtyInstr) return;
+    if (!dirtyName) return;
 
     setSaveState("saving");
     const timer = setTimeout(async () => {
       try {
-        const tasks: Promise<any>[] = [];
-        if (dirtyName && fullName.trim()) {
-          tasks.push(
-            Promise.resolve(
-              supabase.rpc("update_profile_safe", {
-                p_user_id: userId,
-                p_display_name: fullName.trim(),
-              }),
-            ),
-          );
-          tasks.push(supabase.auth.updateUser({ data: { full_name: fullName.trim() } }));
-        }
-        if (dirtyNick || dirtyInstr) {
-          tasks.push(
-            Promise.resolve(
-              supabase.from("ai_personalization").upsert(
-                {
-                  user_id: userId,
-                  call_name: nickname.trim() || null,
-                  custom_instructions: instructions.trim() || null,
-                },
-                { onConflict: "user_id" },
-              ),
-            ),
-          );
-        }
-        const results = await Promise.all(tasks);
+        const results = await Promise.all([
+          Promise.resolve(
+            supabase.rpc("update_profile_safe", {
+              p_user_id: userId,
+              p_display_name: fullName.trim(),
+            }),
+          ),
+          supabase.auth.updateUser({ data: { full_name: fullName.trim() } }),
+        ]);
         const err = results.find((r: any) => r?.error)?.error;
         if (err) throw err;
 
-        savedRef.current = { fullName, nickname, instructions };
+        savedRef.current = { fullName };
         setSaveState("saved");
         setTimeout(() => setSaveState("idle"), 1400);
       } catch (err: any) {
@@ -123,7 +93,7 @@ const ProfileEditPage = () => {
       }
     }, 650);
     return () => clearTimeout(timer);
-  }, [fullName, nickname, instructions, loading, userId]);
+  }, [fullName, loading, userId]);
 
   const goBack = () => navigate("/settings");
 
@@ -168,12 +138,6 @@ const ProfileEditPage = () => {
     }
   };
 
-  const handleLogout = async () => {
-    if (loggingOut) return;
-    setLoggingOut(true);
-    await signOutEverywhere();
-  };
-
   const openDelete = () => setConfirmOpen(true);
   const confirmDelete = () => {
     setConfirmOpen(false);
@@ -182,113 +146,80 @@ const ProfileEditPage = () => {
 
   const statusIcon =
     saveState === "saving" ? (
-      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+      <Loader2 className="pep-spin animate-spin" />
     ) : saveState === "saved" ? (
-      <Check className="w-3.5 h-3.5" />
+      <Check strokeWidth={2.2} />
     ) : null;
 
   // ============================== MOBILE ==============================
   if (isMobile) {
-    const initial = (nickname || fullName || email || "U").trim().charAt(0).toUpperCase();
+    const initial = (fullName || "U").trim().charAt(0).toUpperCase();
+    const BackChevron = isAr ? ChevronRight : ChevronLeft;
     return (
-      <div className="pep-root">
+      <div className="pep-root" dir={isAr ? "rtl" : "ltr"}>
         <style>{pepCss}</style>
 
-        {/* Topbar */}
+        {/* Topbar — same glass header language as the settings home */}
         <header className="pep-topbar">
-          <button className="pep-icon-btn" aria-label="Back" onClick={goBack}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
+          <button className="pep-icon-btn" aria-label={tx("Back")} onClick={goBack}>
+            <BackChevron className="pep-chev" />
           </button>
-          <h1 className="pep-title">Account</h1>
-          <span className="pep-icon-btn" aria-live="polite">{statusIcon}</span>
+          <h1 className="pep-title">{tx("Account")}</h1>
+          <span className="pep-save" aria-live="polite">{statusIcon}</span>
         </header>
 
-        <section className="pep-main">
-          <div className="pep-avatar-wrap">
-            <button
-              type="button"
-              className="pep-avatar-btn"
-              onClick={pickAvatar}
-              disabled={avatarBusy}
-              aria-label="Change profile photo"
-            >
-              {avatarUrl ? (
-                <img src={avatarUrl} alt="" className="pep-avatar-img" />
-              ) : (
-                <span className="pep-avatar">{initial}</span>
-              )}
-              <span className="pep-avatar-badge">
-                {avatarBusy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
+        <main className="pep-main">
+          <section className="pep-card">
+            <button type="button" className="pep-row pep-row-btn" onClick={pickAvatar} disabled={avatarBusy}>
+              <span className="pep-avatar">
+                {avatarUrl ? <img src={avatarUrl} alt="" className="pep-avatar-img" /> : initial}
+              </span>
+              <span className="pep-row-label">{tx("Profile photo")}</span>
+              <span className="pep-row-trailing">
+                {avatarBusy ? (
+                  <Loader2 className="pep-spin animate-spin" />
+                ) : (
+                  <Camera className="pep-row-ico" strokeWidth={1.7} />
+                )}
+                {avatarBusy ? tx("Uploading…") : tx("Change")}
               </span>
             </button>
-            <p className="pep-avatar-hint">{avatarBusy ? "Uploading…" : "Tap to change photo"}</p>
-          </div>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/*"
-            hidden
-            onChange={handleAvatarFile}
-          />
+          </section>
 
           <section className="pep-card">
             <div className="pep-row">
-              <label htmlFor="pep-full" className="pep-row-label">Name</label>
+              <label htmlFor="pep-full" className="pep-row-label">{tx("Full name")}</label>
               <input
                 id="pep-full"
                 className="pep-row-input"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                placeholder="Your name"
+                placeholder={tx("Your name")}
                 autoComplete="name"
               />
             </div>
-            <div className="pep-divider" />
-            <div className="pep-row">
-              <span className="pep-row-label">Email</span>
-              <span className="pep-row-value">{email || "—"}</span>
-            </div>
-            <div className="pep-divider" />
-            <div className="pep-row">
-              <span className="pep-row-label">User ID</span>
-              <span className="pep-row-value pep-row-value-mono">{userId ?? "—"}</span>
-            </div>
           </section>
+          <p className="pep-hint">{tx("Megsy calls you by this name in chat.")}</p>
 
-          <button className="pep-flat" type="button" onClick={() => setLogoutOpen(true)}>
-            Log out
-          </button>
-
-          <button className="pep-flat pep-flat-danger" onClick={openDelete} type="button">
-            Delete account
+          <button className="pep-danger" type="button" onClick={openDelete}>
+            <Trash2 className="pep-danger-ico" strokeWidth={1.7} />
+            <span>{tx("Delete account")}</span>
           </button>
 
           <div className="pep-spacer" />
-        </section>
+        </main>
+
+        <input ref={fileRef} type="file" accept="image/*" hidden onChange={handleAvatarFile} />
 
         <ConfirmDialog
           open={confirmOpen}
           tone="danger"
-          title="Delete account"
-          description="This permanently removes your account, chats and files. This cannot be undone."
-          confirmLabel="Delete"
+          title={tx("Delete account")}
+          description={tx("This permanently removes your account, chats and files. This cannot be undone.")}
+          confirmLabel={tx("Delete")}
           onConfirm={confirmDelete}
           onCancel={() => setConfirmOpen(false)}
         />
-
-        <ConfirmDialog
-          open={logoutOpen}
-          title="Log out"
-          description="You'll need to sign in again to access your chats."
-          confirmLabel="Log out"
-          loading={loggingOut}
-          icon={<LogOut size={20} strokeWidth={1.8} />}
-          onConfirm={handleLogout}
-          onCancel={() => setLogoutOpen(false)}
-        />
-
       </div>
     );
   }
@@ -297,17 +228,17 @@ const ProfileEditPage = () => {
   // ============================== DESKTOP ==============================
   return (
     <SubShell
-      title="Profile"
-      subtitle="Changes are saved automatically."
+      title={tx("Account")}
+      subtitle={tx("Changes are saved automatically.")}
       backTo="/settings"
       action={
         <span className="inline-flex items-center gap-1.5 text-[12px] text-muted-foreground">
-          {saveState === "saving" && (<><Loader2 className="w-3.5 h-3.5 animate-spin" /> Saving…</>)}
-          {saveState === "saved" && (<><Check className="w-3.5 h-3.5 text-primary" /> Saved</>)}
+          {saveState === "saving" && (<><Loader2 className="w-3.5 h-3.5 animate-spin" /> {tx("Saving…")}</>)}
+          {saveState === "saved" && (<><Check className="w-3.5 h-3.5 text-primary" /> {tx("Saved")}</>)}
         </span>
       }
     >
-      <SubSection title="Photo" description="Shown across Megsy.">
+      <SubSection title={tx("Photo")} description={tx("Shown across Megsy.")}>
         <SubCard>
           <div className="flex items-center gap-4">
             <button
@@ -315,12 +246,12 @@ const ProfileEditPage = () => {
               onClick={pickAvatar}
               disabled={avatarBusy}
               className="relative w-16 h-16 rounded-full overflow-hidden border border-border/70 bg-muted grid place-items-center text-[22px] font-medium text-foreground"
-              aria-label="Change profile photo"
+              aria-label={tx("Change profile photo")}
             >
               {avatarUrl ? (
                 <img src={avatarUrl} alt="" className="w-full h-full object-cover" />
               ) : (
-                (nickname || fullName || email || "U").trim().charAt(0).toUpperCase()
+                (fullName || "U").trim().charAt(0).toUpperCase()
               )}
               {avatarBusy && (
                 <span className="absolute inset-0 grid place-items-center bg-background/60">
@@ -335,69 +266,44 @@ const ProfileEditPage = () => {
                 disabled={avatarBusy}
                 className="px-3.5 py-2 rounded-lg text-[13px] font-medium bg-background/60 border border-border/70 hover:border-foreground/40 transition-colors inline-flex items-center gap-2"
               >
-                <Camera className="w-3.5 h-3.5" /> Upload photo
+                <Camera className="w-3.5 h-3.5" /> {tx("Upload photo")}
               </button>
-              <p className="mt-2 text-[12px] text-muted-foreground">PNG or JPG, up to 5MB.</p>
+              <p className="mt-2 text-[12px] text-muted-foreground">{tx("PNG or JPG, up to 5MB.")}</p>
             </div>
           </div>
           <input ref={fileRef} type="file" accept="image/*" hidden onChange={handleAvatarFile} />
         </SubCard>
       </SubSection>
 
-      <SubSection title="Names" description="How Megsy addresses you.">
+      <SubSection title={tx("Name")} description={tx("How Megsy addresses you.")}>
         <SubCard>
-          <div className="space-y-4">
-            <div>
-              <label className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground font-medium">
-                Full name
-              </label>
-              <input
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="Your name"
-                className="mt-2 w-full px-3.5 py-2.5 rounded-lg bg-background/60 border border-border/70 text-[14px] text-foreground outline-none focus:border-foreground/40 transition-colors"
-              />
-            </div>
-            <div>
-              <label className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground font-medium">
-                Nickname
-              </label>
-              <input
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
-                placeholder="Nickname"
-                className="mt-2 w-full px-3.5 py-2.5 rounded-lg bg-background/60 border border-border/70 text-[14px] text-foreground outline-none focus:border-foreground/40 transition-colors"
-              />
-              <p className="mt-2 text-[12px] text-muted-foreground">
-                Megsy calls you by your nickname in chat.
-              </p>
-            </div>
+          <div>
+            <label className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground font-medium">
+              {tx("Full name")}
+            </label>
+            <input
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder={tx("Your name")}
+              className="mt-2 w-full px-3.5 py-2.5 rounded-lg bg-background/60 border border-border/70 text-[14px] text-foreground outline-none focus:border-foreground/40 transition-colors"
+            />
+            <p className="mt-2 text-[12px] text-muted-foreground">
+              {tx("Megsy calls you by this name in chat.")}
+            </p>
           </div>
         </SubCard>
       </SubSection>
 
-      <SubSection title="Instructions" description="Custom guidance applied to every conversation.">
-        <SubCard>
-          <textarea
-            value={instructions}
-            onChange={(e) => setInstructions(e.target.value)}
-            placeholder="How you'd like Megsy to respond"
-            rows={5}
-            className="w-full px-3.5 py-2.5 rounded-lg bg-background/60 border border-border/70 text-[14px] text-foreground outline-none focus:border-foreground/40 transition-colors resize-y"
-          />
-        </SubCard>
-      </SubSection>
-
-      <SubSection title="Danger zone" description="Irreversible actions.">
+      <SubSection title={tx("Danger zone")} description={tx("Irreversible actions.")}>
         <DangerCallout
-          title="Delete account"
-          description="Permanently remove your account and all associated data."
+          title={tx("Delete account")}
+          description={tx("Permanently remove your account and all associated data.")}
           action={
             <button
               onClick={openDelete}
               className="px-4 py-2 rounded-lg text-[13px] font-medium bg-rose-500/10 text-rose-300 border border-rose-500/30 hover:bg-rose-500/20 transition-colors"
             >
-              Delete account
+              {tx("Delete account")}
             </button>
           }
         />
@@ -406,257 +312,182 @@ const ProfileEditPage = () => {
       <ConfirmDialog
         open={confirmOpen}
         tone="danger"
-        title="Delete account"
-        description="This permanently removes your account, chats and files. This cannot be undone."
-        confirmLabel="Delete"
+        title={tx("Delete account")}
+        description={tx("This permanently removes your account, chats and files. This cannot be undone.")}
+        confirmLabel={tx("Delete")}
         onConfirm={confirmDelete}
         onCancel={() => setConfirmOpen(false)}
-      />
-      <ConfirmDialog
-        open={logoutOpen}
-        title="Log out"
-        description="You'll need to sign in again to access your chats."
-        confirmLabel="Log out"
-        loading={loggingOut}
-        icon={<LogOut size={20} strokeWidth={1.8} />}
-        onConfirm={handleLogout}
-        onCancel={() => setLogoutOpen(false)}
       />
     </SubShell>
   );
 };
 
 const pepCss = `
+/* Account editor — same glass canvas as the settings home so it reads as an
+   open section of that page. Reuses the settings-home tokens. */
 .pep-root {
   min-height: 100dvh;
-  background: var(--mn-bg);
-  color: var(--mn-fg);
-  font-family: "Neue Haas Unica", "Helvetica Now Display", -apple-system, "SF Pro Display", Inter, "Segoe UI", Roboto, sans-serif;
+  background: var(--settings-backdrop);
+  background-attachment: fixed;
+  color: var(--settings-ink);
+  font-family: -apple-system, "SF Pro Display", Inter, "Segoe UI", Roboto, sans-serif;
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 .pep-topbar {
   position: sticky; top: 0; z-index: 5;
-  display: grid; grid-template-columns: 38px 1fr 38px;
+  display: grid; grid-template-columns: 46px 1fr 46px;
   align-items: center;
-  padding: calc(env(safe-area-inset-top, 0px) + 8px) 12px 10px;
-  background: var(--mn-bg);
+  padding: max(20px, env(safe-area-inset-top)) 20px 16px;
 }
 .pep-title {
   margin: 0;
   text-align: center;
-  font-size: 16px; font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--mn-fg);
+  font-size: 22px; font-weight: 600;
+  letter-spacing: 0;
+  color: var(--settings-ink);
 }
 .pep-icon-btn {
-  width: 34px; height: 34px;
+  width: 46px; height: 46px;
   display: inline-grid; place-items: center;
-  border-radius: 999px;
-  background: transparent;
-  border: 0;
-  color: var(--mn-fg);
+  border-radius: 50%;
+  background: var(--settings-surface);
+  border: 1px solid var(--settings-glass-edge);
+  box-shadow: var(--settings-shadow);
+  backdrop-filter: var(--settings-frost);
+  color: var(--settings-ink);
   cursor: pointer;
-  transition: transform 160ms ease;
+  transition: transform .25s cubic-bezier(.22,1,.36,1);
 }
-.pep-icon-btn:active { transform: scale(0.94); }
+.pep-icon-btn:active { transform: scale(.93); }
+.pep-chev { width: 22px; height: 22px; }
 
-.pep-main { padding: 6px 14px 20px; }
-.pep-avatar-wrap { display: grid; place-items: center; gap: 8px; padding: 20px 0 18px; }
-.pep-avatar {
-  width: 74px; height: 74px; border-radius: 999px;
-  display: grid; place-items: center;
-  background: var(--mn-avatar); color: #fff;
-  font-size: 30px; font-weight: 500; line-height: 1;
+.pep-save {
+  width: 40px; height: 40px;
+  justify-self: end;
+  display: inline-grid; place-items: center;
+  border-radius: 50%;
+  background: var(--settings-surface);
+  border: 1px solid var(--settings-glass-edge);
+  box-shadow: var(--settings-shadow);
+  backdrop-filter: var(--settings-frost);
+  color: var(--settings-ink);
 }
-.pep-avatar-hint { margin: 0; font-size: 12.5px; color: var(--mn-muted); }
-.pep-avatar-btn {
-  position: relative; padding: 0; border: 0; background: transparent;
-  width: 74px; height: 74px; border-radius: 999px; cursor: pointer;
-  transition: transform 160ms ease;
-}
-.pep-avatar-btn:active { transform: scale(0.96); }
-.pep-avatar-btn:disabled { opacity: 0.7; }
-.pep-avatar-img { width: 74px; height: 74px; border-radius: 999px; object-fit: cover; display: block; }
-.pep-avatar-badge {
-  position: absolute; right: -2px; bottom: -2px;
-  width: 26px; height: 26px; border-radius: 999px;
-  display: grid; place-items: center;
-  background: var(--mn-fg); color: var(--mn-bg);
-  border: 2px solid var(--mn-bg);
-}
-.pep-row-value { flex: 1; text-align: end; font-size: 14px; color: var(--mn-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pep-row-value-mono { font-variant-numeric: tabular-nums; }
-.pep-flat {
-  margin-top: 16px; width: 100%;
-  padding: 14px 16px; border: 0; border-radius: 14px;
-  background: var(--mn-card); color: var(--mn-fg);
-  font: inherit; font-size: 14px; font-weight: 500;
-  cursor: pointer; text-align: center;
-  transition: transform 160ms ease;
-}
-.pep-flat:active { transform: scale(0.99); }
-.pep-flat-danger { color: var(--mn-danger); }
-.pep-section-title {
-  margin: 18px 4px 8px;
-  font-size: 12px; font-weight: 500;
-  color: var(--mn-muted);
-  letter-spacing: -0.005em;
-}
+.pep-save svg { width: 18px; height: 18px; }
+.pep-spin { width: 18px; height: 18px; }
 
+.pep-main {
+  padding: 0 20px;
+  display: flex; flex-direction: column; gap: 14px;
+}
 .pep-card {
-  background: var(--mn-card);
-  border: 0;
-  border-radius: 14px;
+  background: var(--settings-surface);
+  border: 1px solid var(--settings-glass-edge);
+  border-radius: 20px;
   overflow: hidden;
+  box-shadow: var(--settings-shadow);
+  backdrop-filter: var(--settings-frost);
+  animation: pep-in .4s cubic-bezier(.22,1,.36,1) both;
 }
-.pep-card-tight { padding: 4px; }
-
+@keyframes pep-in {
+  from { opacity: 0; translate: 0 8px; }
+  to   { opacity: 1; translate: 0 0; }
+}
 
 .pep-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 13px 15px;
-  min-height: 48px;
+  display: flex; align-items: center; gap: 13px;
+  padding: 11px 16px;
+  min-height: 56px;
 }
+.pep-row-btn {
+  width: 100%;
+  border: 0; background: transparent;
+  color: var(--settings-ink);
+  font: inherit; text-align: start;
+  cursor: pointer;
+  transition: background .2s;
+}
+.pep-row-btn:active:not(:disabled) { background: var(--settings-line); }
+.pep-row-btn:disabled { opacity: .7; }
+
+.pep-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  overflow: hidden; flex-shrink: 0;
+  display: grid; place-items: center;
+  background: var(--settings-line);
+  color: var(--settings-ink);
+  font-size: 17px; font-weight: 600;
+}
+.pep-avatar-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
 .pep-row-label {
-  font-size: 14px; font-weight: 400;
-  color: var(--mn-muted);
+  font-size: 15px; font-weight: 450;
+  color: var(--settings-ink);
   flex-shrink: 0;
 }
+.pep-row-trailing {
+  margin-inline-start: auto;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13.5px;
+  color: var(--settings-muted);
+}
+.pep-row-ico { width: 16px; height: 16px; }
+
+/* Scoped input overrides so app-theme input rules don't repaint the field. */
 .pep-root .pep-row-input {
   flex: 1;
-  background-color: var(--mn-card) !important;
-  background-image: none !important;
-  border: 0 !important; outline: none;
-  color: var(--mn-fg) !important;
-  font: inherit;
-  font-size: 14px; font-weight: 500;
-  text-align: end;
   min-width: 0;
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  outline: none;
+  color: var(--settings-ink) !important;
+  font: inherit;
+  font-size: 15px; font-weight: 500;
+  text-align: end;
   -webkit-appearance: none;
   appearance: none;
-  color-scheme: dark;
   box-shadow: none !important;
-  caret-color: var(--mn-fg);
+  caret-color: var(--settings-ink);
 }
-.pep-root .pep-row-input::placeholder { color: var(--mn-faint) !important; }
+.pep-root .pep-row-input::placeholder { color: var(--settings-muted) !important; }
 .pep-root .pep-row-input:-webkit-autofill,
 .pep-root .pep-row-input:-webkit-autofill:hover,
 .pep-root .pep-row-input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px var(--mn-card) inset;
-  -webkit-text-fill-color: var(--mn-fg);
-  caret-color: var(--mn-fg);
-}
-.pep-divider {
-  height: 1px;
-  background: var(--mn-sep);
-  margin-left: 15px;
-}
-.pep-hint {
-  margin: 8px 6px 0;
-  font-size: 12px;
-  color: rgba(232,232,232,0.5);
-  line-height: 1.45;
+  -webkit-box-shadow: 0 0 0 1000px transparent inset;
+  -webkit-text-fill-color: var(--settings-ink);
+  caret-color: var(--settings-ink);
 }
 
-/* Scope under .pep-root so these rules beat the mobile theme's global
-   body.ms-theme textarea selector and keep the textarea the same dark
-   surface as the card. */
-.pep-root .pep-textarea {
-  width: 100%;
-  min-height: 80px;
-  background-color: var(--mn-card) !important;
-  background-image: none !important;
-  border: 0; outline: none;
-  padding: 12px 14px;
-  color: var(--mn-fg);
-  font: inherit;
-  font-size: 14px; font-weight: 400;
-  resize: none;
-  -webkit-appearance: none;
-  appearance: none;
-  color-scheme: dark;
-  box-shadow: none;
-}
-.pep-root .pep-textarea::placeholder { color: var(--mn-muted); }
-.pep-root .pep-textarea:-webkit-autofill,
-.pep-root .pep-textarea:-webkit-autofill:hover,
-.pep-root .pep-textarea:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px var(--mn-card) inset;
-  -webkit-text-fill-color: var(--mn-fg);
-  caret-color: var(--mn-fg);
+.pep-hint {
+  margin: -6px 8px 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--settings-muted);
 }
 
 .pep-danger {
-  margin-top: 18px;
-  width: 100%;
   display: flex; align-items: center; gap: 10px;
-  padding: 13px 15px;
-  background: rgba(255,90,90,0.06);
-  border: 1px solid rgba(255,90,90,0.12);
-  border-radius: 14px;
-  color: var(--mn-danger);
+  width: 100%;
+  padding: 13px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--settings-glass-edge);
+  background: var(--settings-surface);
+  box-shadow: var(--settings-shadow);
+  backdrop-filter: var(--settings-frost);
+  color: var(--settings-red);
   font: inherit;
-  font-size: 14px; font-weight: 500;
+  font-size: 15px; font-weight: 450;
   cursor: pointer;
-  transition: transform 160ms ease, background-color 160ms ease;
+  transition: transform .25s cubic-bezier(.22,1,.36,1), background .2s;
 }
-.pep-danger:active { transform: scale(0.99); background: rgba(255,90,90,0.10); }
+.pep-danger:active { transform: scale(.98); }
+.pep-danger-ico { width: 18px; height: 18px; }
 
-.pep-spacer { height: 28px; }
+.pep-spacer { height: max(24px, env(safe-area-inset-bottom)); }
 
-/* Confirm modal */
-.pep-modal-scrim {
-  position: fixed; inset: 0; z-index: 40;
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(6px);
-  display: grid; place-items: center;
-  padding: 20px;
-  animation: pep-fade 200ms ease-out both;
-}
-.pep-modal {
-  width: 100%; max-width: 300px;
-  background: var(--mn-card);
-  border: 0;
-  border-radius: 18px;
-  padding: 18px 18px 12px;
-  box-shadow: 0 24px 60px -20px rgba(0,0,0,0.7), inset 0 1px 0 var(--mn-sep);
-  animation: pep-pop 220ms cubic-bezier(0.16,1,0.3,1) both;
-}
-.pep-modal-title {
-  margin: 0 0 5px;
-  font-size: 16px; font-weight: 600;
-  color: var(--mn-fg);
-}
-.pep-modal-body {
-  margin: 0 0 16px;
-  font-size: 13.5px; line-height: 1.4;
-  color: var(--mn-muted);
-}
-.pep-modal-actions {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-}
-.pep-modal-btn {
-  padding: 10px;
-  border-radius: 12px;
-  background: var(--mn-card-2);
-  border: 0;
-  color: var(--mn-fg);
-  font: inherit;
-  font-size: 13.5px; font-weight: 500;
-  cursor: pointer;
-  transition: transform 160ms ease, background-color 160ms ease;
-}
-.pep-modal-btn:active { transform: scale(0.97); }
-.pep-modal-btn-danger {
-  color: var(--mn-danger);
-  background: rgba(255,90,90,0.08);
-  border-color: rgba(255,90,90,0.16);
-}
-
-@keyframes pep-fade { from { opacity: 0; } to { opacity: 1; } }
-@keyframes pep-pop {
-  from { opacity: 0; transform: scale(0.96); }
-  to   { opacity: 1; transform: scale(1); }
+@media (prefers-reduced-motion: reduce) {
+  .pep-card { animation: none; }
+  .pep-root .pep-icon-btn, .pep-root .pep-danger, .pep-root .pep-row-btn { transition: none; }
 }
 `;
 
