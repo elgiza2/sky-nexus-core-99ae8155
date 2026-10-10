@@ -1,0 +1,114 @@
+/* Checkout-only details, on top of the shared glass language in glass.css. */
+.megsy-checkout {
+  --payment-logo-surface: oklch(1 0 0);
+  --payment-visa: oklch(.29 .14 275);
+  --payment-black: oklch(.15 0 0);
+  --payment-red: oklch(.59 .24 27);
+  --payment-yellow: oklch(.77 .17 70);
+  --payment-orange: oklch(.7 .21 42);
+  --payment-blue: oklch(.61 .2 260);
+  --payment-green: oklch(.64 .16 145);
+  --payment-gold: oklch(.83 .17 85);
+}
+.megsy-checkout .checkout-logo {
+  background: transparent;
+  color: var(--payment-black);
+  border: 0;
+}
+.megsy-checkout .checkout-logo svg { width: 30px; height: 26px; }
+.megsy-checkout .checkout-logo svg[viewBox="0 0 32 20"] { width: 40px; }
+
+.payment-visa {
+  color: var(--payment-visa);
+  font-family: Arial, sans-serif;
+  font-style: italic;
+  font-weight: 900;
+  font-size: 22px;
+  line-height: 1;
+}
+
+/* Every brand mark inside an action sits on one line at label height. */
+.megsy-checkout .checkout-mark .payment-visa { font-size: 14px; color: inherit; }
+.megsy-checkout .checkout-mark svg { height: 18px; width: auto; display: block; }
+.megsy-checkout .checkout-mark svg[viewBox="0 0 32 20"] { width: 29px; }
+.payment-red { fill: var(--payment-red); }
+.payment-yellow { fill: var(--payment-yellow); }
+.payment-orange { fill: var(--payment-orange); }
+.payment-blue { fill: var(--payment-blue); }
+.payment-green { fill: var(--payment-green); }
+.payment-gold { fill: var(--payment-gold); }
+.payment-white { fill: var(--payment-logo-surface); }
+
+
+.megsy-checkout {
+  --checkout-surface: oklch(1 0 0);
+  --checkout-input: oklch(.975 0 0);
+  --checkout-line: oklch(.88 0 0);
+  --checkout-text: oklch(.2 0 0);
+  --checkout-muted: oklch(.5 0 0);
+  --checkout-shadow: 0 8px 24px -16px oklch(.2 0 0 / .2);
+  --checkout-card-top: oklch(.96 0 0);
+  --checkout-card-bottom: oklch(.88 0 0);
+  color: var(--checkout-text);
+}
+html.dark .megsy-checkout {
+  --checkout-surface: oklch(.22 0 0);
+  --checkout-input: oklch(.26 0 0);
+  --checkout-line: oklch(.4 0 0);
+  --checkout-text: oklch(.97 0 0);
+  --checkout-muted: oklch(.73 0 0);
+  --checkout-card-top: oklch(.32 0 0);
+  --checkout-card-bottom: oklch(.24 0 0);
+}
+.checkout-layout { position: relative; margin-inline: auto; width: 100%; max-width: 520px; min-height: 100dvh; display: flex; flex-direction: column; padding: max(20px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom)); }
+.checkout-stage { display: flex; flex: 1; flex-direction: column; margin-top: 32px; animation: checkout-enter .32s ease-out; }
+.checkout-title { margin: 0; font-size: 28px; line-height: 1.2; font-weight: 600; letter-spacing: 0; }
+.megsy-checkout .megsy-back { width: 44px; height: 44px; padding: 0; border-radius: 50%; background: var(--checkout-surface); color: var(--checkout-text); box-shadow: var(--checkout-shadow); }
+.checkout-methods { margin-top: 28px; display: flex; flex-direction: column; flex: 1; gap: 24px; }
+.megsy-pay-list { display: grid; grid-template-rows: repeat(4, minmax(94px, 1fr)); gap: 14px; flex: 1; max-height: 560px; }
+.megsy-checkout .megsy-pay-row { width: 100%; height: auto; min-height: 94px; display: flex; justify-content: flex-start; gap: 16px; padding: 20px; border-radius: 18px; border: 1px solid oklch(.2 0 0 / .1); background: var(--checkout-surface); color: var(--checkout-text); text-align: start; box-shadow: var(--checkout-shadow); transition: border-color .35s ease, box-shadow .35s ease, transform .35s cubic-bezier(.22,1,.36,1); }
+.megsy-checkout .megsy-pay-row[data-selected="true"] { border-color: var(--checkout-text); box-shadow: inset 0 0 0 1px var(--checkout-text), var(--checkout-shadow); transform: translateY(-2px); }
+.megsy-pay-mark { width: 68px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.megsy-pay-copy { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.megsy-pay-name { font-size: 16px; line-height: 1.3; font-weight: 600; }
+.megsy-pay-detail { font-size: 12px; line-height: 1.4; font-weight: 400; color: var(--checkout-muted); }
+.megsy-checkout .megsy-pay-chevron { width: 18px; height: 18px; color: var(--checkout-muted); }
+.payment-card-pair { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.megsy-checkout .payment-visa { width: 48px; height: 16px; color: var(--payment-visa); }
+.megsy-checkout .checkout-logo svg { width: 30px; height: 30px; }
+.megsy-checkout .checkout-logo .payment-visa { width: 46px; height: 16px; }
+.megsy-checkout .checkout-logo svg[viewBox="0 0 32 20"] { width: 36px; height: 23px; }
+.megsy-checkout .megsy-pay-cta { display: flex; flex-shrink: 0; width: 100%; min-height: 56px; height: 56px; align-items: center; justify-content: center; gap: 10px; border-radius: 999px; border: 0; background: var(--megsy-ink); color: var(--megsy-ink-foreground); font-size: 15px; font-weight: 600; box-shadow: var(--checkout-shadow); transition: transform .2s ease, opacity .2s ease; }
+.megsy-checkout .megsy-pay-cta:active { transform: scale(.98); }
+.megsy-checkout .megsy-pay-cta:disabled { opacity: .5; }
+.megsy-checkout .megsy-pay-quiet { min-height: 44px; color: var(--checkout-muted); }
+.megsy-checkout button:focus-visible { outline: 2px solid var(--checkout-text); outline-offset: 4px; }
+.card-face { position: relative; width: 100%; aspect-ratio: 1.75; padding: 24px; border-radius: 20px; background: linear-gradient(125deg, var(--checkout-card-top), var(--checkout-card-bottom)); box-shadow: var(--checkout-shadow); display: flex; flex-direction: column; justify-content: space-between; color: var(--checkout-text); }
+.card-chip { width: 36px; height: 28px; border: 1px solid var(--checkout-muted); border-radius: 6px; display: grid; grid-template-columns: repeat(3, 1fr); overflow: hidden; opacity: .65; }
+.card-chip span + span { border-left: 1px solid var(--checkout-muted); }
+.card-chip span { margin-block: 5px; border-block: 1px solid var(--checkout-muted); }
+.card-number { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-size: 18px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.card-caption { display: block; font-size: 10px; line-height: 1.4; color: var(--checkout-muted); }
+.card-holder { margin: 5px 0 0; font-size: 12px; line-height: 1.4; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.checkout-fields { margin-top: 28px; display: grid; gap: 20px; }
+.checkout-field { min-width: 0; display: block; }
+.checkout-field > span { display: block; margin-bottom: 9px; color: var(--checkout-text); font-size: 13px; font-weight: 500; }
+.checkout-input-wrap { height: 56px; display: flex; align-items: center; border: 1px solid var(--checkout-line); border-radius: 12px; background: var(--checkout-surface); transition: border-color .2s ease, box-shadow .2s ease; }
+.checkout-input-wrap:focus-within { border-color: var(--checkout-text); box-shadow: 0 0 0 1px var(--checkout-text); }
+.checkout-input-wrap input { width: 100%; min-width: 0; height: 100%; padding: 0 16px; outline: none; border: 0; border-radius: inherit; background: transparent; color: var(--checkout-text); font-size: 16px; font-weight: 400; letter-spacing: 0; font-variant-numeric: tabular-nums; box-shadow: none; }
+.checkout-input-wrap input:focus { outline: none; box-shadow: none; }
+.checkout-input-wrap input::placeholder { color: var(--checkout-muted); }
+.wallet-identity { display: flex; align-items: center; gap: 12px; margin-top: 28px; font-weight: 500; }
+.wallet-identity svg { width: 36px; height: 36px; }
+.wallet-input { height: 64px; }
+.wallet-prefix { flex-shrink: 0; white-space: nowrap; padding: 0 16px; border-right: 1px solid var(--checkout-line); font-size: 16px; }
+/* Isolate payment from the legacy chat-wide dialog overrides. */
+[role="dialog"].megsy-checkout { background: var(--glass-bg) !important; color: var(--checkout-text) !important; border: 0 !important; box-shadow: none !important; }
+.megsy-checkout .checkout-title { color: var(--checkout-text) !important; font-weight: 600 !important; letter-spacing: 0; }
+.megsy-checkout .checkout-input-wrap input { background: transparent !important; border: 0 !important; box-shadow: none !important; color: var(--checkout-text) !important; font-weight: 400 !important; }
+.megsy-checkout .checkout-input-wrap input:focus-visible { outline: none !important; border: 0 !important; box-shadow: none !important; }
+.megsy-checkout .checkout-logo .payment-visa { width: 56px; height: 19px; }
+@keyframes checkout-enter { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@media (min-width: 640px) { .checkout-layout { padding-inline: 32px; } .checkout-stage { margin-top: 40px; } }
+@media (max-height: 740px) { .checkout-stage { margin-top: 20px; } .megsy-pay-list { grid-template-rows: repeat(4, minmax(82px, 1fr)); gap: 10px; } .megsy-checkout .megsy-pay-row { min-height: 82px; padding-block: 14px; } .card-face { aspect-ratio: 1.9; } .checkout-fields { margin-top: 20px; gap: 14px; } }
+@media (prefers-reduced-motion: reduce) { .checkout-stage { animation: none; } .megsy-checkout .megsy-pay-row, .megsy-checkout .megsy-pay-cta { transition: none; } }
