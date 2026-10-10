@@ -20,7 +20,9 @@ const SLIDES = {
     { t: "وكيلك\nدايمًا جنبك.", d: "ميغسي كمبيوتر بيخلّص الشغل المتعب وانت ركّز في المهم." },
   ],
 };
-const IMAGES = [welcomeArtwork.url, img2, img3];
+// Every visit rotates the pool: a random image starts, then the rest follow in order.
+const POOL = [artSky.url, artStorm.url, artEmber.url];
+const IMAGES = POOL.map((_, k) => POOL[(Math.floor(Math.random() * POOL.length) + k) % POOL.length]);
 
 export default function WelcomePage() {
   const lang = useUserLang();
