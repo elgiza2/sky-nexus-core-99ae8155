@@ -26,6 +26,7 @@
   --checkout-glass-placeholder: oklch(1 0 0 / .72);
   --checkout-glass-shadow: 0 6px 22px oklch(0 0 0 / .12), inset 0 1px 0 oklch(1 0 0 / .22);
   --checkout-glass-focus: 0 0 0 3px oklch(1 0 0 / .15);
+  --checkout-frost: blur(20px) saturate(1.15);
   --checkout-line: oklch(1 0 0 / .38);
   --checkout-fill: oklch(1 0 0 / .14);
   --checkout-fill-on: oklch(1 0 0 / .22);
@@ -249,6 +250,6 @@ html .megsy-checkout .wallet-prefix { padding: 0 14px 0 0; margin-right: 14px; b
 /* Override the old dialog-wide opaque surfaces only inside this checkout. */
 html body section.megsy-checkout .checkout-methods { background: transparent !important; border: 0 !important; box-shadow: none !important; backdrop-filter: none !important; padding: 0 !important; }
 html body section.megsy-checkout .checkout-input-wrap input:not([type="checkbox"]):not([type="radio"]) { background: transparent !important; background-image: none !important; border: 0 !important; color: var(--checkout-glass-ink) !important; -webkit-text-fill-color: var(--checkout-glass-ink) !important; box-shadow: none !important; }
-html body section.megsy-checkout .checkout-input-wrap, html body section.megsy-checkout .checkout-method { -webkit-backdrop-filter: blur(20px) saturate(1.15) !important; backdrop-filter: blur(20px) saturate(1.15) !important; }
+html body section.megsy-checkout .checkout-input-wrap, html body section.megsy-checkout .checkout-method { -webkit-backdrop-filter: blur(20px) saturate(1.15) !important; backdrop-filter: var(--checkout-frost) !important; }
 html body section.megsy-checkout .checkout-title, html body section.megsy-checkout .checkout-field > span, html body section.megsy-checkout .checkout-method span { color: var(--checkout-glass-ink) !important; -webkit-text-fill-color: var(--checkout-glass-ink) !important; opacity: 1 !important; }
 
