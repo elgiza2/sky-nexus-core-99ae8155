@@ -344,6 +344,7 @@ export const EGYPTIAN_DICT: Record<string, string> = {
 "Credit (MC) — one wallet": "رصيد (MC) — محفظة واحدة",
 "Credit Packs": "باقات الرصيد",
 "Credit-based videos": "فيديوهات مبنية على الرصيد",
+"Subscription": "الاشتراك",
 "Credits": "الكريدت",
 "Credits preview": "معاينة الأرصدة",
 "Credits used": "الأرصدة المستخدمة",
