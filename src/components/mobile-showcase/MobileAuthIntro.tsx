@@ -1,4 +1,4 @@
-/** Shared welcome/sign-in screen, matching the quiet Cue reference with Megsy's character. */
+/** Shared reference sign-in and registration presentation with Megsy branding. */
 import { ArrowLeft, Eye, EyeOff, Mail, X } from "lucide-react";
 import { AgentOrb } from "@/components/agent/AgentOrb";
 import AppleSignInButton from "@/components/auth/AppleSignInButton";
@@ -15,10 +15,10 @@ interface Props {
 export default function MobileAuthIntro(p: Props) {
   const ar = useUserLang() === "ar-eg";
   const label = (provider: string) => ar ? `متابعة باستخدام ${provider}` : `Continue with ${provider}`;
-  return <main className="megsy-auth-screen" dir={ar ? "rtl" : "ltr"}>
+  return <main className={`megsy-auth-screen ${p.expanded ? "megsy-auth-expanded" : "megsy-auth-entry"}`} dir={ar ? "rtl" : "ltr"}>
     {!p.expanded && <Button variant="ghost" type="button" className="megsy-auth-close" onClick={p.onClose} aria-label={ar ? "إغلاق" : "Close"}><X size={22} /></Button>}
     {p.expanded && <Button variant="ghost" type="button" className="megsy-auth-back" onClick={p.onBack} aria-label={ar ? "رجوع" : "Back"}><ArrowLeft size={20} /></Button>}
-    <div className="megsy-auth-brand"><div className="megsy-auth-lockup"><AgentOrb color="aurora" state="idle" size={86} /><h1>Megsy</h1></div><p className="megsy-auth-tagline">{ar ? "أنشئ حسابك مجانًا" : "Create an account for free"}</p></div>
+    <div className="megsy-auth-brand"><div className="megsy-auth-lockup"><AgentOrb color="aurora" state="idle" size={64} /><h1>Megsy</h1></div><p className="megsy-auth-tagline">{ar ? "أنشئ حسابك مجانًا" : "Create an account for free"}</p></div>
     <section className="megsy-auth-actions">
       {p.error && <p role="alert" className="megsy-auth-error">{p.error}</p>}
       {!p.expanded ? <>

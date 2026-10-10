@@ -286,5 +286,6 @@
 - [x] Redesign the checkout page completely: full match of the pricing design language (full-bleed photo, glass rows, iOS-style motion, theme-following CTA).
 
 ## Current authentication and checkout refinement (October 10, 2026)
+- [x] Refine auth branding weight, provider controls and spacing to match the re-uploaded reference; phone/desktop, email/password/recovery and routing test verified, preserving configured providers and account flow. Apple remains hidden until configured; no invented SSO.
 - [x] Redesign sign-in and registration presentation to match the supplied white reference; verify email, password and recovery presentation.
 - [x] Make checkout inputs and payment-method selectors clean frosted glass; verified card/wallet switching and computed blur in light/dark on phone/desktop, without a real payment.
