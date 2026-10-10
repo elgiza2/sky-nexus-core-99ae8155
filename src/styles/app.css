@@ -41,4 +41,5 @@
 /* Checkout mirrors the botanical pricing design — last, so it wins over the
    shared glass language and every legacy sheet. */
 @import "./checkout.css";
+@import "./settings-home.css";
 
