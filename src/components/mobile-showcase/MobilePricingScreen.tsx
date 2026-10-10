@@ -21,7 +21,7 @@ interface Props {
 export default function MobilePricingScreen({ isYearly, onToggleYearly, onSubscribe, loadingTier, onMenuClick }: Props) {
   const isAr = useUserLang() === "ar-eg";
   const navigate = useNavigate();
-  const artwork = useMemo(() => [artAura, artCar][Math.floor(Math.random() * 2)], []);
+  const artwork = useMemo(() => [{ ...artAura, key: "aura" }, { ...artCar, key: "car" }][Math.floor(Math.random() * 2)], []);
   const { plan } = useUserPlan();
   const subscribed = plan === "pro" || plan === "max" || plan === "elite";
   const pro = getPlan("pro");
@@ -37,7 +37,7 @@ export default function MobilePricingScreen({ isYearly, onToggleYearly, onSubscr
   ];
 
   return (
-    <section className="botanical-pricing" dir={isAr ? "rtl" : "ltr"} aria-label={isAr ? "اشتراك Megsy Pro" : "Megsy Pro subscription"}>
+    <section className="botanical-pricing" data-art={artwork.key} dir={isAr ? "rtl" : "ltr"} aria-label={isAr ? "اشتراك Megsy Pro" : "Megsy Pro subscription"}>
       <div className="botanical-art" aria-hidden="true">
         <img src={artwork.url} alt="" fetchPriority="high" width={1024} height={1920} />
       </div>
