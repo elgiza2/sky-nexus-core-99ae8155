@@ -287,6 +287,7 @@
 
 ## Current authentication and checkout refinement (October 10, 2026)
 - [ ] Redesign settings home to match the clean uploaded grouped-list reference, preserving current actions; verify phone and desktop.
+- [ ] Reduce settings row/icon sizes and refine the icons after user feedback.
 - [x] Replace auth buttons in place with email entry and account-aware password flow; verified live new-account lookup, simulated existing-account response, validation/back/password visibility, moving agents and eight unique blink delays. Real signup/email delivery not exercised.
 - [x] Keep the center subtitle to exactly two clean lines and slightly increase character spacing; phone/desktop screenshots verified.
 - [x] Add soft button-press feedback and polished transitions between auth steps; preview build OK and routing test passed.
