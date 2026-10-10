@@ -38,7 +38,6 @@ import { INTRO_PRICE } from "@/lib/pricingOffers";
 
 import { brandText, getZoneBrand } from "@/lib/zoneBrand";
 import { translateExactText, useUserLang } from "@/lib/authI18n";
-import CustomCardForm from "@/components/billing/CustomCardForm";
 
 const LandingFooter = lazy(() => import("@/components/landing/LandingFooter"));
 
