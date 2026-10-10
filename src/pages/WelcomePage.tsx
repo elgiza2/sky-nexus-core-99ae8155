@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useUserLang } from "@/lib/authI18n";
-import img1 from "@/assets/megsy-editorial-woman.jpg";
+import welcomeArtwork from "@/assets/phone-aura.jpg.asset.json";
 import img2 from "@/assets/welcome-2.jpg";
 import img3 from "@/assets/welcome-3.jpg";
 
@@ -20,7 +20,7 @@ const SLIDES = {
     { t: "وكيلك\nدايمًا جنبك.", d: "ميغسي كمبيوتر بيخلّص الشغل المتعب وانت ركّز في المهم." },
   ],
 };
-const IMAGES = [img1, img2, img3];
+const IMAGES = [welcomeArtwork.url, img2, img3];
 
 export default function WelcomePage() {
   const lang = useUserLang();
@@ -110,7 +110,7 @@ export default function WelcomePage() {
       <motion.img
         key={i}
         src={IMAGES[i]}
-        alt={i === 0 ? "Woman holding her phone in a sunlit conservatory" : ""}
+        alt={i === 0 ? "Person using a phone surrounded by luminous light" : ""}
         width={1024}
         height={1536}
         initial={{ opacity: 0, scale: 1.04 }}
