@@ -1,11 +1,12 @@
 /** Immersive subscription screen. Prices and checkout stay in the shared catalogue and parent. */
-import { Check, ChevronRight, Loader2, X } from "lucide-react";
+import { Check, ChevronRight, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useUserLang } from "@/lib/authI18n";
 import { useUserPlan } from "@/hooks/useUserPlan";
 import { getDisplayPrice, getPlan, type PlanTier } from "@/data/pricingData";
-import artwork from "@/assets/megsy-botanical-girl.jpg";
+import artwork from "@/assets/megsy-editorial-woman.jpg";
+import MobileSidebarButton from "@/components/shared/MobileSidebarButton";
 
 interface Props {
   isYearly: boolean;
@@ -15,7 +16,7 @@ interface Props {
   onMenuClick?: () => void;
 }
 
-export default function MobilePricingScreen({ isYearly, onToggleYearly, onSubscribe, loadingTier }: Props) {
+export default function MobilePricingScreen({ isYearly, onToggleYearly, onSubscribe, loadingTier, onMenuClick }: Props) {
   const isAr = useUserLang() === "ar-eg";
   const navigate = useNavigate();
   const { plan } = useUserPlan();
@@ -31,11 +32,6 @@ export default function MobilePricingScreen({ isYearly, onToggleYearly, onSubscr
     { yearly: false, label: isAr ? "شهري" : "Monthly", price: monthly.price, note: isAr ? "للشهر الأول" : "First month", detail: isAr ? `ثم $${pro.monthlyPrice} / شهر` : `Then $${pro.monthlyPrice} / month` },
     { yearly: true, label: isAr ? "سنوي" : "Yearly", price: yearly.price, note: isAr ? "دفع سنوي" : "Billed yearly", detail: isAr ? `يعادل $${(yearly.price / 12).toFixed(2)} / شهر` : `$${(yearly.price / 12).toFixed(2)} / month equivalent` },
   ];
-  const fine = subscribed
-    ? (isAr ? "اشتراكك نشط. تقدر تديره أو تلغيه من إعدادات الاشتراك." : "Your subscription is active. Manage or cancel it in subscription settings.")
-    : isYearly
-      ? (isAr ? `$${yearly.price.toFixed(2)} سنويًا. الاشتراك بيتجدد تلقائيًا لحد ما تلغيه.` : `$${yearly.price.toFixed(2)} billed annually. Your subscription renews automatically unless cancelled.`)
-      : (isAr ? `$${monthly.price.toFixed(2)} للشهر الأول، ثم $${pro.monthlyPrice.toFixed(2)} شهريًا. تقدر تلغي في أي وقت.` : `$${monthly.price.toFixed(2)} for the first month, then $${pro.monthlyPrice.toFixed(2)}/month. Cancel anytime.`);
 
   return (
     <section className="botanical-pricing" dir={isAr ? "rtl" : "ltr"} aria-label={isAr ? "اشتراك Megsy Pro" : "Megsy Pro subscription"}>
@@ -45,10 +41,7 @@ export default function MobilePricingScreen({ isYearly, onToggleYearly, onSubscr
       <div className="botanical-scrim" aria-hidden="true" />
       <div className="botanical-content">
         <header className="botanical-nav">
-          <Button variant="ghost" size="icon" className="botanical-close" aria-label={isAr ? "رجوع" : "Close pricing"} onClick={() => navigate(-1)} title={isAr ? "رجوع" : "Back"}><X /></Button>
-          <Button variant="ghost" className="botanical-account" onClick={() => navigate(subscribed ? "/settings/billing" : "/auth?redirect=/pricing")}>
-            {isAr ? "حسابي" : "My account"}
-          </Button>
+          {onMenuClick && <MobileSidebarButton edge side={isAr ? "right" : "left"} className="botanical-menu" ariaLabel={isAr ? "فتح القائمة" : "Open menu"} onClick={onMenuClick} />}
         </header>
         <div className="botanical-heading">
           <h1 dir="ltr">megsy <span>pro</span></h1>
@@ -73,7 +66,6 @@ export default function MobilePricingScreen({ isYearly, onToggleYearly, onSubscr
           <Button variant="neutral" className="botanical-subscribe" disabled={loadingTier === "pro"} onClick={() => subscribed ? navigate("/settings/billing") : onSubscribe("pro", { trial: false })}>
             {loadingTier === "pro" ? <Loader2 className="animate-spin" /> : <>{subscribed ? (isAr ? "إدارة الاشتراك" : "Manage subscription") : (isAr ? "اشترك الآن" : "Subscribe")}<ChevronRight className="rtl-flip" /></>}
           </Button>
-          <p className="botanical-fine">{fine}</p>
         </div>
       </div>
     </section>

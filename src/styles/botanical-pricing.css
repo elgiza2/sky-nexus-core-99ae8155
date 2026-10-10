@@ -1,13 +1,13 @@
 /* Isolated illustrated paywall: no checkout or global theme overrides. */
 :root {
-  --paywall-bg: oklch(.225 .004 180);
-  --paywall-fg: oklch(.985 .002 180);
-  --paywall-muted: oklch(.64 .008 180);
-  --paywall-accent: oklch(.715 .12 208);
-  --paywall-ink: oklch(.23 .035 208);
-  --paywall-border: oklch(.55 .006 180);
-  --paywall-pane: oklch(.225 .004 180 / .8);
-  --paywall-shade: oklch(.12 .01 180 / .55);
+  --paywall-bg: oklch(.18 0 0);
+  --paywall-fg: oklch(.985 0 0);
+  --paywall-muted: oklch(.75 0 0);
+  --paywall-accent: oklch(.97 0 0);
+  --paywall-ink: oklch(.18 0 0);
+  --paywall-border: oklch(.46 0 0);
+  --paywall-pane: oklch(.22 0 0 / .92);
+  --paywall-shade: oklch(.12 0 0 / .65);
 }
 .botanical-pricing { position: relative; isolation: isolate; width: 100%; min-height: 100dvh; overflow: hidden; color: var(--paywall-fg); background: var(--paywall-bg); font-family: "Geist", "Inter", system-ui, sans-serif; letter-spacing: 0; }
 .botanical-art { position: absolute; inset: 0 0 auto; height: 70%; max-height: 670px; z-index: -3; }
@@ -15,10 +15,8 @@
 .botanical-scrim { position: absolute; inset: 0; z-index: -2; background: linear-gradient(to bottom, var(--paywall-shade) 0%, transparent 24%, transparent 34%, var(--paywall-pane) 53%, var(--paywall-bg) 68%); }
 .botanical-content { position: relative; min-height: 100dvh; max-width: 440px; margin: auto; padding: max(env(safe-area-inset-top), 16px) 20px max(env(safe-area-inset-bottom), 24px); display: flex; flex-direction: column; }
 .botanical-nav { display: flex; align-items: center; justify-content: space-between; margin-inline: -8px; }
-.botanical-pricing .botanical-close, .botanical-pricing .botanical-account { background: transparent; color: var(--paywall-fg); border: 0; box-shadow: none; }
-.botanical-pricing .botanical-close:hover, .botanical-pricing .botanical-account:hover { background: var(--paywall-shade); }
-.botanical-close svg { width: 24px; height: 24px; }
-.botanical-account { font-size: 14px; font-weight: 400; padding-inline: 8px; }
+.botanical-nav { min-height: 44px; }
+html .botanical-pricing button.botanical-menu { background: transparent !important; color: var(--paywall-fg) !important; border: 0 !important; box-shadow: none !important; }
 .botanical-heading { text-align: center; margin-top: 8px; }
 .botanical-heading h1 { font-size: 42px; line-height: 1.2; font-weight: 400; text-align: center; letter-spacing: 0; }
 .botanical-heading h1 span { font-size: 31px; line-height: .96; display: inline-block; border: 1.5px solid currentColor; border-radius: 2px; padding: 0 4px 3px; vertical-align: 3px; }
@@ -61,12 +59,11 @@ html .botanical-pricing button.botanical-subscribe {
   box-shadow: none !important;
 }
 html .botanical-pricing button::before, html .botanical-pricing button::after { display: none !important; }
-.botanical-fine { font-size: 11px; line-height: 1.5; color: var(--paywall-muted); margin-top: 25px; margin-bottom: 0; }
 .botanical-desktop .botanical-pricing, .botanical-desktop .botanical-content { min-height: min(900px,100dvh); }
 .botanical-desktop .botanical-art { left: 50%; transform: translateX(-50%); width: min(100%,720px); height: 78%; max-height: 760px; }
 .botanical-desktop .botanical-scrim { background: linear-gradient(to bottom, var(--paywall-shade), transparent 30%, var(--paywall-pane) 60%, var(--paywall-bg) 80%), linear-gradient(to right, var(--paywall-bg), transparent 25%, transparent 75%, var(--paywall-bg)); }
 .botanical-desktop .botanical-content { padding-top: 24px; padding-bottom: 35px; }
 .botanical-desktop .botanical-details { padding-top: 255px; }
 @media (max-width: 360px) { .botanical-content { padding-inline: 16px; } .botanical-options { gap: 12px; } .botanical-pricing .botanical-option { padding-inline: 12px; } .botanical-benefits li { font-size: 14px; } }
-@media (max-height: 740px) and (max-width: 767px) { .botanical-details { padding-top: 150px; } .botanical-benefits { gap: 10px; margin-bottom: 22px; } .botanical-pricing .botanical-option { height: 136px; padding-top: 13px; padding-bottom: 13px; } .botanical-heading h1 { font-size: 36px; } .botanical-fine { margin-top: 18px; } }
+@media (max-height: 740px) and (max-width: 767px) { .botanical-details { padding-top: 150px; } .botanical-benefits { gap: 10px; margin-bottom: 22px; } .botanical-pricing .botanical-option { height: 136px; padding-top: 13px; padding-bottom: 13px; } .botanical-heading h1 { font-size: 36px; } }
 @media (prefers-reduced-motion: reduce) { .botanical-pricing * { transition: none; } }
