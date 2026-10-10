@@ -12,15 +12,15 @@ import OliveAvatar from "@/components/branding/OliveAvatar";
 import MegsyStar from "@/components/branding/MegsyStar";
 import { signOutEverywhere } from "@/lib/signOutEverywhere";
 import {
-  AccountIcon,
-  BillingIcon,
-  AppearanceIcon,
-  IntegrationsIcon,
-  SupportIcon,
-  PrivacyIcon,
-  StatusIcon,
-  LogoutIcon,
-} from "@/components/settings/SettingsIcons";
+  UserRound as AccountIcon,
+  CreditCard as BillingIcon,
+  SlidersHorizontal as AppearanceIcon,
+  Plug as IntegrationsIcon,
+  CircleHelp as SupportIcon,
+  ShieldCheck as PrivacyIcon,
+  Activity as StatusIcon,
+  LogOut as LogoutIcon,
+} from "lucide-react";
 
 type Row = {
   icon: FC<SVGProps<SVGSVGElement>>;
