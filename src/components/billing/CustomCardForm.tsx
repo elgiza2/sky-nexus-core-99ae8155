@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ChevronRight, Check, Loader2 } from "lucide-react";
-import "@/styles/checkout.css";
 import { Button } from "@/components/ui/button";
 import { BrandMark, CardPreview } from "./CardPreview";
 import artCoat from "@/assets/orange-coat.png.asset.json";
@@ -191,13 +190,13 @@ export default function CustomCardForm({ open, tier, interval, onClose }: Props)
   const view = hostedUrl ? "hosted" : threeDsUrl ? "verify" : result === "success" ? "done" : stage;
 
   return (
-    <section className="megsy-checkout fixed inset-0 z-[120] overflow-y-auto overscroll-contain" dir="ltr" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+    <section className="botanical-pricing megsy-checkout z-[120]" dir="ltr" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
       <div aria-hidden="true" className="botanical-art">
         <img src={artCoat.url} alt="" fetchPriority="high" width={768} height={1376} />
       </div>
       <div aria-hidden="true" className="botanical-scrim" />
-      <div className="checkout-layout">
-        <header className="flex items-center">
+      <div className="botanical-content botanical-checkout-content">
+        <header className="checkout-nav">
           <Button variant="ghost" type="button" onClick={back} disabled={busy && !hostedUrl} aria-label="Back" title="Back" className="megsy-back">
             <ArrowLeft className="h-5 w-5" />
           </Button>
@@ -223,15 +222,15 @@ export default function CustomCardForm({ open, tier, interval, onClose }: Props)
             </div>
           ) : threeDsUrl ? (
             <div className="mt-6 flex-1 space-y-4">
-              <p className="text-sm leading-6 text-muted-foreground">Complete your bank’s verification to finish the payment.</p>
+              <p className="checkout-note">Complete your bank’s verification to finish the payment.</p>
               <iframe title="Bank verification" src={threeDsUrl} className="h-[480px] w-full rounded-2xl bg-card" />
             </div>
           ) : result === "success" ? (
             <div className="flex flex-1 flex-col">
               <div className="flex flex-1 flex-col items-center justify-center py-12 text-center">
-                <span className="flex h-20 w-20 items-center justify-center rounded-full bg-foreground text-background"><Check className="h-9 w-9" /></span>
-                <h2 className="mt-6 text-xl font-semibold">Thank you</h2>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">We’re confirming the payment and activating your subscription in a moment.</p>
+                <span className="checkout-success-badge"><Check aria-hidden="true" /></span>
+                <h2 className="checkout-subtitle mt-6 text-xl font-semibold">Thank you</h2>
+                <p className="checkout-note mt-3">We’re confirming the payment and activating your subscription in a moment.</p>
                 {orderId && <p className="mt-2 max-w-full break-all font-mono text-xs text-muted-foreground">{orderId}</p>}
               </div>
               <Button variant="ghost" type="button" className="megsy-pay-cta" onClick={onClose}>Continue</Button>
@@ -277,10 +276,10 @@ export default function CustomCardForm({ open, tier, interval, onClose }: Props)
             <form onSubmit={submitWallet} className="mt-6 flex flex-1 flex-col" autoComplete="off">
               {walletWaiting ? (
                 <div className="flex flex-1 flex-col items-center justify-center py-12 text-center">
-                  <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                  <h2 className="mt-6 text-xl font-semibold">Open your phone and approve the payment</h2>
-                  <p className="mt-3 text-sm leading-6 text-muted-foreground">We sent a payment request to <span dir="ltr">{phone}</span>.</p>
-                  <ol className="glass-tile mt-6 w-full space-y-3 p-5 text-start text-sm leading-6">
+                  <Loader2 className="h-10 w-10 animate-spin" />
+                  <h2 className="checkout-subtitle mt-6 text-xl font-semibold">Open your phone and approve the payment</h2>
+                  <p className="checkout-note mt-3">We sent a payment request to <span dir="ltr">{phone}</span>.</p>
+                  <ol className="checkout-steps mt-6 w-full">
                     <li>1. Open the “Ana Vodafone” app or dial <span dir="ltr" className="font-semibold">*9#</span></li>
                     <li>2. Go to “Payment requests” and approve it</li>
                     <li>3. Enter your wallet PIN — this page continues on its own</li>
@@ -289,7 +288,7 @@ export default function CustomCardForm({ open, tier, interval, onClose }: Props)
                 </div>
               ) : (
                 <div>
-                  <p className="text-[15px] leading-6 text-muted-foreground">Enter the number linked to your wallet. We’ll send a payment request to approve on your phone.</p>
+                  <p className="checkout-note">Enter the number linked to your wallet. We’ll send a payment request to approve on your phone.</p>
                   <div className="wallet-identity"><TileLogo id="vodafone" /><span>Vodafone Cash</span></div>
                   <label className="checkout-field mt-7">
                     <span>Wallet phone number</span>
@@ -404,7 +403,7 @@ function ErrorBox({ text }: { text: string }) {
   return (
     <p
       role="alert"
-      className="mt-4 rounded-lg bg-destructive/5 px-4 py-3 text-sm leading-6 text-destructive"
+      className="checkout-error"
     >
       {text}
     </p>
