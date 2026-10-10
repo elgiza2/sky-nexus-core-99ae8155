@@ -228,9 +228,9 @@ export default function CustomCardForm({ open, tier, interval, onClose }: Props)
           ) : result === "success" ? (
             <div className="flex flex-1 flex-col">
               <div className="flex flex-1 flex-col items-center justify-center py-12 text-center">
-                <span className="flex h-20 w-20 items-center justify-center rounded-full bg-foreground text-background"><Check className="h-9 w-9" /></span>
-                <h2 className="mt-6 text-xl font-semibold">Thank you</h2>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">We’re confirming the payment and activating your subscription in a moment.</p>
+                <span className="checkout-success-badge"><Check aria-hidden="true" /></span>
+                <h2 className="checkout-subtitle mt-6 text-xl font-semibold">Thank you</h2>
+                <p className="checkout-note mt-3">We’re confirming the payment and activating your subscription in a moment.</p>
                 {orderId && <p className="mt-2 max-w-full break-all font-mono text-xs text-muted-foreground">{orderId}</p>}
               </div>
               <Button variant="ghost" type="button" className="megsy-pay-cta" onClick={onClose}>Continue</Button>
