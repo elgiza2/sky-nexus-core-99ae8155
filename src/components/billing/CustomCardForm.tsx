@@ -403,7 +403,7 @@ function ErrorBox({ text }: { text: string }) {
   return (
     <p
       role="alert"
-      className="mt-4 rounded-lg bg-destructive/5 px-4 py-3 text-sm leading-6 text-destructive"
+      className="checkout-error"
     >
       {text}
     </p>
