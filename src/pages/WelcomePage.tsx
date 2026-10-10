@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useUserLang } from "@/lib/authI18n";
-import img1 from "@/assets/welcome-1.jpg";
+import img1 from "@/assets/megsy-botanical-girl.jpg";
 import img2 from "@/assets/welcome-2.jpg";
 import img3 from "@/assets/welcome-3.jpg";
 
@@ -110,7 +110,9 @@ export default function WelcomePage() {
       <motion.img
         key={i}
         src={IMAGES[i]}
-        alt=""
+        alt={i === 0 ? "Woman using Megsy in a botanical garden" : ""}
+        width={1024}
+        height={1536}
         initial={{ opacity: 0, scale: 1.04 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0 }}
