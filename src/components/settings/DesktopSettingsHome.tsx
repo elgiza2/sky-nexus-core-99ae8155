@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useConfirm } from "@/components/common/ConfirmDialog";
 import { useActiveAccount } from "@/hooks/useActiveAccount";
 import { translateExactText, useUserLang, AVAILABLE_LANGS } from "@/lib/authI18n";
+import { Button } from "@/components/ui/button";
 import OliveAvatar from "@/components/branding/OliveAvatar";
 import MegsyStar from "@/components/branding/MegsyStar";
 import { signOutEverywhere } from "@/lib/signOutEverywhere";
@@ -134,30 +135,21 @@ export function DesktopSettingsHome() {
   ];
 
   return (
-    <div data-desktop-mono className="settings-popover-menu relative z-10 mx-auto w-full max-w-xl space-y-8 pb-16">
+    <div data-desktop-mono className="settings-reference-desktop relative z-10 mx-auto w-full max-w-xl space-y-8 pb-16">
       <style>{desktopRowCss}</style>
-      {/* Profile block — centered, mobile-inspired */}
-      <section className="flex flex-col items-center pt-4">
-        <div className="h-[104px] w-[104px] rounded-full overflow-hidden ring-2 ring-foreground/20 shadow-sm">
-          {avatarUrl ? (
-            <img
-              loading="lazy"
-              decoding="async"
-              src={avatarUrl}
-              alt=""
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <OliveAvatar seed={userEmail || userName} className="h-full w-full" />
-          )}
-        </div>
-        <p className="mt-4 text-[22px] font-semibold tracking-tight text-foreground">{userName}</p>
-        <p className="mt-1 text-[13.5px] text-foreground/60">{userEmail || "—"}</p>
-      </section>
+      <h1 className="settings-reference-title">{tx("Settings")}</h1>
+      <div className="settings-profile-group">
+        <Button variant="ghost" className="settings-profile-row" onClick={() => go("/settings/profile/edit")}>
+          <span className="settings-profile-avatar">{avatarUrl ? <img src={avatarUrl} alt="" loading="lazy" decoding="async" /> : <OliveAvatar seed={userEmail || userName} />}</span>
+          <span className="settings-profile-copy"><strong>{userName}</strong><span>{tx("View Profile")}</span></span>
+          <ChevronRight className="ms-row-chev" />
+        </Button>
+        <Button variant="ghost" className="ds-row w-full flex items-center justify-between px-6" onClick={() => go("/settings/profile/edit")}><span>{tx("Edit Profile")}</span><ChevronRight className="ms-row-chev" /></Button>
+      </div>
 
       {/* Upgrade CTA */}
       {isFree && (
-        <button
+        <Button variant="ghost"
           onClick={() => go("/settings/billing")}
           className="group relative w-full rounded-2xl px-5 py-4 flex items-center gap-3.5 text-left text-foreground overflow-hidden border border-border bg-card hover:bg-muted transition-colors"
         >
@@ -171,26 +163,26 @@ export function DesktopSettingsHome() {
             </p>
           </div>
           <Sparkles className="h-4 w-4 text-foreground/85 shrink-0" />
-        </button>
+        </Button>
       )}
 
       {/* Grouped rows */}
       <div className="space-y-6">
         {groups.map((group) => (
           <section key={group.title}>
-            <h2 className="mb-2.5 px-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/55">
+            <h2 className="settings-group-heading mb-2.5">
               {group.title}
             </h2>
-            <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+            <div className="settings-desktop-group">
               {group.rows.map((row) => {
                 const Icon = row.icon;
                 return (
-                  <button
+                  <Button variant="ghost"
                     key={row.label}
                     onClick={() => (row.onClick ? row.onClick() : row.path && go(row.path))}
                     className="ds-row w-full flex items-center gap-3 px-5 py-3.5 text-left hover:bg-muted/60 active:bg-muted transition-colors"
                   >
-                    <Icon className="w-[18px] h-[18px] text-foreground/75 shrink-0" />
+                    <span className={`ms-icon-tile ${row.icon === BillingIcon ? "ms-tone-wallet" : row.icon === PrivacyIcon ? "ms-tone-privacy" : row.icon === SupportIcon ? "ms-tone-help" : row.control ? "ms-tone-appearance" : group.title === tx("Preferences") ? "ms-tone-language" : ""}`}><Icon className="w-[19px] h-[19px]" /></span>
                     <span className="flex-1 text-[14.5px] font-medium text-foreground">
                       {row.label}
                     </span>
@@ -215,7 +207,7 @@ export function DesktopSettingsHome() {
                     ) : (
                       <ChevronRight className="w-4 h-4 text-foreground/65 shrink-0" />
                     )}
-                  </button>
+                  </Button>
                 );
               })}
             </div>
@@ -224,17 +216,17 @@ export function DesktopSettingsHome() {
 
         {/* Logout group */}
         <section>
-          <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
-            <button
+          <div className="settings-desktop-group">
+            <Button variant="ghost"
               onClick={handleLogout}
               className="w-full flex items-center gap-3 px-5 py-3.5 text-left hover:bg-muted/60 active:bg-muted transition-colors"
               aria-label="Logout"
             >
-              <LogoutIcon className="w-[18px] h-[18px] text-destructive shrink-0" />
+              <span className="ms-icon-tile ms-tone-logout"><LogoutIcon className="w-[19px] h-[19px]" /></span>
               <span className="flex-1 text-[14.5px] font-medium text-destructive">
                 {tx("Sign out")}
               </span>
-            </button>
+            </Button>
           </div>
         </section>
       </div>
