@@ -6,7 +6,7 @@ import {
   ChevronRight,
   Brain,
   CreditCard,
-  Coins,
+  Sparkles,
   SlidersHorizontal,
   Database,
   PanelBottom,
