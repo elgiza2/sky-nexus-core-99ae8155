@@ -288,7 +288,7 @@ export default function CustomCardForm({ open, tier, interval, onClose }: Props)
                 </div>
               ) : (
                 <div>
-                  <p className="text-[15px] leading-6 text-muted-foreground">Enter the number linked to your wallet. We’ll send a payment request to approve on your phone.</p>
+                  <p className="checkout-note">Enter the number linked to your wallet. We’ll send a payment request to approve on your phone.</p>
                   <div className="wallet-identity"><TileLogo id="vodafone" /><span>Vodafone Cash</span></div>
                   <label className="checkout-field mt-7">
                     <span>Wallet phone number</span>
