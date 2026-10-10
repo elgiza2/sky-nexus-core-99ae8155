@@ -286,6 +286,8 @@
 - [x] Redesign the checkout page completely: full match of the pricing design language (full-bleed photo, glass rows, iOS-style motion, theme-following CTA).
 
 ## Current authentication and checkout refinement (October 10, 2026)
+- [x] Redesign settings home to match the clean uploaded grouped-list reference, preserving current actions; verified isolated phone/desktop presentation, theme selection and logout confirmation; live account actions not exercised.
+- [x] Reduce settings rows to 52px and icons to 27px with soft tinted backgrounds and thinner strokes; verified light/dark screenshots and scrolling.
 - [x] Replace auth buttons in place with email entry and account-aware password flow; verified live new-account lookup, simulated existing-account response, validation/back/password visibility, moving agents and eight unique blink delays. Real signup/email delivery not exercised.
 - [x] Keep the center subtitle to exactly two clean lines and slightly increase character spacing; phone/desktop screenshots verified.
 - [x] Add soft button-press feedback and polished transitions between auth steps; preview build OK and routing test passed.
