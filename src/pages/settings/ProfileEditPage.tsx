@@ -323,236 +323,171 @@ const ProfileEditPage = () => {
 };
 
 const pepCss = `
+/* Account editor — same glass canvas as the settings home so it reads as an
+   open section of that page. Reuses the settings-home tokens. */
 .pep-root {
   min-height: 100dvh;
-  background: var(--mn-bg);
-  color: var(--mn-fg);
-  font-family: "Neue Haas Unica", "Helvetica Now Display", -apple-system, "SF Pro Display", Inter, "Segoe UI", Roboto, sans-serif;
+  background: var(--settings-backdrop);
+  background-attachment: fixed;
+  color: var(--settings-ink);
+  font-family: -apple-system, "SF Pro Display", Inter, "Segoe UI", Roboto, sans-serif;
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 .pep-topbar {
   position: sticky; top: 0; z-index: 5;
-  display: grid; grid-template-columns: 38px 1fr 38px;
+  display: grid; grid-template-columns: 46px 1fr 46px;
   align-items: center;
-  padding: calc(env(safe-area-inset-top, 0px) + 8px) 12px 10px;
-  background: var(--mn-bg);
+  padding: max(20px, env(safe-area-inset-top)) 20px 16px;
 }
 .pep-title {
   margin: 0;
   text-align: center;
-  font-size: 16px; font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--mn-fg);
+  font-size: 22px; font-weight: 600;
+  letter-spacing: 0;
+  color: var(--settings-ink);
 }
 .pep-icon-btn {
-  width: 34px; height: 34px;
+  width: 46px; height: 46px;
   display: inline-grid; place-items: center;
-  border-radius: 999px;
-  background: transparent;
-  border: 0;
-  color: var(--mn-fg);
+  border-radius: 50%;
+  background: var(--settings-surface);
+  border: 1px solid var(--settings-glass-edge);
+  box-shadow: var(--settings-shadow);
+  backdrop-filter: var(--settings-frost);
+  color: var(--settings-ink);
   cursor: pointer;
-  transition: transform 160ms ease;
+  transition: transform .25s cubic-bezier(.22,1,.36,1);
 }
-.pep-icon-btn:active { transform: scale(0.94); }
+.pep-icon-btn:active { transform: scale(.93); }
+.pep-chev { width: 22px; height: 22px; }
 
-.pep-main { padding: 6px 14px 20px; }
-.pep-avatar-wrap { display: grid; place-items: center; gap: 8px; padding: 20px 0 18px; }
-.pep-avatar {
-  width: 74px; height: 74px; border-radius: 999px;
-  display: grid; place-items: center;
-  background: var(--mn-avatar); color: #fff;
-  font-size: 30px; font-weight: 500; line-height: 1;
+.pep-save {
+  width: 40px; height: 40px;
+  justify-self: end;
+  display: inline-grid; place-items: center;
+  border-radius: 50%;
+  background: var(--settings-surface);
+  border: 1px solid var(--settings-glass-edge);
+  box-shadow: var(--settings-shadow);
+  backdrop-filter: var(--settings-frost);
+  color: var(--settings-ink);
 }
-.pep-avatar-hint { margin: 0; font-size: 12.5px; color: var(--mn-muted); }
-.pep-avatar-btn {
-  position: relative; padding: 0; border: 0; background: transparent;
-  width: 74px; height: 74px; border-radius: 999px; cursor: pointer;
-  transition: transform 160ms ease;
-}
-.pep-avatar-btn:active { transform: scale(0.96); }
-.pep-avatar-btn:disabled { opacity: 0.7; }
-.pep-avatar-img { width: 74px; height: 74px; border-radius: 999px; object-fit: cover; display: block; }
-.pep-avatar-badge {
-  position: absolute; right: -2px; bottom: -2px;
-  width: 26px; height: 26px; border-radius: 999px;
-  display: grid; place-items: center;
-  background: var(--mn-fg); color: var(--mn-bg);
-  border: 2px solid var(--mn-bg);
-}
-.pep-row-value { flex: 1; text-align: end; font-size: 14px; color: var(--mn-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pep-row-value-mono { font-variant-numeric: tabular-nums; }
-.pep-flat {
-  margin-top: 16px; width: 100%;
-  padding: 14px 16px; border: 0; border-radius: 14px;
-  background: var(--mn-card); color: var(--mn-fg);
-  font: inherit; font-size: 14px; font-weight: 500;
-  cursor: pointer; text-align: center;
-  transition: transform 160ms ease;
-}
-.pep-flat:active { transform: scale(0.99); }
-.pep-flat-danger { color: var(--mn-danger); }
-.pep-section-title {
-  margin: 18px 4px 8px;
-  font-size: 12px; font-weight: 500;
-  color: var(--mn-muted);
-  letter-spacing: -0.005em;
-}
+.pep-save svg { width: 18px; height: 18px; }
+.pep-spin { width: 18px; height: 18px; }
 
+.pep-main {
+  padding: 0 20px;
+  display: flex; flex-direction: column; gap: 14px;
+}
 .pep-card {
-  background: var(--mn-card);
-  border: 0;
-  border-radius: 14px;
+  background: var(--settings-surface);
+  border: 1px solid var(--settings-glass-edge);
+  border-radius: 20px;
   overflow: hidden;
+  box-shadow: var(--settings-shadow);
+  backdrop-filter: var(--settings-frost);
+  animation: pep-in .4s cubic-bezier(.22,1,.36,1) both;
 }
-.pep-card-tight { padding: 4px; }
-
+@keyframes pep-in {
+  from { opacity: 0; translate: 0 8px; }
+  to   { opacity: 1; translate: 0 0; }
+}
 
 .pep-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 13px 15px;
-  min-height: 48px;
+  display: flex; align-items: center; gap: 13px;
+  padding: 11px 16px;
+  min-height: 56px;
 }
+.pep-row-btn {
+  width: 100%;
+  border: 0; background: transparent;
+  color: var(--settings-ink);
+  font: inherit; text-align: start;
+  cursor: pointer;
+  transition: background .2s;
+}
+.pep-row-btn:active:not(:disabled) { background: var(--settings-line); }
+.pep-row-btn:disabled { opacity: .7; }
+
+.pep-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  overflow: hidden; flex-shrink: 0;
+  display: grid; place-items: center;
+  background: var(--settings-line);
+  color: var(--settings-ink);
+  font-size: 17px; font-weight: 600;
+}
+.pep-avatar-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
 .pep-row-label {
-  font-size: 14px; font-weight: 400;
-  color: var(--mn-muted);
+  font-size: 15px; font-weight: 450;
+  color: var(--settings-ink);
   flex-shrink: 0;
 }
+.pep-row-trailing {
+  margin-inline-start: auto;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13.5px;
+  color: var(--settings-muted);
+}
+.pep-row-ico { width: 16px; height: 16px; }
+
+/* Scoped input overrides so app-theme input rules don't repaint the field. */
 .pep-root .pep-row-input {
   flex: 1;
-  background-color: var(--mn-card) !important;
-  background-image: none !important;
-  border: 0 !important; outline: none;
-  color: var(--mn-fg) !important;
-  font: inherit;
-  font-size: 14px; font-weight: 500;
-  text-align: end;
   min-width: 0;
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  outline: none;
+  color: var(--settings-ink) !important;
+  font: inherit;
+  font-size: 15px; font-weight: 500;
+  text-align: end;
   -webkit-appearance: none;
   appearance: none;
-  color-scheme: dark;
   box-shadow: none !important;
-  caret-color: var(--mn-fg);
+  caret-color: var(--settings-ink);
 }
-.pep-root .pep-row-input::placeholder { color: var(--mn-faint) !important; }
+.pep-root .pep-row-input::placeholder { color: var(--settings-muted) !important; }
 .pep-root .pep-row-input:-webkit-autofill,
 .pep-root .pep-row-input:-webkit-autofill:hover,
 .pep-root .pep-row-input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px var(--mn-card) inset;
-  -webkit-text-fill-color: var(--mn-fg);
-  caret-color: var(--mn-fg);
-}
-.pep-divider {
-  height: 1px;
-  background: var(--mn-sep);
-  margin-left: 15px;
-}
-.pep-hint {
-  margin: 8px 6px 0;
-  font-size: 12px;
-  color: rgba(232,232,232,0.5);
-  line-height: 1.45;
+  -webkit-box-shadow: 0 0 0 1000px transparent inset;
+  -webkit-text-fill-color: var(--settings-ink);
+  caret-color: var(--settings-ink);
 }
 
-/* Scope under .pep-root so these rules beat the mobile theme's global
-   body.ms-theme textarea selector and keep the textarea the same dark
-   surface as the card. */
-.pep-root .pep-textarea {
-  width: 100%;
-  min-height: 80px;
-  background-color: var(--mn-card) !important;
-  background-image: none !important;
-  border: 0; outline: none;
-  padding: 12px 14px;
-  color: var(--mn-fg);
-  font: inherit;
-  font-size: 14px; font-weight: 400;
-  resize: none;
-  -webkit-appearance: none;
-  appearance: none;
-  color-scheme: dark;
-  box-shadow: none;
-}
-.pep-root .pep-textarea::placeholder { color: var(--mn-muted); }
-.pep-root .pep-textarea:-webkit-autofill,
-.pep-root .pep-textarea:-webkit-autofill:hover,
-.pep-root .pep-textarea:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px var(--mn-card) inset;
-  -webkit-text-fill-color: var(--mn-fg);
-  caret-color: var(--mn-fg);
+.pep-hint {
+  margin: -6px 8px 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--settings-muted);
 }
 
 .pep-danger {
-  margin-top: 18px;
-  width: 100%;
   display: flex; align-items: center; gap: 10px;
-  padding: 13px 15px;
-  background: rgba(255,90,90,0.06);
-  border: 1px solid rgba(255,90,90,0.12);
-  border-radius: 14px;
-  color: var(--mn-danger);
+  width: 100%;
+  padding: 13px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--settings-glass-edge);
+  background: var(--settings-surface);
+  box-shadow: var(--settings-shadow);
+  backdrop-filter: var(--settings-frost);
+  color: var(--settings-red);
   font: inherit;
-  font-size: 14px; font-weight: 500;
+  font-size: 15px; font-weight: 450;
   cursor: pointer;
-  transition: transform 160ms ease, background-color 160ms ease;
+  transition: transform .25s cubic-bezier(.22,1,.36,1), background .2s;
 }
-.pep-danger:active { transform: scale(0.99); background: rgba(255,90,90,0.10); }
+.pep-danger:active { transform: scale(.98); }
+.pep-danger-ico { width: 18px; height: 18px; }
 
-.pep-spacer { height: 28px; }
+.pep-spacer { height: max(24px, env(safe-area-inset-bottom)); }
 
-/* Confirm modal */
-.pep-modal-scrim {
-  position: fixed; inset: 0; z-index: 40;
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(6px);
-  display: grid; place-items: center;
-  padding: 20px;
-  animation: pep-fade 200ms ease-out both;
-}
-.pep-modal {
-  width: 100%; max-width: 300px;
-  background: var(--mn-card);
-  border: 0;
-  border-radius: 18px;
-  padding: 18px 18px 12px;
-  box-shadow: 0 24px 60px -20px rgba(0,0,0,0.7), inset 0 1px 0 var(--mn-sep);
-  animation: pep-pop 220ms cubic-bezier(0.16,1,0.3,1) both;
-}
-.pep-modal-title {
-  margin: 0 0 5px;
-  font-size: 16px; font-weight: 600;
-  color: var(--mn-fg);
-}
-.pep-modal-body {
-  margin: 0 0 16px;
-  font-size: 13.5px; line-height: 1.4;
-  color: var(--mn-muted);
-}
-.pep-modal-actions {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-}
-.pep-modal-btn {
-  padding: 10px;
-  border-radius: 12px;
-  background: var(--mn-card-2);
-  border: 0;
-  color: var(--mn-fg);
-  font: inherit;
-  font-size: 13.5px; font-weight: 500;
-  cursor: pointer;
-  transition: transform 160ms ease, background-color 160ms ease;
-}
-.pep-modal-btn:active { transform: scale(0.97); }
-.pep-modal-btn-danger {
-  color: var(--mn-danger);
-  background: rgba(255,90,90,0.08);
-  border-color: rgba(255,90,90,0.16);
-}
-
-@keyframes pep-fade { from { opacity: 0; } to { opacity: 1; } }
-@keyframes pep-pop {
-  from { opacity: 0; transform: scale(0.96); }
-  to   { opacity: 1; transform: scale(1); }
+@media (prefers-reduced-motion: reduce) {
+  .pep-card { animation: none; }
+  .pep-root .pep-icon-btn, .pep-root .pep-danger, .pep-root .pep-row-btn { transition: none; }
 }
 `;
 
