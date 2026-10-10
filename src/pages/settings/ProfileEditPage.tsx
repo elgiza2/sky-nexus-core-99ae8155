@@ -159,13 +159,16 @@ const ProfileEditPage = () => {
       <div className="pep-root" dir={isAr ? "rtl" : "ltr"}>
         <style>{pepCss}</style>
 
-        {/* Topbar — same glass header language as the settings home */}
+        {/* Sheet — opens as a stacked layer over the settings page */}
+        <div className="pep-sheet">
         <header className="pep-topbar">
           <button className="pep-icon-btn" aria-label={tx("Back")} onClick={goBack}>
             <BackChevron className="pep-chev" />
           </button>
           <h1 className="pep-title">{tx("Account")}</h1>
-          <span className="pep-save" aria-live="polite">{statusIcon}</span>
+          {saveState !== "idle" && (
+            <span className="pep-save" aria-live="polite">{statusIcon}</span>
+          )}
         </header>
 
         <main className="pep-main">
@@ -208,6 +211,7 @@ const ProfileEditPage = () => {
 
           <div className="pep-spacer" />
         </main>
+        </div>
 
         <input ref={fileRef} type="file" accept="image/*" hidden onChange={handleAvatarFile} />
 
@@ -326,12 +330,39 @@ const pepCss = `
 /* Account editor — same glass canvas as the settings home so it reads as an
    open section of that page. Reuses the settings-home tokens. */
 .pep-root {
-  min-height: 100dvh;
-  background: var(--settings-backdrop);
-  background-attachment: fixed;
+  position: fixed; inset: 0; z-index: 80;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   color: var(--settings-ink);
   font-family: -apple-system, "SF Pro Display", Inter, "Segoe UI", Roboto, sans-serif;
+}
+.pep-root::before {
+  content: "";
+  position: fixed; inset: 0; z-index: 0;
+  background: color-mix(in oklab, var(--settings-backdrop) 45%, transparent);
+  backdrop-filter: blur(10px) saturate(1.1);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+  animation: pep-scrim .35s ease both;
+}
+.pep-sheet {
+  position: relative; z-index: 1;
+  min-height: 100%;
+  margin-top: 14px;
+  background: var(--settings-backdrop);
+  background-attachment: fixed;
+  border-radius: 26px 26px 0 0;
+  box-shadow: 0 -24px 60px color-mix(in oklab, var(--settings-ink) 22%, transparent);
+  overflow: hidden;
+  animation: pep-sheet-in .5s cubic-bezier(.22,1,.36,1) both;
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@keyframes pep-sheet-in {
+  from { opacity: .4; translate: 0 7%; scale: .97; }
+  to   { opacity: 1; translate: 0 0; scale: 1; }
+}
+@keyframes pep-scrim {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 .pep-topbar {
   position: sticky; top: 0; z-index: 5;
@@ -486,7 +517,7 @@ const pepCss = `
 .pep-spacer { height: max(24px, env(safe-area-inset-bottom)); }
 
 @media (prefers-reduced-motion: reduce) {
-  .pep-card { animation: none; }
+  .pep-card, .pep-root::before, .pep-root .pep-sheet { animation: none; }
   .pep-root .pep-icon-btn, .pep-root .pep-danger, .pep-root .pep-row-btn { transition: none; }
 }
 `;
