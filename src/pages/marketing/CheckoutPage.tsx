@@ -31,7 +31,7 @@ const CheckoutPage = () => {
         const { data: refreshed } = await supabase.auth.refreshSession();
         session = refreshed.session;
       }
-      if (!session?.access_token && !cancelled) {
+      if (!session?.access_token && !cancelled && !params.get("preview")) {
         await supabase.auth.signOut().catch(() => {});
         toast.error("Please sign in again to continue.");
         navigate("/auth?redirect=/checkout", { replace: true });
