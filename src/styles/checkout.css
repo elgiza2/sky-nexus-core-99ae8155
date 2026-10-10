@@ -41,24 +41,28 @@
 
 
 .megsy-checkout {
-  --checkout-surface: oklch(1 0 0);
-  --checkout-input: oklch(.975 0 0);
-  --checkout-line: oklch(.88 0 0);
-  --checkout-text: oklch(.2 0 0);
-  --checkout-muted: oklch(.5 0 0);
-  --checkout-shadow: 0 8px 24px -16px oklch(.2 0 0 / .2);
-  --checkout-card-top: oklch(.96 0 0);
-  --checkout-card-bottom: oklch(.88 0 0);
+  /* Botanical glass: the payment page sits on the same full-screen photo as pricing */
+  --checkout-surface: oklch(1 0 0 / .14);
+  --checkout-input: oklch(1 0 0 / .12);
+  --checkout-line: oklch(1 0 0 / .4);
+  --checkout-text: oklch(1 0 0);
+  --checkout-muted: oklch(1 0 0 / .72);
+  --checkout-shadow: 0 8px 24px -16px oklch(0 0 0 / .35);
+  --checkout-card-top: oklch(1 0 0 / .18);
+  --checkout-card-bottom: oklch(1 0 0 / .1);
   color: var(--checkout-text);
+  font-family: "Geist", "Inter", system-ui, sans-serif;
+  letter-spacing: 0;
+  text-shadow: 0 1px 2px oklch(0 0 0 / .6), 0 0 14px oklch(0 0 0 / .35);
 }
 html.dark .megsy-checkout {
-  --checkout-surface: oklch(.22 0 0);
-  --checkout-input: oklch(.26 0 0);
-  --checkout-line: oklch(.4 0 0);
-  --checkout-text: oklch(.97 0 0);
-  --checkout-muted: oklch(.73 0 0);
-  --checkout-card-top: oklch(.32 0 0);
-  --checkout-card-bottom: oklch(.24 0 0);
+  --checkout-surface: oklch(1 0 0 / .14);
+  --checkout-input: oklch(1 0 0 / .12);
+  --checkout-line: oklch(1 0 0 / .4);
+  --checkout-text: oklch(1 0 0);
+  --checkout-muted: oklch(1 0 0 / .72);
+  --checkout-card-top: oklch(1 0 0 / .18);
+  --checkout-card-bottom: oklch(1 0 0 / .1);
 }
 .checkout-layout { position: relative; margin-inline: auto; width: 100%; max-width: 520px; min-height: 100dvh; display: flex; flex-direction: column; padding: max(20px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom)); }
 .checkout-stage { display: flex; flex: 1; flex-direction: column; margin-top: 32px; animation: checkout-enter .32s ease-out; }
