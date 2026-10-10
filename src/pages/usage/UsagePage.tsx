@@ -1,23 +1,7 @@
-/** @doc Billing — plan status, credit top-ups, cancel subscription and history, as a glass sheet over settings. */
+/** @doc Billing — plan status, credit top-ups and cancel subscription, as a glass sheet over settings. */
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  BadgeCheck,
-  CalendarClock,
-  ChevronLeft,
-  Clapperboard,
-  Gift,
-  Globe,
-  Image as ImageIcon,
-  Loader2,
-  MessageCircle,
-  Presentation,
-  RefreshCw,
-  Search,
-  Wand2,
-  XCircle,
-  Zap,
-} from "lucide-react";
+import { ChevronLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { invokeFunction } from "@/lib/supabaseFunction";
@@ -36,55 +20,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-type Tx = {
-  id: string;
-  amount: number;
-  description: string | null;
-  action_type: string | null;
-  created_at: string;
-};
-
-const LABELS: Record<string, [string, string]> = {
-  reward: ["Reward", "مكافأة"],
-  daily: ["Daily credits", "رصيد يومي"],
-  video: ["Video", "فيديو"],
-  edit: ["Image editing", "تعديل صورة"],
-  image: ["Image", "صورة"],
-  slides: ["Presentation", "عرض تقديمي"],
-  research: ["Research", "بحث"],
-  web: ["Website", "موقع"],
-  chat: ["Chat", "محادثة"],
-  task: ["Task", "مهمة"],
-};
-
-const ICONS: Record<string, typeof Zap> = {
-  reward: Gift,
-  daily: RefreshCw,
-  video: Clapperboard,
-  edit: Wand2,
-  image: ImageIcon,
-  slides: Presentation,
-  research: Search,
-  web: Globe,
-  chat: MessageCircle,
-  task: Zap,
-};
-
-/** Never expose upstream provider or model names in the UI. */
-const kindOf = (raw: string | null, action: string | null) => {
-  const s = `${raw ?? ""} ${action ?? ""}`.toLowerCase();
-  if (/reward|follow|bonus/.test(s)) return "reward";
-  if (/refresh|daily/.test(s)) return "daily";
-  if (/video|veo|sora|kling|hailuo|seedance|ltx|minimax/.test(s)) return "video";
-  if (/headshot|inpaint|remover|colorizer|sketch|retouch|image-tool/.test(s)) return "edit";
-  if (/image|seedream|gpt-image|render/.test(s)) return "image";
-  if (/slide|presentation/.test(s)) return "slides";
-  if (/research|report/.test(s)) return "research";
-  if (/page|code|web/.test(s)) return "web";
-  if (/chat|message|agent|generation/.test(s)) return "chat";
-  return "task";
-};
-
 export default function UsagePage() {
   const navigate = useNavigate();
   const lang = useUserLang();
@@ -92,7 +27,6 @@ export default function UsagePage() {
   const loc = ar ? "ar-EG" : "en-US";
   const t = (s: string) => translateExactText(s, lang);
   const [ov, setOv] = useState<CreditOverview | null>(null);
-  const [rows, setRows] = useState<Tx[]>([]);
   const [loading, setLoading] = useState(true);
   const [signedOut, setSignedOut] = useState(false);
   const [confirmCancel, setConfirmCancel] = useState(false);
@@ -111,18 +45,9 @@ export default function UsagePage() {
         return;
       }
       await claimDailyCredits();
-      const [o, tx] = await Promise.all([
-        fetchCreditOverview(),
-        supabase
-          .from("credit_transactions")
-          .select("id, amount, description, action_type, created_at")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false })
-          .limit(80),
-      ]);
+      const o = await fetchCreditOverview();
       if (dead) return;
       setOv(o);
-      setRows((tx.data as Tx[]) ?? []);
       setLoading(false);
     })();
     return () => {
@@ -144,15 +69,6 @@ export default function UsagePage() {
 
   const usedPct = ov && ov.dailyAllowance > 0 ? Math.min(100, (ov.spentToday / ov.dailyAllowance) * 100) : 0;
 
-  const groups = useMemo(() => {
-    const map = new Map<string, Tx[]>();
-    for (const r of rows) {
-      const k = new Date(r.created_at).toLocaleDateString(loc, { month: "long", day: "numeric" });
-      map.set(k, [...(map.get(k) ?? []), r]);
-    }
-    return Array.from(map.entries());
-  }, [rows, loc]);
-
   const cancelSubscription = async () => {
     setCancelling(true);
     try {
@@ -173,6 +89,12 @@ export default function UsagePage() {
     }
   };
 
+  const status = cancelled
+    ? ar ? "ملغي — شغال لآخر المدة" : "Cancelled — active until period ends"
+    : paid
+      ? ar ? "نشط · يتجدد تلقائيًا" : "Active · Auto-renews"
+      : ar ? "الخطة المجانية" : "Free plan";
+
   return (
     <div className="pep-root" dir={ar ? "rtl" : "ltr"}>
       <style>{pepCss}</style>
@@ -191,123 +113,59 @@ export default function UsagePage() {
           <span className="pep-icon-btn" style={{ visibility: "hidden" }} />
         </header>
 
-        {/* Plan status */}
-        <section className="pep-card bill-status">
-          <div className="bill-status-top">
-            <span className="bill-plan">
-              <BadgeCheck className="h-3.5 w-3.5" />
-              {paid ? plan : ar ? "مجاني" : "Free"}
-            </span>
-            {paid && !cancelled && (
-              <span className="bill-renew">
-                <CalendarClock className="h-3.5 w-3.5" />
-                {ar ? "يتجدد تلقائيًا" : "Auto-renews"}
-              </span>
-            )}
-          </div>
-          <p className="bill-balance-label">{ar ? "رصيدك الحالي" : "Current balance"}</p>
-          <p className="bill-balance">{ov ? fmt(ov.credits) : "—"}</p>
-          <p className="bill-status-note">
-            {cancelled
-              ? ar
-                ? "الاشتراك اتلغى — الباقة شغالة لآخر المدة المدفوعة"
-                : "Cancelled — your plan stays active until the paid period ends"
-              : paid
-                ? ar
-                  ? "اشتراكك شغال ومفيش أي مشكلة في الدفع"
-                  : "Your subscription is active and payments are up to date"
-                : ar
-                  ? "أنت على الخطة المجانية"
-                  : "You're on the free plan"}
-          </p>
-        </section>
-
-        {/* Today */}
-        <section className="pep-card bill-pad">
-          <div className="bill-row-between">
-            <p className="bill-sec-label">{ar ? "استخدام النهارده" : "Today's usage"}</p>
-            <p className="bill-sec-val">{ov ? `${fmt(ov.spentToday)} / ${fmt(ov.dailyAllowance)}` : "—"}</p>
-          </div>
-          <div className="bill-bar">
-            <div
-              className="bill-bar-fill"
-              style={{ width: `${Math.max(usedPct, ov && ov.spentToday > 0 ? 3 : 0)}%` }}
-            />
-          </div>
-          <div className="bill-stats">
-            <Stat label={ar ? "مهام" : "Tasks"} value={ov ? fmt(ov.tasksToday) : "—"} />
-            <Stat label={ar ? "الشهر ده" : "This month"} value={ov ? fmt(ov.spentThisMonth) : "—"} />
-            <Stat label={ar ? "التجديد" : "Refresh"} value={refreshIn ?? "—"} />
-          </div>
-        </section>
-
-        {/* Balance breakdown */}
-        <section className="pep-card bill-pad">
-          <div className="bill-stats bill-stats-4">
-            <Stat label={ar ? "يومي" : "Daily"} value={ov ? fmt(ov.dailyCredits) : "—"} />
-            <Stat label={ar ? "هدايا" : "Bonus"} value={ov ? fmt(ov.bonusCredits) : "—"} />
-            <Stat label={ar ? "الباقة" : "Plan"} value={ov ? fmt(ov.planCredits) : "—"} />
-            <Stat label={ar ? "مشترى" : "Purchased"} value={ov ? fmt(ov.purchasedCredits) : "—"} />
-          </div>
-        </section>
-
-        {!signedOut && (
-          <div className="bill-packs">
-            <CreditPacks isPro={paid} />
-          </div>
-        )}
-
-        {paid && !cancelled && !signedOut && (
-          <button className="pep-danger" type="button" onClick={() => setConfirmCancel(true)}>
-            <XCircle className="pep-danger-ico" strokeWidth={1.7} />
-            {ar ? "إلغاء الاشتراك" : "Cancel subscription"}
-          </button>
-        )}
-
-        {/* History */}
-        <h2 className="bill-hist-title">{ar ? "السجل" : "History"}</h2>
         {loading ? (
-          <div className="grid h-32 place-items-center">
-            <Loader2 className="h-5 w-5 animate-spin" style={{ color: "var(--settings-muted)" }} />
+          <div className="bill-loading">
+            <Loader2 className="h-5 w-5 animate-spin" />
           </div>
         ) : signedOut ? (
           <p className="bill-empty">{ar ? "سجّل دخولك عشان تشوف رصيدك" : "Sign in to see your credits"}</p>
-        ) : groups.length === 0 ? (
-          <p className="bill-empty">{ar ? "لسه مفيش استخدام" : "No usage yet"}</p>
         ) : (
-          <div className="space-y-6">
-            {groups.map(([day, items]) => (
-              <div key={day}>
-                <p className="bill-day">{day}</p>
-                <div className="pep-card bill-hist">
-                  {items.map((it) => {
-                    const amount = Number(it.amount) || 0;
-                    const grant = amount < 0; // grants are stored as negatives
-                    const kind = kindOf(it.description, it.action_type);
-                    const Icon = ICONS[kind];
-                    const label = LABELS[kind][ar ? 1 : 0];
-                    return (
-                      <div key={it.id} className="bill-tx">
-                        <span className="bill-tx-ico">
-                          <Icon className="h-4 w-4" />
-                        </span>
-                        <span className="bill-tx-main">
-                          <span className="bill-tx-label">{label}</span>
-                          <span className="bill-tx-time">
-                            {new Date(it.created_at).toLocaleTimeString(loc, { hour: "numeric", minute: "2-digit" })}
-                          </span>
-                        </span>
-                        <span className="bill-tx-amt">
-                          {grant ? "+" : "−"}
-                          {fmt(Math.abs(amount))}
-                        </span>
-                      </div>
-                    );
-                  })}
+          <>
+            <section className="bill-hero">
+              <p className="bill-hero-label">{ar ? "رصيدك" : "Balance"}</p>
+              <p className="bill-hero-num">{ov ? fmt(ov.credits) : "—"}</p>
+              <span className="bill-chip">
+                <span className={`bill-dot ${cancelled ? "off" : paid ? "on" : ""}`} />
+                {paid ? <b>{plan}</b> : null}
+                {status}
+              </span>
+            </section>
+
+            <p className="bill-sec">{ar ? "النهارده" : "Today"}</p>
+            <section className="pep-card bill-list">
+              <div className="bill-li bill-li-col">
+                <div className="bill-li-row">
+                  <span>{ar ? "الاستخدام" : "Used"}</span>
+                  <span className="bill-li-val">
+                    {ov ? `${fmt(ov.spentToday)} / ${fmt(ov.dailyAllowance)}` : "—"}
+                  </span>
+                </div>
+                <div className="bill-bar">
+                  <div className="bill-bar-fill" style={{ width: `${usedPct}%` }} />
                 </div>
               </div>
-            ))}
-          </div>
+              <Row label={ar ? "التجديد بعد" : "Refreshes in"} value={refreshIn ?? "—"} />
+              <Row label={ar ? "الشهر ده" : "This month"} value={ov ? fmt(ov.spentThisMonth) : "—"} />
+            </section>
+
+            <p className="bill-sec">{ar ? "تفاصيل الرصيد" : "Breakdown"}</p>
+            <section className="pep-card bill-list">
+              <Row label={ar ? "يومي" : "Daily"} value={ov ? fmt(ov.dailyCredits) : "—"} />
+              <Row label={ar ? "الباقة" : "Plan"} value={ov ? fmt(ov.planCredits) : "—"} />
+              <Row label={ar ? "هدايا" : "Bonus"} value={ov ? fmt(ov.bonusCredits) : "—"} />
+              <Row label={ar ? "مشترى" : "Purchased"} value={ov ? fmt(ov.purchasedCredits) : "—"} />
+            </section>
+
+            <div className="bill-packs">
+              <CreditPacks isPro={paid} />
+            </div>
+
+            {paid && !cancelled && (
+              <button className="bill-cancel" type="button" onClick={() => setConfirmCancel(true)}>
+                {ar ? "إلغاء الاشتراك" : "Cancel subscription"}
+              </button>
+            )}
+          </>
         )}
         <div className="pep-spacer" />
       </div>
@@ -341,75 +199,60 @@ export default function UsagePage() {
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bill-stat">
-      <p className="bill-stat-val">{value}</p>
-      <p className="bill-stat-label">{label}</p>
+    <div className="bill-li">
+      <span>{label}</span>
+      <span className="bill-li-val">{value}</span>
     </div>
   );
 }
 
 const billCss = `
-.pep-root .pep-title { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
-.pep-root .bill-status { padding: 22px; }
-.pep-root .bill-status-top { display: flex; align-items: center; justify-content: space-between; }
-.pep-root .bill-plan {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 6px 14px; border-radius: 999px;
-  background: var(--settings-ink); color: var(--settings-surface);
-  font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+.pep-root .pep-title { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+.pep-root .bill-loading { display: grid; place-items: center; height: 240px; color: var(--settings-muted); }
+.pep-root .bill-empty { padding: 60px 0; text-align: center; font-size: 14px; color: var(--settings-muted); }
+.pep-root .bill-hero { text-align: center; padding: 28px 0 32px; }
+.pep-root .bill-hero-label { font-size: 13px; color: var(--settings-muted); }
+.pep-root .bill-hero-num {
+  margin-top: 6px; font-size: 56px; font-weight: 600; line-height: 1;
+  letter-spacing: -0.04em; font-variant-numeric: tabular-nums; color: var(--settings-ink);
 }
-.pep-root .bill-renew {
-  display: inline-flex; align-items: center; gap: 5px;
-  font-size: 12px; color: var(--settings-muted);
+.pep-root .bill-chip {
+  margin-top: 16px; display: inline-flex; align-items: center; gap: 7px;
+  padding: 6px 12px; border-radius: 999px; font-size: 12.5px;
+  background: var(--settings-line); color: var(--settings-muted);
 }
-.pep-root .bill-balance-label { margin-top: 20px; font-size: 13px; font-weight: 500; color: var(--settings-muted); }
-.pep-root .bill-balance {
-  margin-top: 4px; font-size: 52px; font-weight: 700; line-height: 1;
-  letter-spacing: -0.03em; font-variant-numeric: tabular-nums; color: var(--settings-ink);
+.pep-root .bill-chip b { color: var(--settings-ink); font-weight: 600; text-transform: capitalize; }
+.pep-root .bill-dot { width: 6px; height: 6px; border-radius: 999px; background: var(--settings-muted); }
+.pep-root .bill-dot.on { background: hsl(145 60% 45%); }
+.pep-root .bill-dot.off { background: var(--settings-red); }
+.pep-root .bill-sec {
+  margin: 22px 16px 8px; font-size: 13px; font-weight: 500; color: var(--settings-muted);
 }
-.pep-root .bill-status-note { margin-top: 10px; font-size: 12.5px; color: var(--settings-muted); }
-.pep-root .bill-pad { padding: 18px; }
-.pep-root .bill-row-between { display: flex; align-items: baseline; justify-content: space-between; }
-.pep-root .bill-sec-label { font-size: 14px; font-weight: 600; color: var(--settings-ink); }
-.pep-root .bill-sec-val { font-size: 13px; font-variant-numeric: tabular-nums; color: var(--settings-muted); }
-.pep-root .bill-bar {
-  margin-top: 12px; height: 10px; border-radius: 999px; overflow: hidden;
-  background: var(--settings-line);
+.pep-root .bill-list { padding: 0; overflow: hidden; }
+.pep-root .bill-li {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  min-height: 50px; padding: 0 18px; font-size: 15px; color: var(--settings-ink);
+  border-bottom: 1px solid var(--settings-line);
 }
-.pep-root .bill-bar-fill { height: 100%; border-radius: 999px; background: var(--settings-ink); transition: width .4s ease; }
-.pep-root .bill-stats { margin-top: 16px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
-.pep-root .bill-stats-4 { margin-top: 0; grid-template-columns: repeat(2, 1fr); }
-@media (min-width: 640px) { .pep-root .bill-stats-4 { grid-template-columns: repeat(4, 1fr); } }
-.pep-root .bill-stat { border-radius: 16px; background: var(--settings-line); padding: 12px 8px; }
-.pep-root .bill-stat-val { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--settings-ink); }
-.pep-root .bill-stat-label { margin-top: 2px; font-size: 11.5px; color: var(--settings-muted); }
+.pep-root .bill-li:last-child { border-bottom: 0; }
+.pep-root .bill-li-col { flex-direction: column; align-items: stretch; justify-content: center; gap: 10px; padding: 14px 18px; }
+.pep-root .bill-li-row { display: flex; justify-content: space-between; }
+.pep-root .bill-li-val { color: var(--settings-muted); font-variant-numeric: tabular-nums; }
+.pep-root .bill-bar { height: 4px; border-radius: 999px; overflow: hidden; background: var(--settings-line); }
+.pep-root .bill-bar-fill { height: 100%; border-radius: 999px; background: var(--settings-ink); transition: width .5s ease; }
+.pep-root .bill-packs { margin-top: 28px; }
 .pep-root .bill-packs .py-10 { padding-top: 0; padding-bottom: 0; }
 .pep-root .bill-packs h2 { color: var(--settings-ink); }
 .pep-root .bill-packs p { color: var(--settings-muted); }
 .pep-root .bill-packs button {
   background: var(--settings-surface); border-color: var(--settings-glass-edge) !important;
-  color: var(--settings-ink); border-radius: 20px;
+  color: var(--settings-ink); border-radius: 20px; box-shadow: none;
 }
-.pep-root .bill-hist-title {
-  margin: 28px 4px 12px; font-size: 12px; font-weight: 600;
-  text-transform: uppercase; letter-spacing: .08em; color: var(--settings-muted);
+.pep-root .bill-cancel {
+  display: block; width: 100%; margin-top: 28px; padding: 14px;
+  border-radius: 20px; background: transparent; border: 0;
+  font-size: 15px; font-weight: 500; color: var(--settings-red);
 }
-.pep-root .bill-day { margin: 0 4px 8px; font-size: 12.5px; font-weight: 500; color: var(--settings-muted); }
-.pep-root .bill-hist { padding: 0; overflow: hidden; }
-.pep-root .bill-tx {
-  display: flex; align-items: center; gap: 12px; padding: 12px 16px;
-  border-bottom: 1px solid var(--settings-line);
-}
-.pep-root .bill-tx:last-child { border-bottom: 0; }
-.pep-root .bill-tx-ico {
-  display: grid; place-items: center; width: 36px; height: 36px; flex-shrink: 0;
-  border-radius: 12px; background: var(--settings-line); color: var(--settings-ink);
-}
-.pep-root .bill-tx-main { min-width: 0; flex: 1; }
-.pep-root .bill-tx-label { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; font-weight: 500; color: var(--settings-ink); }
-.pep-root .bill-tx-time { display: block; font-size: 12px; color: var(--settings-muted); }
-.pep-root .bill-tx-amt { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--settings-ink); }
-.pep-root .bill-empty { padding: 40px 0; text-align: center; font-size: 14px; color: var(--settings-muted); }
 `;
