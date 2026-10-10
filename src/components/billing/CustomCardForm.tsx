@@ -276,10 +276,10 @@ export default function CustomCardForm({ open, tier, interval, onClose }: Props)
             <form onSubmit={submitWallet} className="mt-6 flex flex-1 flex-col" autoComplete="off">
               {walletWaiting ? (
                 <div className="flex flex-1 flex-col items-center justify-center py-12 text-center">
-                  <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                  <h2 className="mt-6 text-xl font-semibold">Open your phone and approve the payment</h2>
-                  <p className="mt-3 text-sm leading-6 text-muted-foreground">We sent a payment request to <span dir="ltr">{phone}</span>.</p>
-                  <ol className="glass-tile mt-6 w-full space-y-3 p-5 text-start text-sm leading-6">
+                  <Loader2 className="h-10 w-10 animate-spin" />
+                  <h2 className="checkout-subtitle mt-6 text-xl font-semibold">Open your phone and approve the payment</h2>
+                  <p className="checkout-note mt-3">We sent a payment request to <span dir="ltr">{phone}</span>.</p>
+                  <ol className="checkout-steps mt-6 w-full">
                     <li>1. Open the “Ana Vodafone” app or dial <span dir="ltr" className="font-semibold">*9#</span></li>
                     <li>2. Go to “Payment requests” and approve it</li>
                     <li>3. Enter your wallet PIN — this page continues on its own</li>
