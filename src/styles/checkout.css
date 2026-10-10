@@ -189,7 +189,7 @@
 [role="dialog"].megsy-checkout { background: transparent !important; color: oklch(1 0 0) !important; border: 0 !important; box-shadow: none !important; }
 .megsy-checkout .glass-texture { display: none; }
 .megsy-checkout .checkout-title { color: oklch(1 0 0) !important; font-weight: 400 !important; letter-spacing: 0; }
-.megsy-checkout .checkout-input-wrap input { background: transparent !important; border: 0 !important; box-shadow: none !important; color: oklch(1 0 0) !important; font-weight: 400 !important; }
+.megsy-checkout .checkout-input-wrap input { background: transparent !important; border: 0 !important; box-shadow: none !important; color: oklch(.22 0 0) !important; font-weight: 500 !important; }
 .megsy-checkout .checkout-input-wrap input:focus-visible { outline: none !important; border: 0 !important; box-shadow: none !important; }
 .megsy-checkout .checkout-logo .payment-visa { width: 56px; height: 19px; }
 
