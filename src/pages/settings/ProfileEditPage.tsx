@@ -138,12 +138,6 @@ const ProfileEditPage = () => {
     }
   };
 
-  const handleLogout = async () => {
-    if (loggingOut) return;
-    setLoggingOut(true);
-    await signOutEverywhere();
-  };
-
   const openDelete = () => setConfirmOpen(true);
   const confirmDelete = () => {
     setConfirmOpen(false);
@@ -152,9 +146,9 @@ const ProfileEditPage = () => {
 
   const statusIcon =
     saveState === "saving" ? (
-      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+      <Loader2 className="pep-spin animate-spin" />
     ) : saveState === "saved" ? (
-      <Check className="w-3.5 h-3.5" />
+      <Check strokeWidth={2.2} />
     ) : null;
 
   // ============================== MOBILE ==============================
