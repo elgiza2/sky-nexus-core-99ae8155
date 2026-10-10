@@ -60,7 +60,9 @@ const AuthPage = () => {
   // so the first authenticated navigation is instant.
   usePrefetchOnIdle(["/chat", "/library"], 2000);
   const [email, setEmail] = useState("");
-  const [authMode, setAuthMode] = useState<"signup" | "signin">("signup");
+  // No manual signup/signin toggle: we always try sign-in first and fall back
+  // to OTP signup automatically when the account doesn't exist.
+  const authMode = "signin" as const;
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [newPassword, setNewPassword] = useState("");
@@ -742,16 +744,6 @@ const AuthPage = () => {
         <SEOHead title={authT("seoTitle")} description={authT("seoDesc")} path="/auth" noindex />
         <MobileAuthIntro
           authMode={authMode}
-          onAuthModeChange={(mode) => {
-            if (isSubmitting) return;
-            setAuthMode(mode);
-            setUserExists(false);
-            setPassword("");
-            setNewPassword("");
-            setOtpValues(["", "", "", "", "", ""]);
-            clearMobileError();
-            if (step !== "intro1") setStep("email");
-          }}
           onGoogle={handleGoogleLogin}
           onBack={() => setStep(step === "password" ? "email" : "intro1")}
           onEmail={() => setStep("email")}
