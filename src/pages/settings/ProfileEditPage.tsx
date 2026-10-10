@@ -1,32 +1,30 @@
-/** @doc Profile editor — full name, nickname, AI instructions. Autosaves. */
+/** @doc Profile editor — full name, photo, delete account. Autosaves the name. */
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Check, Camera, Loader2, LogOut, Trash2 } from "lucide-react";
+import { Check, Camera, ChevronLeft, ChevronRight, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { sanitizeErrorMessage } from "@/lib/sanitizeError";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SubShell, SubSection, SubCard, DangerCallout } from "@/components/settings/SubShell";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
-import { signOutEverywhere } from "@/lib/signOutEverywhere";
+import { translateExactText, useUserLang } from "@/lib/authI18n";
 
 const ProfileEditPage = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const lang = useUserLang();
+  const isAr = lang === "ar-eg";
+  const tx = (text: string) => translateExactText(text, lang);
 
   const [userId, setUserId] = useState<string | null>(null);
-  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(true);
 
   const [fullName, setFullName] = useState("");
-  const [nickname, setNickname] = useState("");
-  const [instructions, setInstructions] = useState("");
 
-  const savedRef = useRef({ fullName: "", nickname: "", instructions: "" });
+  const savedRef = useRef({ fullName: "" });
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [logoutOpen, setLogoutOpen] = useState(false);
-  const [loggingOut, setLoggingOut] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarBusy, setAvatarBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement | null>(null);
