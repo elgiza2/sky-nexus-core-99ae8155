@@ -212,5 +212,5 @@ html .megsy-checkout button::before, html .megsy-checkout button::after { displa
 
 @keyframes checkout-enter { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @media (min-width: 640px) { .checkout-stage { margin-top: 44px; } }
-@media (max-height: 740px) { .checkout-stage { margin-top: 22px; } .megsy-pay-list { grid-template-rows: repeat(4, minmax(78px, 1fr)); gap: 10px; } .megsy-checkout .megsy-pay-row { min-height: 78px; padding-block: 14px; } .card-face { aspect-ratio: 1.9; } .checkout-fields { margin-top: 20px; gap: 14px; } }
+@media (max-height: 740px) { .checkout-stage { margin-top: 22px; } .megsy-pay-list { gap: 10px; } .megsy-checkout .megsy-pay-row { min-height: 54px; padding-block: 10px; } .card-face { aspect-ratio: 2.1; } .checkout-allinone { margin-top: 18px; gap: 16px; } .checkout-card-form { gap: 12px; } }
 @media (prefers-reduced-motion: reduce) { .checkout-stage { animation: none; } .megsy-checkout .megsy-pay-row, .megsy-checkout .megsy-pay-cta, .megsy-checkout .megsy-back { transition: none; } }
