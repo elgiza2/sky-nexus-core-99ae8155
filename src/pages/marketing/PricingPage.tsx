@@ -184,10 +184,6 @@ const PricingPage = () => {
   const [currentPlan, setCurrentPlan] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [customCard, setCustomCard] = useState<{
-    tier: PlanTier;
-    interval: "monthly" | "yearly";
-  } | null>(null);
   const [settled, setSettled] = useState(false);
 
   const BRAND = getZoneBrand();
