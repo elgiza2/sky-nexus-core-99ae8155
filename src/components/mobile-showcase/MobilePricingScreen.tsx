@@ -1,61 +1,11 @@
-/** @doc Mobile /pricing — Manus-style minimal upgrade sheet (pixel-matched to reference).
- *  Single plan (Megsy Pro): dotted backdrop · Megsy star · big serif title ·
- *  clean single-column feature card · two rounded billing cards with radios · fine print ·
- *  solid CTA · legal links.
- */
-import { useEffect, useMemo, useState } from "react";
-import {
-  Monitor,
-  Clock,
-  Bot,
-  Search,
-  Infinity as InfinityIcon,
-} from "lucide-react";
+/** Immersive subscription screen. Prices and checkout stay in the shared catalogue and parent. */
+import { Check, ChevronRight, Loader2, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
-import MegsyStar from "@/components/branding/MegsyStar";
-import { MobileSidebarButton } from "@/components/shared/MobileSidebarButton";
+import { Button } from "@/components/ui/button";
 import { useUserLang } from "@/lib/authI18n";
 import { useUserPlan } from "@/hooks/useUserPlan";
 import { getDisplayPrice, getPlan, type PlanTier } from "@/data/pricingData";
-
-function MegsyFeatureIcon({ className, style }: { className?: string; style?: React.CSSProperties }) {
-  return <MegsyStar className={className ?? "h-5 w-5"} />;
-}
-
-function useLocalPrice() {
-  return (_usd: number) => null;
-}
-
-
-function useCompactHeight() {
-  const [compact, setCompact] = useState(
-    typeof window !== "undefined" && window.innerHeight < 780,
-  );
-  useEffect(() => {
-    const update = () => setCompact(window.innerHeight < 780);
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
-  return compact;
-}
-
-function useIsLightTheme() {
-  const [light, setLight] = useState(
-    typeof document !== "undefined" &&
-      document.documentElement.getAttribute("data-theme") === "light",
-  );
-  useEffect(() => {
-    const el = document.documentElement;
-    const update = () => setLight(el.getAttribute("data-theme") === "light");
-    const obs = new MutationObserver(update);
-    obs.observe(el, { attributes: true, attributeFilter: ["data-theme"] });
-    update();
-    return () => obs.disconnect();
-  }, []);
-  return light;
-}
+import artwork from "@/assets/megsy-botanical-girl.jpg";
 
 interface Props {
   isYearly: boolean;
@@ -65,359 +15,67 @@ interface Props {
   onMenuClick?: () => void;
 }
 
-export default function MobilePricingScreen({
-  isYearly,
-  onToggleYearly,
-  onSubscribe,
-  loadingTier,
-  onMenuClick,
-}: Props) {
-  const lang = useUserLang();
-  const isAr = lang === "ar-eg";
-  const isLight = useIsLightTheme();
-  const compact = useCompactHeight();
-  const localPrice = useLocalPrice();
-  const isLoading = loadingTier === "pro";
+export default function MobilePricingScreen({ isYearly, onToggleYearly, onSubscribe, loadingTier }: Props) {
+  const isAr = useUserLang() === "ar-eg";
   const navigate = useNavigate();
-  // A subscriber must never be told to "upgrade" to the plan they already own.
   const { plan } = useUserPlan();
-  const alreadySubscribed = plan === "pro" || plan === "max" || plan === "elite";
-
-  // Keep the benefit rows stable so the card height (and the CTA position) never
-  // shifts when the billing interval changes — only the first row's copy does.
-  const features = useMemo(() => {
-    const base = isAr
-      ? [
-          { icon: Monitor, text: "بحث وتصفح وبرمجة في نفس الشات" },
-          { icon: Clock, text: "متابعة خطوات المهمة مباشرة" },
-          { icon: Bot, text: "تغيير الوكيل للمشتركين" },
-          { icon: Search, text: "بحث عميق موثّق بالمصادر" },
-          { icon: InfinityIcon, text: "دردشة بلا حدود" },
-        ]
-      : [
-          { icon: Monitor, text: "Search, browsing and coding in chat" },
-          { icon: Clock, text: "Live task progress" },
-          { icon: Bot, text: "Subscriber-only agent switching" },
-          { icon: Search, text: "Deep research with citations" },
-          { icon: InfinityIcon, text: "Unlimited chat" },
-        ];
-
-    const head = {
-      icon: MegsyFeatureIcon,
-      text: isYearly
-        ? isAr
-          ? "1000 رصيد Megsy كل شهر"
-          : "1,000 Megsy Credits every month"
-        : isAr
-          ? "1000 رصيد Megsy مع الاشتراك"
-          : "1,000 Megsy Credits with your plan",
-    };
-
-    return [head, ...base, {
-      icon: MegsyFeatureIcon,
-      text: isAr ? "صور وفيديو Higgsfield للمشتركين فقط" : "Higgsfield images & video — subscribers only",
-    }];
-  }, [isAr, isYearly]);
-
-
-  const pro = getPlan("pro")!;
+  const subscribed = plan === "pro" || plan === "max" || plan === "elite";
+  const pro = getPlan("pro");
+  if (!pro) return null;
   const monthly = getDisplayPrice(pro, false);
   const yearly = getDisplayPrice(pro, true);
-
-  const monthlyPrice = monthly.price;
-  const yearlyPrice = yearly.price;
-  const monthlyOff = Math.round((1 - monthlyPrice / pro.monthlyPrice) * 100);
-
-  const t = isAr
-    ? {
-        title: "قم بالترقية إلى Megsy Pro",
-        monthly: "شهرياً",
-        yearly: "سنوياً",
-        introBadge: `خصم ${monthlyOff}% على الشهر الأول`,
-        yearlyBadge: "4 أشهر مجاناً",
-        perMonth: "/ الشهر الأول",
-        perYear: "/ سنة",
-        fine: `$${monthlyPrice}.00 للشهر الأول، ثم $${pro.monthlyPrice}.00/شهر. يمكنك الإلغاء في أي وقت.`,
-        cta: "قم بالترقية الآن",
-        terms: "الشروط",
-        privacy: "الخصوصية",
-        restore: "استعادة",
-      }
-    : {
-        title: "Upgrade to Megsy Pro",
-        monthly: "Monthly",
-        yearly: "Yearly",
-        introBadge: `${monthlyOff}% off the first month`,
-        yearlyBadge: "4 months free",
-        perMonth: "/first mo",
-        perYear: "/year",
-        fine: `$${monthlyPrice}.00 for the first month, then $${pro.monthlyPrice}.00/month. Cancel anytime.`,
-        cta: "Upgrade now",
-        terms: "Terms",
-        privacy: "Privacy",
-        restore: "Restore",
-      };
-
-  if (alreadySubscribed) {
-    const planLabel = plan === "pro" ? "Megsy Pro" : plan === "max" ? "Megsy Max" : "Megsy Elite";
-    t.title = isAr ? `أنت مشترك في ${planLabel}` : `You're on ${planLabel}`;
-    t.cta = isAr ? "إدارة الاشتراك" : "Manage subscription";
-    t.fine = isAr
-      ? "اشتراكك نشط. من إدارة الاشتراك تقدر تغيّر الخطة أو تلغيها في أي وقت."
-      : "Your subscription is active. Change or cancel it anytime from subscription settings.";
-  }
-
-  const c = isLight
-    ? {
-        bg: "#f2f2f2",
-        dot: "rgba(0,0,0,0.10)",
-        text: "#0a0a0a",
-        muted: "#6b7280",
-        faint: "#9ca3af",
-        card: "#ffffff",
-        cardBorder: "rgba(0,0,0,0.06)",
-        cardShadow: "0 1px 2px rgba(0,0,0,0.03), 0 12px 32px -16px rgba(0,0,0,0.10)",
-        selBorder: "#0a0a0a",
-        unselBorder: "rgba(0,0,0,0.10)",
-        badgeBg: "#e8f1ff",
-        badgeText: "#1d4ed8",
-        icon: "#1f2937",
-        ctaBg: "#0a0a0a",
-        ctaFg: "#ffffff",
-      }
-    : {
-        bg: "#0b0b0c",
-        dot: "rgba(255,255,255,0.08)",
-        text: "#f5f5f5",
-        muted: "#a3a3a3",
-        faint: "#737373",
-        card: "rgba(255,255,255,0.05)",
-        cardBorder: "rgba(255,255,255,0.09)",
-        cardShadow: "0 1px 2px rgba(0,0,0,0.25), 0 12px 32px -16px rgba(0,0,0,0.5)",
-        selBorder: "#f5f5f5",
-        unselBorder: "rgba(255,255,255,0.14)",
-        badgeBg: "rgba(96,165,250,0.16)",
-        badgeText: "#93c5fd",
-        icon: "#e4e4e7",
-        ctaBg: "#f5f5f5",
-        ctaFg: "#0a0a0a",
-      };
-
+  const benefits = isAr
+    ? ["١٬٠٠٠ رصيد Megsy كل شهر", "بحث وتصفح وبرمجة مع وكيلك", "إنشاء الصور والفيديو داخل الشات"]
+    : ["1,000 Megsy Credits every month", "Research, browse & code with your agent", "Create images & video in chat"];
   const options = [
-    {
-      key: "monthly",
-      yearly: false,
-      label: t.monthly,
-      badge: t.introBadge,
-      price: monthlyPrice,
-      strike: monthly.strike,
-      unit: t.perMonth,
-    },
-    {
-      key: "yearly",
-      yearly: true,
-      label: t.yearly,
-      badge: t.yearlyBadge,
-      price: yearlyPrice,
-      strike: yearly.strike,
-      unit: t.perYear,
-    },
-  ] as const;
+    { yearly: false, label: isAr ? "شهري" : "Monthly", price: monthly.price, note: isAr ? "للشهر الأول" : "First month", detail: isAr ? `ثم $${pro.monthlyPrice} / شهر` : `Then $${pro.monthlyPrice} / month` },
+    { yearly: true, label: isAr ? "سنوي" : "Yearly", price: yearly.price, note: isAr ? "دفع سنوي" : "Billed yearly", detail: isAr ? `يعادل $${(yearly.price / 12).toFixed(2)} / شهر` : `$${(yearly.price / 12).toFixed(2)} / month equivalent` },
+  ];
+  const fine = subscribed
+    ? (isAr ? "اشتراكك نشط. تقدر تديره أو تلغيه من إعدادات الاشتراك." : "Your subscription is active. Manage or cancel it in subscription settings.")
+    : isYearly
+      ? (isAr ? `$${yearly.price.toFixed(2)} سنويًا. الاشتراك بيتجدد تلقائيًا لحد ما تلغيه.` : `$${yearly.price.toFixed(2)} billed annually. Your subscription renews automatically unless cancelled.`)
+      : (isAr ? `$${monthly.price.toFixed(2)} للشهر الأول، ثم $${pro.monthlyPrice.toFixed(2)} شهريًا. تقدر تلغي في أي وقت.` : `$${monthly.price.toFixed(2)} for the first month, then $${pro.monthlyPrice.toFixed(2)}/month. Cancel anytime.`);
 
   return (
-    <div
-      dir={isAr ? "rtl" : "ltr"}
-      className="relative flex h-[100dvh] w-full flex-col overflow-hidden"
-      style={{
-        background: c.bg,
-        color: c.text,
-        fontFamily: 'Inter, -apple-system, "SF Pro Text", system-ui, sans-serif',
-      }}
-    >
-      {/* Dotted backdrop texture */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage: `radial-gradient(${c.dot} 1px, transparent 1px)`,
-          backgroundSize: "18px 18px",
-          maskImage: "radial-gradient(120% 90% at 50% 0%, black 30%, transparent 100%)",
-          WebkitMaskImage: "radial-gradient(120% 90% at 50% 0%, black 30%, transparent 100%)",
-        }}
-      />
-      <style>{`
-        @keyframes mps-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-        .mps-rise { animation: mps-rise .5s cubic-bezier(.22,.61,.36,1) both; }
-        @media (prefers-reduced-motion: reduce) { .mps-rise { animation: none; } }
-      `}</style>
-
-      {/* Header — same fixed bar + button spot as the chat mobile header */}
-      <header
-        className="fixed inset-x-0 z-30 flex min-h-[44px] items-center px-3 py-1.5 pt-[max(env(safe-area-inset-top),0.25rem)]"
-        style={{ top: "var(--promo-banner-h, 0px)" }}
-      >
-        <MobileSidebarButton
-          onClick={() => onMenuClick?.()}
-          ariaLabel="Menu"
-          className="text-foreground"
-        />
-      </header>
-      {/* Spacer so content clears the fixed header */}
-      <div className="shrink-0" style={{ height: "calc(max(env(safe-area-inset-top), 0.25rem) + 44px)" }} />
-
-      <main className="relative z-10 mx-auto flex w-full max-w-[400px] flex-1 flex-col px-5">
-        {/* Top flexible space — centers the whole block on tall screens */}
-        <div className="flex-[0.6]" />
-        {/* Megsy star mark */}
-        <div
-          className={`mps-rise flex justify-center ${compact ? "mt-[2%]" : "mt-[4%]"}`}
-          style={{ animationDelay: "10ms", color: c.text }}
-        >
-          <MegsyStar className={compact ? "h-7 w-7" : "h-8 w-8"} />
+    <section className="botanical-pricing" dir={isAr ? "rtl" : "ltr"} aria-label={isAr ? "اشتراك Megsy Pro" : "Megsy Pro subscription"}>
+      <div className="botanical-art" aria-hidden="true">
+        <img src={artwork} alt="" width={1024} height={1536} fetchPriority="high" />
+      </div>
+      <div className="botanical-scrim" aria-hidden="true" />
+      <div className="botanical-content">
+        <header className="botanical-nav">
+          <Button variant="ghost" size="icon" className="botanical-close" aria-label={isAr ? "رجوع" : "Close pricing"} onClick={() => navigate(-1)} title={isAr ? "رجوع" : "Back"}><X /></Button>
+          <Button variant="ghost" className="botanical-account" onClick={() => navigate(subscribed ? "/settings/billing" : "/auth?redirect=/pricing")}>
+            {isAr ? "حسابي" : "My account"}
+          </Button>
+        </header>
+        <div className="botanical-heading">
+          <h1 dir="ltr">megsy <span>pro</span></h1>
+          <p>{isAr ? "إمكانيات أكتر. أفكار بلا حدود." : "Unlock more possibilities with"}<br />{isAr ? "وكيلك الذكي، في مكان واحد." : "your personal AI agent."}</p>
         </div>
-
-        {/* Title */}
-        <h1
-          className={`mps-rise text-center font-normal leading-[1.2] tracking-[-0.015em] ${
-            compact ? "mt-2 text-[22px]" : "mt-2.5 text-[25px]"
-          }`}
-          style={{ animationDelay: "60ms", fontFamily: '"Instrument Serif", Georgia, serif' }}
-        >
-          {t.title}
-        </h1>
-
-        {/* Feature card — single column, airy rows like the reference */}
-        <div
-          className={`mps-rise rounded-[24px] ${
-            compact ? "mt-3.5 px-4 py-3.5" : "mt-5 px-5 py-4"
-          }`}
-          style={{
-            animationDelay: "120ms",
-            background: c.card,
-            border: `1px solid ${c.cardBorder}`,
-            boxShadow: c.cardShadow,
-          }}
-        >
-          <ul className={`flex flex-col ${compact ? "gap-[11px]" : "gap-[14px]"}`}>
-            {features.map(({ icon: Icon, text }) => (
-              <li
-                key={text}
-                className={`flex items-center gap-3 ${isAr ? "flex-row-reverse text-right" : ""}`}
-              >
-                <Icon
-                  className={`${compact ? "h-[18px] w-[18px]" : "h-[20px] w-[20px]"} shrink-0`}
-                  strokeWidth={1.5}
-                  style={{ color: c.icon }}
-                />
-                <span
-                  className={`flex-1 leading-[1.35] ${compact ? "text-[13px]" : "text-[14px]"}`}
-                  style={{ color: c.text }}
-                >
-                  {text}
-                </span>
-              </li>
-            ))}
+        <div className="botanical-details">
+          <ul className="botanical-benefits">
+            {benefits.map(text => <li key={text}><Check aria-hidden="true" /><span>{text}</span></li>)}
           </ul>
+          <div className="botanical-options" role="group" aria-label={isAr ? "مدة الاشتراك" : "Billing interval"}>
+            {options.map(option => {
+              const selected = isYearly === option.yearly;
+              return <Button key={String(option.yearly)} variant="outline" className="botanical-option" data-selected={selected} aria-pressed={selected} onClick={() => onToggleYearly(option.yearly)}>
+                {selected && <span className="botanical-selection"><Check aria-hidden="true" /></span>}
+                <span className="botanical-option-label">{option.label}</span>
+                <span className="botanical-price" dir="ltr">${option.price.toFixed(2)}</span>
+                <span className="botanical-option-note">{option.note}</span>
+                <span className="botanical-option-detail">{option.detail}</span>
+              </Button>;
+            })}
+          </div>
+          <Button variant="neutral" className="botanical-subscribe" disabled={loadingTier === "pro"} onClick={() => subscribed ? navigate("/settings/billing") : onSubscribe("pro", { trial: false })}>
+            {loadingTier === "pro" ? <Loader2 className="animate-spin" /> : <>{subscribed ? (isAr ? "إدارة الاشتراك" : "Manage subscription") : (isAr ? "اشترك الآن" : "Subscribe")}<ChevronRight className="rtl-flip" /></>}
+          </Button>
+          <p className="botanical-fine">{fine}</p>
         </div>
-
-        {/* Breathing room between the feature card and billing options */}
-        <div className="flex-[0.4] min-h-[12px] max-h-10" />
-
-        {/* Billing options */}
-        <div
-          className={`mps-rise flex flex-col ${compact ? "gap-2" : "gap-2.5"}`}
-          style={{ animationDelay: "200ms" }}
-        >
-          {options.map((opt) => {
-            const selected = isYearly === opt.yearly;
-            return (
-              <button
-                key={opt.key}
-                type="button"
-                onClick={() => onToggleYearly(opt.yearly)}
-                className={`flex w-full items-center gap-3 rounded-[18px] px-4 text-start transition-all duration-200 ${
-                  compact ? "py-2" : "py-2.5"
-                } ${isAr ? "flex-row-reverse" : ""}`}
-                style={{
-                  background: c.card,
-                  border: `${selected ? "2px" : "1px"} solid ${selected ? c.selBorder : c.unselBorder}`,
-                  boxShadow: selected ? c.cardShadow : "none",
-                }}
-              >
-                <span
-                  className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full transition-colors"
-                  style={{ border: `2px solid ${selected ? c.text : c.faint}` }}
-                >
-                  {selected && (
-                    <span className="h-[8px] w-[8px] rounded-full" style={{ background: c.text }} />
-                  )}
-                </span>
-                <span className="flex flex-1 flex-col gap-[3px]">
-                  <span
-                    className={`flex items-center gap-2 ${isAr ? "flex-row-reverse" : ""} justify-start`}
-                  >
-                    <span className="text-[12.5px] font-medium" style={{ color: c.muted }}>
-                      {opt.label}
-                    </span>
-                  </span>
-                  <span
-                    className={`flex items-baseline gap-2 tabular-nums ${isAr ? "flex-row-reverse" : ""} justify-start`}
-                  >
-                    {/* The local currency is the price, not a footnote: the
-                        dollar amount moves to the small secondary line. */}
-                    <span className={`${compact ? "text-[15px]" : "text-[16px]"} font-semibold`} style={{ color: c.text }}>
-                      {localPrice(opt.price) ?? `$${opt.price}`}
-                    </span>
-                    <span className="text-[11px]" style={{ color: c.muted }}>
-                      {opt.unit}
-                    </span>
-                    <span className="text-[11.5px] line-through" style={{ color: c.faint }}>
-                      {localPrice(opt.strike) ?? `$${opt.strike}`}
-                    </span>
-                    {localPrice(opt.price) ? (
-                      <span className="text-[11px]" style={{ color: c.faint }}>
-                        ${opt.price}
-                      </span>
-                    ) : null}
-                  </span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* CTA pinned to the very bottom of the screen */}
-        <div className="h-[92px] shrink-0" />
-        <div
-          className="fixed inset-x-0 bottom-0 z-30 px-5 pt-3"
-          style={{
-            paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 14px)",
-          }}
-        >
-          <button
-            type="button"
-            onClick={() =>
-              alreadySubscribed
-                ? navigate("/settings/billing")
-                : onSubscribe("pro", { trial: false })
-            }
-            disabled={isLoading}
-            className={`flex w-full items-center justify-center rounded-[16px] px-6 font-semibold leading-none transition active:scale-[0.99] disabled:opacity-60 ${
-              compact ? "h-[46px] text-[14px]" : "h-[50px] text-[15px]"
-            }`}
-            style={{ background: c.ctaBg, color: c.ctaFg }}
-          >
-            {isLoading ? (
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-current/30 border-t-current" />
-            ) : (
-              t.cta
-            )}
-          </button>
-        </div>
-        {/* Bottom flexible space — keeps the block centered on tall screens */}
-        <div className="flex-[0.6]" />
-      </main>
-
-    </div>
+      </div>
+    </section>
   );
 }
