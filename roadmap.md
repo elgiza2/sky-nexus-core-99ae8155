@@ -1,8 +1,8 @@
 # Megsy — roadmap
 
 ## Reference pricing and Welcome (October 10, 2026)
-- [ ] Verify theme-aware pricing colors in light and dark modes.
-- [ ] Replace portrait with the user's new image: waiting for an attachment (only the original Perplexity reference screenshot is available).
+- [x] Verify theme-aware pricing colors in light and dark modes.
+- [x] Replace the shared portrait with the uploaded phone-aura image, preserving its landscape framing in pricing.
 - [x] Keep the pricing portrait identical to the woman displayed in Welcome, as clarified by the user.
 - [x] Replace rejected artwork and green/turquoise palette; remove My account and final fine print; restore the unified sidebar toggle.
 - [x] Match pricing to the uploaded botanical subscription screen without changing prices or checkout.

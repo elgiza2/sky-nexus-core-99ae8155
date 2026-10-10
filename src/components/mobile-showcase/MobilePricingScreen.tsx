@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useUserLang } from "@/lib/authI18n";
 import { useUserPlan } from "@/hooks/useUserPlan";
 import { getDisplayPrice, getPlan, type PlanTier } from "@/data/pricingData";
-import artwork from "@/assets/megsy-editorial-woman.jpg";
+import artwork from "@/assets/phone-aura.jpg.asset.json";
 import MobileSidebarButton from "@/components/shared/MobileSidebarButton";
 
 interface Props {
@@ -36,7 +36,7 @@ export default function MobilePricingScreen({ isYearly, onToggleYearly, onSubscr
   return (
     <section className="botanical-pricing" dir={isAr ? "rtl" : "ltr"} aria-label={isAr ? "اشتراك Megsy Pro" : "Megsy Pro subscription"}>
       <div className="botanical-art" aria-hidden="true">
-        <img src={artwork} alt="" width={1024} height={1536} fetchPriority="high" />
+        <img src={artwork.url} alt="" width={309} height={203} fetchPriority="high" />
       </div>
       <div className="botanical-scrim" aria-hidden="true" />
       <div className="botanical-content">
