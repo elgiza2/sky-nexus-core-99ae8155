@@ -272,3 +272,6 @@
 - [ ] Verify the real checkout end to end: blocked by external unmanaged authentication — the payment screen was viewed through a temporary flag that has since been removed.
 - [x] Restore from the repository: the stored pricing design is back and the app glass styles are gone from settings, chat and sign-up. Checkout is untouched. The sign-up fix was kept because the glass commit also carried it.
 - [ ] Decide what to do with the restored pricing screen's promotional strings ("53% off the first month", "4 months free", the first-month footnote) and its Terms/Privacy/Restore footer — the user had these deleted before the restore brought them back.
+- [ ] Restore (not regenerate) the 5 uploaded pricing images via edit_image, extend to full-screen 1024x1920
+- [ ] Re-upload restored images as CDN assets and rewire MobilePricingScreen pool
+- [ ] Verify pricing page in light/dark themes
