@@ -112,7 +112,7 @@ export default function WelcomePage() {
       <motion.img
         key={i}
         src={IMAGES[i]}
-        alt={i === 0 ? "Person using a phone surrounded by luminous light" : ""}
+        alt=""
         width={1024}
         height={1536}
         initial={{ opacity: 0, scale: 1.04 }}
