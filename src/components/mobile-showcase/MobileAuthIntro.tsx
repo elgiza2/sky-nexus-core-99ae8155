@@ -19,10 +19,6 @@ export default function MobileAuthIntro(p: Props) {
     {p.expanded && <button type="button" className="megsy-auth-back" onClick={p.onBack} aria-label={ar ? "رجوع" : "Back"}><ArrowLeft size={20} /></button>}
     <div className="megsy-auth-brand"><div className="megsy-auth-lockup"><AgentOrb color="aurora" state="idle" size={86} /><h1>Megsy</h1></div></div>
     <section className="megsy-auth-actions">
-      {p.onAuthModeChange && <div className="auth-mode-toggle" role="group" aria-label={ar ? "نوع التسجيل" : "Account access"}>
-        <Button variant="ghost" className="auth-mode-option" aria-pressed={p.authMode === "signup"} onClick={() => p.onAuthModeChange?.("signup")}>{ar ? "إنشاء حساب" : "Create account"}</Button>
-        <Button variant="ghost" className="auth-mode-option" aria-pressed={p.authMode === "signin"} onClick={() => p.onAuthModeChange?.("signin")}>{ar ? "تسجيل الدخول" : "Sign in"}</Button>
-      </div>}
       {p.error && <p role="alert" className="megsy-auth-error">{p.error}</p>}
       {!p.expanded ? <>
         <button className="megsy-auth-pill" onClick={p.onGoogle}><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.54 12.28c0-.82-.08-1.62-.22-2.4H12v4.54h6.48c-.28 1.5-1.12 2.78-2.4 3.64l3.7 2.88c2.16-2 3.42-4.94 3.42-8.66z"/><path fill="#34A853" d="M12 24c3.24 0 5.96-1.06 7.94-2.9l-3.7-2.88c-1.02.68-2.34 1.1-4.24 1.1-2.86 0-5.34-2.02-6.36-4.96L1.28 17.4C3.26 21.3 7.32 24 12 24z"/><path fill="#FBBC05" d="M5.64 14.42a7.1 7.1 0 010-4.84L1.28 6.2A11.98 11.98 0 000 12c0 1.94.46 3.78 1.28 5.4l4.36-2.98z"/><path fill="#EA4335" d="M12 5.04c1.94 0 3.66.67 5.02 1.98l3.72-3.72C18.42 1.19 15.44 0 12 0 7.32 0 3.26 2.7 1.28 6.62l4.36 3.38C6.66 7.06 9.14 5.04 12 5.04z"/></svg><span>{label("Google")}</span></button>
