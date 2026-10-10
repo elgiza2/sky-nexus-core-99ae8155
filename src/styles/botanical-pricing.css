@@ -82,3 +82,14 @@ html .botanical-pricing button::before, html .botanical-pricing button::after { 
 @media (max-width: 360px) { .botanical-content { padding-inline: 16px; } .botanical-options { gap: 12px; } .botanical-pricing .botanical-option { padding-inline: 12px; } .botanical-benefits li { font-size: 14px; } }
 @media (max-height: 740px) and (max-width: 767px) { .botanical-details { padding-top: 150px; } .botanical-benefits { gap: 10px; margin-bottom: 22px; } .botanical-pricing .botanical-option { height: 136px; padding-top: 13px; padding-bottom: 13px; } .botanical-heading h1 { font-size: 36px; } }
 @media (prefers-reduced-motion: reduce) { .botanical-pricing * { transition: none; } }
+
+/* Benefits sit directly on the photo — no pane; contrast tuned per artwork. */
+.botanical-pricing .botanical-benefits { padding: 4px 2px; border: 0; background: none; backdrop-filter: none; -webkit-backdrop-filter: none; border-radius: 0; }
+.botanical-pricing .botanical-benefits li { color: oklch(1 0 0); -webkit-text-fill-color: oklch(1 0 0); font-weight: 560; }
+.botanical-pricing .botanical-benefits svg { color: oklch(1 0 0); filter: drop-shadow(0 1px 3px oklch(0 0 0 / .7)); }
+/* Aura: dark, even lower half — a light lift is enough. */
+.botanical-pricing[data-art="aura"] .botanical-benefits li { text-shadow: 0 1px 2px oklch(0 0 0 / .65), 0 0 14px oklch(0 0 0 / .45); }
+/* Car: bright band behind the list — heavier soft halo, no edges. */
+.botanical-pricing[data-art="car"] .botanical-benefits li { font-weight: 620; text-shadow: 0 1px 2px oklch(0 0 0 / .9), 0 0 10px oklch(0 0 0 / .75), 0 0 24px oklch(0 0 0 / .6); }
+.botanical-pricing[data-art="car"] .botanical-benefits { position: relative; }
+.botanical-pricing[data-art="car"] .botanical-benefits::before { content: ""; position: absolute; inset: -24px -32px; z-index: -1; pointer-events: none; background: radial-gradient(ellipse at center, oklch(0 0 0 / .42), transparent 70%); }
