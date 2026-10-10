@@ -19,6 +19,13 @@
   --payment-green: oklch(.64 .16 145);
   --payment-gold: oklch(.83 .17 85);
   /* Glass content always reads as white on the photo, in both themes. */
+  --checkout-glass: oklch(.18 0 0 / .22);
+  --checkout-glass-selected: oklch(1 0 0 / .2);
+  --checkout-glass-hover: oklch(1 0 0 / .15);
+  --checkout-glass-ink: oklch(1 0 0);
+  --checkout-glass-placeholder: oklch(1 0 0 / .72);
+  --checkout-glass-shadow: 0 6px 22px oklch(0 0 0 / .12), inset 0 1px 0 oklch(1 0 0 / .22);
+  --checkout-glass-focus: 0 0 0 3px oklch(1 0 0 / .15);
   --checkout-line: oklch(1 0 0 / .38);
   --checkout-fill: oklch(1 0 0 / .14);
   --checkout-fill-on: oklch(1 0 0 / .22);
@@ -219,18 +226,20 @@ html .megsy-checkout button::before, html .megsy-checkout button::after { displa
 
 /* v3 — single-screen method switcher */
 .checkout-methods { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-.checkout-method { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 68px; padding: 8px 4px; border-radius: 16px; border: 1px solid oklch(1 0 0 / .22); background: oklch(1 0 0 / .1); backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4); color: oklch(1 0 0); font-size: 11.5px; font-weight: 600; text-shadow: 0 1px 6px oklch(0 0 0 / .4); transition: transform .35s cubic-bezier(.34,1.56,.64,1), background .25s, border-color .25s; }
-.checkout-method[data-selected="true"] { background: oklch(1 0 0 / .26); border-color: oklch(1 0 0 / .9); transform: scale(1.04); }
-.checkout-method:active { transform: scale(.95); }
+html .megsy-checkout .checkout-method { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 78px; height: auto; padding: 12px 4px; border-radius: 8px !important; border: 1px solid var(--checkout-line) !important; background: var(--checkout-glass) !important; background-image: none !important; backdrop-filter: blur(24px) saturate(1.15); -webkit-backdrop-filter: blur(24px) saturate(1.15); color: var(--checkout-glass-ink) !important; -webkit-text-fill-color: var(--checkout-glass-ink) !important; box-shadow: var(--checkout-glass-shadow) !important; font-size: 11.5px; line-height: 1.3; font-weight: 600; text-shadow: none; transition: transform .3s, background .25s, border-color .25s; }
+html .megsy-checkout .checkout-method:hover { background: var(--checkout-glass-hover) !important; }
+html .megsy-checkout .checkout-method[data-selected="true"] { background: var(--checkout-glass-selected) !important; border-color: var(--checkout-glass-ink) !important; }
+html .megsy-checkout .checkout-method:active { transform: scale(.96); }
+html .megsy-checkout .checkout-method > svg { width: 23px; height: 23px; }
 .checkout-method .payment-card-pair { transform: scale(.8); }
 .checkout-panel { margin-top: 18px; animation: checkout-panel-in .4s cubic-bezier(.22,1,.36,1); }
 @keyframes checkout-panel-in { from { opacity: 0; transform: translateY(10px) scale(.98); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
 .megsy-checkout .checkout-field > span { display: block; margin-bottom: 7px; font-size: 12.5px; font-weight: 600; color: oklch(1 0 0 / .9); text-shadow: 0 1px 6px oklch(0 0 0 / .45); }
-.megsy-checkout .checkout-input-wrap { display: flex; align-items: center; gap: 10px; height: 54px; padding: 0 16px; border-radius: 16px; border: 1px solid oklch(1 0 0 / .28); background: oklch(0 0 0 / .28); backdrop-filter: blur(22px) saturate(1.5); -webkit-backdrop-filter: blur(22px) saturate(1.5); box-shadow: inset 0 1px 0 oklch(1 0 0 / .12); transition: border-color .2s, background .2s, box-shadow .2s; }
-.megsy-checkout .checkout-input-wrap:focus-within { border-color: oklch(1 0 0 / .85); background: oklch(0 0 0 / .38); box-shadow: 0 0 0 4px oklch(1 0 0 / .14); }
-.megsy-checkout .checkout-input-wrap input { flex: 1; min-width: 0; height: 100%; padding: 0 !important; color: oklch(1 0 0) !important; -webkit-text-fill-color: oklch(1 0 0); font-size: 16px; font-weight: 500 !important; letter-spacing: .02em; }
-.megsy-checkout .checkout-input-wrap input::placeholder { color: oklch(1 0 0 / .45); -webkit-text-fill-color: oklch(1 0 0 / .45); }
-.megsy-checkout .wallet-prefix { padding-right: 10px; border-right: 1px solid oklch(1 0 0 / .25); color: oklch(1 0 0 / .85); font-weight: 600; }
+html .megsy-checkout .checkout-input-wrap { display: flex; align-items: center; gap: 0; height: 56px; padding: 0 16px; border-radius: 8px; border: 1px solid var(--checkout-line); background: var(--checkout-glass); backdrop-filter: blur(24px) saturate(1.15); -webkit-backdrop-filter: blur(24px) saturate(1.15); box-shadow: var(--checkout-glass-shadow); transition: border-color .2s, background .2s, box-shadow .2s; }
+html .megsy-checkout .checkout-input-wrap:focus-within { border-color: var(--checkout-glass-ink); background: var(--checkout-glass); box-shadow: var(--checkout-glass-shadow), var(--checkout-glass-focus); }
+html .megsy-checkout .checkout-input-wrap input { flex: 1; min-width: 0; height: 100%; padding: 0 !important; color: var(--checkout-glass-ink) !important; -webkit-text-fill-color: var(--checkout-glass-ink) !important; font-size: 16px; font-weight: 500 !important; letter-spacing: 0; text-shadow: none; }
+html .megsy-checkout .checkout-input-wrap input::placeholder { color: var(--checkout-glass-placeholder) !important; -webkit-text-fill-color: var(--checkout-glass-placeholder) !important; opacity: 1; }
+html .megsy-checkout .wallet-prefix { padding: 0 14px 0 0; margin-right: 14px; border-right: 1px solid var(--checkout-line); color: var(--checkout-glass-ink); font-weight: 500; text-shadow: none; }
 .wallet-pay-btn { display: flex; align-items: center; justify-content: center; gap: 8px; height: 54px; width: 100%; border-radius: 16px; background: oklch(0 0 0); color: oklch(1 0 0); font-size: 17px; font-weight: 600; transition: transform .2s; }
 .wallet-pay-btn:active { transform: scale(.97); }
 .wallet-pay-btn svg { height: 20px; width: auto; }

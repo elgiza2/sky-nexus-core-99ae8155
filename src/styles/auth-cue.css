@@ -44,3 +44,11 @@
 @media(min-width:768px) { .megsy-auth-screen { padding-bottom: 48px; } .megsy-auth-brand { padding-top: 100px; } .megsy-auth-lockup h1 { font-size: 64px; } }
 @media(max-height:700px) { .megsy-auth-brand { min-height: 220px; padding-top: 65px; padding-bottom: 32px; } .megsy-auth-lockup h1 { font-size: 46px; } .megsy-auth-legal { margin-top: 40px; } }
 @media(prefers-reduced-motion:reduce) { .megsy-auth-screen .megsy-auth-pill { transition: none; } }
+
+/* Keep recovery and verification readable under the legacy dark auth rules. */
+html .megsy-auth-extras h1, html .megsy-auth-extras p, html .megsy-auth-extras input { color: var(--auth-ink) !important; -webkit-text-fill-color: var(--auth-ink) !important; text-shadow: none !important; }
+html .megsy-auth-extras h1 { font-weight: 550 !important; }
+html .megsy-auth-extras input::placeholder { color: var(--auth-muted) !important; -webkit-text-fill-color: var(--auth-muted) !important; }
+html .megsy-auth-extras button.megsy-auth-primary { background: var(--auth-black) !important; background-image: none !important; color: var(--auth-surface) !important; -webkit-text-fill-color: var(--auth-surface) !important; border-radius: 999px !important; box-shadow: none !important; }
+html .megsy-auth-extras button.megsy-auth-primary * { color: inherit !important; -webkit-text-fill-color: inherit !important; }
+html .megsy-auth-extras button.megsy-auth-back { background: var(--auth-surface) !important; color: var(--auth-ink) !important; -webkit-text-fill-color: var(--auth-ink) !important; }

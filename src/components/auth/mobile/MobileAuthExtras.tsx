@@ -48,7 +48,7 @@ const TopBar = ({ onBack }: { onBack: () => void }) => (
     <Button variant="ghost"
       onClick={onBack}
       aria-label={authT("back")}
-      className="mt-4 w-9 h-9 rounded-full grid place-items-center text-foreground/85 active:scale-95 transition-transform"
+      className="megsy-auth-back"
       style={{
         background: "var(--auth-control)",
         border: "1px solid var(--overlay-white-12)",
@@ -137,7 +137,7 @@ export default function MobileAuthExtras(p: Props) {
   return (
     <div
       dir="ltr"
-      className="megsy-auth-screen"
+      className="megsy-auth-screen megsy-auth-extras"
       style={{ fontFamily: FONT_SANS, touchAction: "manipulation" }}
     >
       <div className="megsy-auth-brand"><div className="megsy-auth-lockup"><AgentOrb color="aurora" size={86} /><h1>Megsy</h1></div></div>
