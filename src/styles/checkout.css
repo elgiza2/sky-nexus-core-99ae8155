@@ -87,7 +87,7 @@
 }
 .megsy-checkout .megsy-pay-row[data-selected="true"] { border-color: oklch(1 0 0 / .85); background: var(--checkout-fill-on); transform: scale(1.02); }
 .megsy-checkout .megsy-pay-row:active { transform: scale(.97); transition-duration: .12s; }
-.megsy-pay-mark { width: 64px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.megsy-pay-mark { width: 44px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 .megsy-pay-copy { flex: 1; display: flex; flex-direction: column; gap: 6px; }
 .megsy-pay-name { font-size: 16px; line-height: 1.3; font-weight: 600; }
 .megsy-pay-detail { font-size: 12px; line-height: 1.4; font-weight: 400; color: var(--checkout-muted); }
