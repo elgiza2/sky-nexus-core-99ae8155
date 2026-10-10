@@ -1,7 +1,7 @@
 /** @doc Profile editor — full name, photo, delete account. Autosaves the name. */
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Check, Camera, Loader2, Trash2, X } from "lucide-react";
+import { Check, ChevronLeft, Camera, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { sanitizeErrorMessage } from "@/lib/sanitizeError";
@@ -160,8 +160,8 @@ const ProfileEditPage = () => {
         {/* Sheet — opens as a stacked layer over the settings page */}
         <div className="pep-sheet">
         <header className="pep-topbar">
-          <button className="pep-icon-btn" aria-label={tx("Close")} onClick={goBack}>
-            <X className="pep-chev" strokeWidth={1.9} />
+          <button className="pep-icon-btn" aria-label={tx("Back")} onClick={goBack}>
+            <ChevronLeft className="pep-chev" strokeWidth={2.1} />
           </button>
           <h1 className="pep-title">{tx("Account")}</h1>
           {saveState !== "idle" && (
@@ -388,7 +388,8 @@ export const pepCss = `
   transition: transform .25s cubic-bezier(.22,1,.36,1);
 }
 .pep-icon-btn:active { transform: scale(.93); }
-.pep-chev { width: 22px; height: 22px; }
+.pep-chev { width: 24px; height: 24px; }
+[dir="rtl"] .pep-chev { transform: scaleX(-1); }
 
 .pep-save {
   width: 40px; height: 40px;
