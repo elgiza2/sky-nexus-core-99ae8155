@@ -296,3 +296,9 @@
 - [x] Refine auth branding weight, provider controls and spacing to match the re-uploaded reference; phone/desktop, email/password/recovery and routing test verified, preserving configured providers and account flow. Apple remains hidden until configured; no invented SSO.
 - [x] Redesign sign-in and registration presentation to match the supplied white reference; verify email, password and recovery presentation.
 - [x] Make checkout inputs and payment-method selectors clean frosted glass; verified card/wallet switching and computed blur in light/dark on phone/desktop, without a real payment.
+
+## Account page redesign (October 10, 2026)
+- [x] Redesign the mobile account page to match the uploaded iOS Profile reference: circular glass back button, centered title, circular save-state check, glass name field and glass photo row, red glass delete-account row. Content limited to name, photo and delete (nickname, instructions, email, user ID and logout removed from this page).
+- [x] The page uses the settings-home glass canvas and tokens so it reads as an open section of the settings page.
+- [x] The settings Payment row already points at /pricing — user confirmed this is the intended "development/pricing" destination; no change made.
+- [ ] Verify the redesigned account page with a real signed-in session: blocked by external unmanaged authentication.
