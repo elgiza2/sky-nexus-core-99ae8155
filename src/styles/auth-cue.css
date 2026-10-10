@@ -78,23 +78,24 @@ html body .megsy-auth-screen.megsy-auth-extras button.megsy-auth-primary { backg
   padding: max(18px, env(safe-area-inset-top)) 30px max(20px, env(safe-area-inset-bottom));
 }
 .megsy-auth-entry .megsy-auth-brand { position: relative; flex: 1; min-height: 460px; width: 100%; max-width: 620px; align-self: center; padding: 0; justify-content: center; }
-.megsy-auth-entry .megsy-auth-brand-copy { position: relative; z-index: 1; text-align: center; pointer-events: none; padding: 0 8px; animation: auth-copy-in .8s ease-out both; }
+.megsy-auth-entry .megsy-auth-brand-copy { position: relative; z-index: 1; width: 240px; max-width: 100%; text-align: center; pointer-events: none; padding: 0 8px; animation: auth-copy-in .8s ease-out both; }
 .megsy-auth-entry .megsy-auth-lockup h1 { font-size: 40px; }
 .megsy-auth-entry .megsy-auth-tagline { font-size: 17px; line-height: 1.4; margin-top: 18px; }
 .megsy-auth-entry .megsy-auth-actions { flex: none; min-height: 0; position: relative; z-index: 2; }
 .megsy-auth-entry .megsy-auth-legal { margin-top: 0; padding-top: 12px; font-size: 11px; }
 .megsy-auth-entry .megsy-auth-pill { min-height: 48px; margin-bottom: 10px; font-size: 15px; animation: auth-button-in .65s cubic-bezier(.22,1,.36,1) both; animation-delay: .18s; }
 .megsy-auth-entry .megsy-auth-pill:nth-of-type(2) { animation-delay: .28s; }
-.auth-agent-orbit { position: absolute; inset: 0 -52px; pointer-events: none; direction: ltr; }
-.auth-agent-satellite { position: absolute; width: 68px; height: 68px; offset-path: ellipse(48% 42% at 50% 50%); offset-rotate: 0deg; animation: auth-orbit 88s linear infinite; }
-.auth-agent-satellite-0 { animation-delay: -55s; --auth-agent-fill: var(--auth-agent-green); }
-.auth-agent-satellite-1 { animation-delay: -66s; --auth-agent-fill: var(--auth-agent-pink); }
-.auth-agent-satellite-2 { animation-delay: -77s; --auth-agent-fill: var(--auth-agent-brown); }
-.auth-agent-satellite-3 { animation-delay: 0s; --auth-agent-fill: var(--auth-agent-red); }
-.auth-agent-satellite-4 { animation-delay: -11s; --auth-agent-fill: var(--auth-agent-teal); }
-.auth-agent-satellite-5 { animation-delay: -22s; --auth-agent-fill: var(--auth-agent-orange); }
-.auth-agent-satellite-6 { animation-delay: -33s; --auth-agent-fill: var(--auth-agent-blue); }
-.auth-agent-satellite-7 { animation-delay: -44s; --auth-agent-fill: var(--auth-agent-purple); }
+.auth-agent-orbit { position: absolute; left: 50%; top: 50%; width: calc(100% + 50px); aspect-ratio: 1; transform: translate(-50%, -50%); pointer-events: none; direction: ltr; }
+.auth-agent-satellite { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(var(--auth-angle)); animation: auth-orbit 88s linear infinite; }
+.auth-agent-satellite .ag-orb { position: absolute; top: 0; left: calc(50% - 34px); transform: rotate(calc(-1 * var(--auth-angle))); animation: auth-orbit-upright 88s linear infinite; animation-delay: inherit; }
+.auth-agent-satellite-0 { --auth-angle: -45deg; --auth-agent-fill: var(--auth-agent-green); }
+.auth-agent-satellite-1 { --auth-angle: 0deg; --auth-agent-fill: var(--auth-agent-pink); }
+.auth-agent-satellite-2 { --auth-angle: 45deg; --auth-agent-fill: var(--auth-agent-brown); }
+.auth-agent-satellite-3 { --auth-angle: 90deg; --auth-agent-fill: var(--auth-agent-red); }
+.auth-agent-satellite-4 { --auth-angle: 135deg; --auth-agent-fill: var(--auth-agent-teal); }
+.auth-agent-satellite-5 { --auth-angle: 180deg; --auth-agent-fill: var(--auth-agent-orange); }
+.auth-agent-satellite-6 { --auth-angle: 225deg; --auth-agent-fill: var(--auth-agent-blue); }
+.auth-agent-satellite-7 { --auth-angle: 270deg; --auth-agent-fill: var(--auth-agent-purple); }
 .auth-agent-orbit .ag-orb__body { background: var(--auth-agent-fill); box-shadow: none; animation: none; }
 .auth-agent-orbit .ag-orb__eyes { top: 53%; transform: translate(-50%,-50%) rotate(12deg); }
 .auth-agent-orbit .ag-orb__eye { width: 7px; height: 19px; }
@@ -102,11 +103,12 @@ html body .megsy-auth-screen.megsy-auth-extras button.megsy-auth-primary { backg
 .auth-agent-satellite-5 .ag-orb__body { border-radius: 22%; clip-path: polygon(50% 0,95% 24%,100% 75%,50% 100%,0 76%,5% 25%); }
 .auth-agent-satellite-6 .ag-orb__body { border-radius: 25%; transform: rotate(9deg); }
 .auth-agent-satellite-7 .ag-orb__body { border-radius: 48% 52% 38% 62%; }
-@keyframes auth-orbit { from { offset-distance: 0%; } to { offset-distance: 100%; } }
+@keyframes auth-orbit { from { transform: rotate(var(--auth-angle)); } to { transform: rotate(calc(var(--auth-angle) + 360deg)); } }
+@keyframes auth-orbit-upright { from { transform: rotate(calc(-1 * var(--auth-angle))); } to { transform: rotate(calc(-1 * var(--auth-angle) - 360deg)); } }
 @keyframes auth-button-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes auth-copy-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .megsy-auth-expanded .megsy-auth-brand-copy { display: flex; flex-direction: column; align-items: center; }
 @layer properties { html body .megsy-auth-entry .megsy-auth-lockup h1 { font-weight: 600 !important; } }
-@media(min-width:768px) { .megsy-auth-entry { min-height: 740px; } .megsy-auth-entry .megsy-auth-brand { flex: 1; max-height: 900px; margin: auto; min-height: 560px; } .megsy-auth-entry .megsy-auth-lockup h1 { font-size: 48px; } .megsy-auth-entry .megsy-auth-tagline { font-size: 20px; } .auth-agent-orbit { inset: 0; } }
+@media(min-width:768px) { .megsy-auth-entry { min-height: 740px; } .megsy-auth-entry .megsy-auth-brand { flex: 1; max-height: 900px; margin: auto; min-height: 560px; } .megsy-auth-entry .megsy-auth-lockup h1 { font-size: 48px; } .megsy-auth-entry .megsy-auth-tagline { font-size: 20px; } .auth-agent-orbit { width: 100%; } }
 @media(max-height:740px) and (max-width:767px) { .megsy-auth-entry { min-height: 620px; padding-bottom: 12px; } .megsy-auth-entry .megsy-auth-brand { min-height: 420px; } .auth-agent-satellite { scale: .82; } }
-@media(prefers-reduced-motion:reduce) { .auth-agent-satellite { animation-play-state: paused; } .auth-agent-orbit .ag-orb__eye, .megsy-auth-entry .megsy-auth-pill, .megsy-auth-entry .megsy-auth-brand-copy { animation: none; } }
+@media(prefers-reduced-motion:reduce) { .auth-agent-satellite, .auth-agent-satellite .ag-orb { animation: none; } .auth-agent-orbit .ag-orb__eye, .megsy-auth-entry .megsy-auth-pill, .megsy-auth-entry .megsy-auth-brand-copy { animation: none; } }
