@@ -3,6 +3,7 @@ import { ArrowLeft, ChevronRight, Check, Loader2 } from "lucide-react";
 import "@/styles/checkout.css";
 import { Button } from "@/components/ui/button";
 import { BrandMark, CardPreview } from "./CardPreview";
+import artCoat from "@/assets/orange-coat.png.asset.json";
 
 import {
   type HostedMethod,
@@ -191,7 +192,10 @@ export default function CustomCardForm({ open, tier, interval, onClose }: Props)
 
   return (
     <section className="megsy-checkout fixed inset-0 z-[120] overflow-y-auto overscroll-contain" dir="ltr" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
-      <div aria-hidden="true" className="glass-texture pointer-events-none absolute inset-0" />
+      <div aria-hidden="true" className="botanical-art">
+        <img src={artCoat.url} alt="" fetchPriority="high" width={768} height={1376} />
+      </div>
+      <div aria-hidden="true" className="botanical-scrim" />
       <div className="checkout-layout">
         <header className="flex items-center">
           <Button variant="ghost" type="button" onClick={back} disabled={busy && !hostedUrl} aria-label="Back" title="Back" className="megsy-back">
