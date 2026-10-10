@@ -280,3 +280,7 @@
 
 ## Open
 - [x] iOS-style selection animation on pricing plan cards (spring pop, checkmark bounce)
+
+## Checkout separation (October 10, 2026)
+- [x] Split checkout from pricing: Subscribe now navigates to /checkout (dedicated page, CustomCardForm fullscreen), pricing page no longer hosts the payment overlay.
+- [ ] Redesign the checkout page with a clean look inspired by the botanical pricing design.

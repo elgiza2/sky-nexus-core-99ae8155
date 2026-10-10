@@ -38,7 +38,6 @@ import { INTRO_PRICE } from "@/lib/pricingOffers";
 
 import { brandText, getZoneBrand } from "@/lib/zoneBrand";
 import { translateExactText, useUserLang } from "@/lib/authI18n";
-import CustomCardForm from "@/components/billing/CustomCardForm";
 
 const LandingFooter = lazy(() => import("@/components/landing/LandingFooter"));
 
@@ -184,10 +183,6 @@ const PricingPage = () => {
   const [currentPlan, setCurrentPlan] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [customCard, setCustomCard] = useState<{
-    tier: PlanTier;
-    interval: "monthly" | "yearly";
-  } | null>(null);
   const [settled, setSettled] = useState(false);
 
   const BRAND = getZoneBrand();
@@ -276,7 +271,7 @@ const PricingPage = () => {
     if (loadingTier) return;
     const interval: "monthly" | "yearly" = opts.interval ?? (isYearly ? "yearly" : "monthly");
 
-    // Ensure signed in before opening the picker.
+    // Ensure signed in before the checkout page opens.
     let {
       data: { session },
     } = await supabase.auth.getSession();
@@ -291,7 +286,7 @@ const PricingPage = () => {
       return;
     }
 
-    setCustomCard({ tier, interval });
+    navigate("/checkout", { state: { tier, interval } });
   };
 
   const scrollTo = (id: string) => {
@@ -343,19 +338,6 @@ const PricingPage = () => {
             />
           </div>
         </div>
-        <Suspense fallback={null}>
-          {customCard && (
-            <CustomCardForm
-              open
-              tier={customCard.tier}
-              interval={customCard.interval}
-              onClose={() => {
-                setCustomCard(null);
-                setLoadingTier(null);
-              }}
-            />
-          )}
-        </Suspense>
       </>
     );
   }
@@ -413,19 +395,6 @@ const PricingPage = () => {
               {settled && (
                 <Suspense fallback={null}>
                   <LandingFooter />
-                </Suspense>
-              )}
-              {customCard !== null && (
-                <Suspense fallback={null}>
-                  <CustomCardForm
-                    open
-                    tier={customCard.tier}
-                    interval={customCard.interval}
-                    onClose={() => {
-                      setCustomCard(null);
-                      setLoadingTier(null);
-                    }}
-                  />
                 </Suspense>
               )}
             </div>
