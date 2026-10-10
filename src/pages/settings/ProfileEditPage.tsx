@@ -39,13 +39,13 @@ const ProfileEditPage = () => {
         return;
       }
       setUserId(user.id);
-      setEmail(user.email ?? "");
       setAvatarUrl(user.user_metadata?.avatar_url ?? null);
 
-      const [profileRes, persRes] = await Promise.all([
-        supabase.from("profiles").select("display_name, avatar_url").eq("id", user.id).maybeSingle(),
-        supabase.from("ai_personalization").select("call_name, custom_instructions").eq("user_id", user.id).maybeSingle(),
-      ]);
+      const profileRes = await supabase
+        .from("profiles")
+        .select("display_name, avatar_url")
+        .eq("id", user.id)
+        .maybeSingle();
       if (cancelled) return;
 
       if ((profileRes.data as any)?.avatar_url) setAvatarUrl((profileRes.data as any).avatar_url);
@@ -55,17 +55,9 @@ const ProfileEditPage = () => {
         user.user_metadata?.full_name ||
         user.email?.split("@")[0] ||
         "";
-      const initialNick = (persRes.data as any)?.call_name || initialFull;
-      const initialInstr = (persRes.data as any)?.custom_instructions || "";
 
       setFullName(initialFull);
-      setNickname(initialNick);
-      setInstructions(initialInstr);
-      savedRef.current = {
-        fullName: initialFull,
-        nickname: initialNick,
-        instructions: initialInstr,
-      };
+      savedRef.current = { fullName: initialFull };
       setLoading(false);
     })();
     return () => { cancelled = true; };
@@ -75,44 +67,24 @@ const ProfileEditPage = () => {
   useEffect(() => {
     if (loading || !userId) return;
     const dirtyName = fullName.trim() !== savedRef.current.fullName.trim();
-    const dirtyNick = nickname !== savedRef.current.nickname;
-    const dirtyInstr = instructions !== savedRef.current.instructions;
-    if (!dirtyName && !dirtyNick && !dirtyInstr) return;
+    if (!dirtyName) return;
 
     setSaveState("saving");
     const timer = setTimeout(async () => {
       try {
-        const tasks: Promise<any>[] = [];
-        if (dirtyName && fullName.trim()) {
-          tasks.push(
-            Promise.resolve(
-              supabase.rpc("update_profile_safe", {
-                p_user_id: userId,
-                p_display_name: fullName.trim(),
-              }),
-            ),
-          );
-          tasks.push(supabase.auth.updateUser({ data: { full_name: fullName.trim() } }));
-        }
-        if (dirtyNick || dirtyInstr) {
-          tasks.push(
-            Promise.resolve(
-              supabase.from("ai_personalization").upsert(
-                {
-                  user_id: userId,
-                  call_name: nickname.trim() || null,
-                  custom_instructions: instructions.trim() || null,
-                },
-                { onConflict: "user_id" },
-              ),
-            ),
-          );
-        }
-        const results = await Promise.all(tasks);
+        const results = await Promise.all([
+          Promise.resolve(
+            supabase.rpc("update_profile_safe", {
+              p_user_id: userId,
+              p_display_name: fullName.trim(),
+            }),
+          ),
+          supabase.auth.updateUser({ data: { full_name: fullName.trim() } }),
+        ]);
         const err = results.find((r: any) => r?.error)?.error;
         if (err) throw err;
 
-        savedRef.current = { fullName, nickname, instructions };
+        savedRef.current = { fullName };
         setSaveState("saved");
         setTimeout(() => setSaveState("idle"), 1400);
       } catch (err: any) {
@@ -121,7 +93,7 @@ const ProfileEditPage = () => {
       }
     }, 650);
     return () => clearTimeout(timer);
-  }, [fullName, nickname, instructions, loading, userId]);
+  }, [fullName, loading, userId]);
 
   const goBack = () => navigate("/settings");
 
