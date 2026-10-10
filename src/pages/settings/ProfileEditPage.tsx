@@ -275,60 +275,35 @@ const ProfileEditPage = () => {
         </SubCard>
       </SubSection>
 
-      <SubSection title="Names" description="How Megsy addresses you.">
+      <SubSection title={tx("Name")} description={tx("How Megsy addresses you.")}>
         <SubCard>
-          <div className="space-y-4">
-            <div>
-              <label className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground font-medium">
-                Full name
-              </label>
-              <input
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="Your name"
-                className="mt-2 w-full px-3.5 py-2.5 rounded-lg bg-background/60 border border-border/70 text-[14px] text-foreground outline-none focus:border-foreground/40 transition-colors"
-              />
-            </div>
-            <div>
-              <label className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground font-medium">
-                Nickname
-              </label>
-              <input
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
-                placeholder="Nickname"
-                className="mt-2 w-full px-3.5 py-2.5 rounded-lg bg-background/60 border border-border/70 text-[14px] text-foreground outline-none focus:border-foreground/40 transition-colors"
-              />
-              <p className="mt-2 text-[12px] text-muted-foreground">
-                Megsy calls you by your nickname in chat.
-              </p>
-            </div>
+          <div>
+            <label className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground font-medium">
+              {tx("Full name")}
+            </label>
+            <input
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder={tx("Your name")}
+              className="mt-2 w-full px-3.5 py-2.5 rounded-lg bg-background/60 border border-border/70 text-[14px] text-foreground outline-none focus:border-foreground/40 transition-colors"
+            />
+            <p className="mt-2 text-[12px] text-muted-foreground">
+              {tx("Megsy calls you by this name in chat.")}
+            </p>
           </div>
         </SubCard>
       </SubSection>
 
-      <SubSection title="Instructions" description="Custom guidance applied to every conversation.">
-        <SubCard>
-          <textarea
-            value={instructions}
-            onChange={(e) => setInstructions(e.target.value)}
-            placeholder="How you'd like Megsy to respond"
-            rows={5}
-            className="w-full px-3.5 py-2.5 rounded-lg bg-background/60 border border-border/70 text-[14px] text-foreground outline-none focus:border-foreground/40 transition-colors resize-y"
-          />
-        </SubCard>
-      </SubSection>
-
-      <SubSection title="Danger zone" description="Irreversible actions.">
+      <SubSection title={tx("Danger zone")} description={tx("Irreversible actions.")}>
         <DangerCallout
-          title="Delete account"
-          description="Permanently remove your account and all associated data."
+          title={tx("Delete account")}
+          description={tx("Permanently remove your account and all associated data.")}
           action={
             <button
               onClick={openDelete}
               className="px-4 py-2 rounded-lg text-[13px] font-medium bg-rose-500/10 text-rose-300 border border-rose-500/30 hover:bg-rose-500/20 transition-colors"
             >
-              Delete account
+              {tx("Delete account")}
             </button>
           }
         />
@@ -337,21 +312,11 @@ const ProfileEditPage = () => {
       <ConfirmDialog
         open={confirmOpen}
         tone="danger"
-        title="Delete account"
-        description="This permanently removes your account, chats and files. This cannot be undone."
-        confirmLabel="Delete"
+        title={tx("Delete account")}
+        description={tx("This permanently removes your account, chats and files. This cannot be undone.")}
+        confirmLabel={tx("Delete")}
         onConfirm={confirmDelete}
         onCancel={() => setConfirmOpen(false)}
-      />
-      <ConfirmDialog
-        open={logoutOpen}
-        title="Log out"
-        description="You'll need to sign in again to access your chats."
-        confirmLabel="Log out"
-        loading={loggingOut}
-        icon={<LogOut size={20} strokeWidth={1.8} />}
-        onConfirm={handleLogout}
-        onCancel={() => setLogoutOpen(false)}
       />
     </SubShell>
   );
