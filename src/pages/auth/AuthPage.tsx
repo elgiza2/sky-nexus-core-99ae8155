@@ -759,7 +759,7 @@ const AuthPage = () => {
     "flex h-12 w-full items-center justify-center gap-2.5 rounded-[10px] border border-foreground/20 bg-foreground/[0.04] px-4 text-[14px] font-semibold text-foreground transition-[transform,border-color,background-color] duration-200 hover:border-foreground/35 hover:bg-foreground/[0.08] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/30";
 
   // ─── Mobile intro — inline expandable email/password flow ──
-  if (isMobileIntroStep(step)) {
+  if (step === "intro1" || step === "email" || step === "password" || step === "create-password") {
     const creatingPassword = step === "create-password";
     const isExpanded = step !== "intro1";
     return (

@@ -22,7 +22,7 @@ export default function MobileAuthIntro(p: Props) {
     {p.expanded && <Button variant="ghost" type="button" className="megsy-auth-back" onClick={p.onBack} aria-label={ar ? "رجوع" : "Back"}><ArrowLeft size={20} /></Button>}
     <div className="megsy-auth-brand">
       <AuthAgentOrbit />
-      <div className="megsy-auth-brand-copy"><div className="megsy-auth-lockup"><h1>Megsy</h1></div><p className="megsy-auth-tagline">{ar ? <>فريقك من الوكلاء، جاهز دائمًا<br />لإنجاز شغلك.</> : <>Your team of always-on agents<br />that finish the work.</>}</p></div>
+      <div className="megsy-auth-brand-copy"><div className="megsy-auth-lockup"><h1>Megsy</h1></div><p className="megsy-auth-tagline">{ar ? <><span>فريقك من الوكلاء، جاهز دائمًا</span><span>لإنجاز شغلك.</span></> : <><span>Your team of always-on agents</span><span>that finish the work.</span></>}</p></div>
     </div>
     <section className="megsy-auth-actions">
       <AnimatePresence mode="wait" initial={false}><motion.div key={screen} initial={{ opacity: 0, y: reducedMotion ? 0 : 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: reducedMotion ? 0 : -8 }} transition={{ duration: reducedMotion ? 0 : .2, ease: "easeOut" }}>
