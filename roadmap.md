@@ -1,6 +1,8 @@
 # Megsy — roadmap
 
 ## Reference pricing and Welcome (October 10, 2026)
+- [x] Keep the pricing portrait identical to the woman displayed in Welcome, as clarified by the user.
+- [x] Replace rejected artwork and green/turquoise palette; remove My account and final fine print; restore the unified sidebar toggle.
 - [x] Match pricing to the uploaded botanical subscription screen without changing prices or checkout.
 - [x] Generate new female artwork for Welcome and shorten benefits to three.
 - [x] Verify pricing selection and Welcome rendering on phone and desktop; three benefits, loaded artwork, no overflow or runtime errors. Real payment not performed.
