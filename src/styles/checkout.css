@@ -65,11 +65,16 @@
 .checkout-subtitle { color: oklch(1 0 0 / .9); font-size: 15px; line-height: 1.4; text-shadow: 0 1px 2px oklch(0 0 0 / .7); }
 .checkout-note { color: var(--checkout-muted); font-size: 14px; line-height: 1.5; }
 
+/* All-in-one payment screen: card form, preview, and alternatives on one page. */
+.checkout-allinone { margin-top: 26px; display: flex; flex: 1; flex-direction: column; gap: 22px; }
+.checkout-card-form { display: grid; gap: 16px; }
+.checkout-card-form .megsy-pay-cta { margin-top: 6px; }
+.checkout-or { margin: 0; color: var(--checkout-muted); font-size: 13px; font-weight: 500; letter-spacing: .02em; }
+
 /* Payment methods: pricing option rows, reused verbatim. */
-.checkout-methods { margin-top: 30px; display: flex; flex-direction: column; flex: 1; gap: 24px; }
-.megsy-pay-list { display: grid; grid-template-rows: repeat(4, minmax(88px, 1fr)); gap: 14px; flex: 1; max-height: 560px; }
+.megsy-pay-list { display: grid; gap: 12px; }
 .megsy-checkout .megsy-pay-row {
-  width: 100%; height: auto; min-height: 88px; display: flex; justify-content: flex-start; gap: 16px; padding: 18px 20px;
+  width: 100%; height: auto; min-height: 60px; display: flex; justify-content: flex-start; gap: 14px; padding: 12px 18px;
   border-radius: 14px;
   background: var(--checkout-fill);
   -webkit-backdrop-filter: blur(16px) saturate(1.15);
