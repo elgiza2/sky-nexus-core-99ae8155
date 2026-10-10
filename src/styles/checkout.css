@@ -245,11 +245,10 @@ html .megsy-checkout .wallet-prefix { padding: 0 14px 0 0; margin-right: 14px; b
 .wallet-pay-btn svg { height: 20px; width: auto; }
 @media (prefers-reduced-motion: reduce) { .checkout-panel, .checkout-method { animation: none; transition: none; } }
 
-@layer properties {
-/* Override the old dialog-wide opaque surfaces only inside this checkout. */
-html body section.megsy-checkout[role="dialog"] .checkout-methods { background: transparent !important; border: 0 !important; box-shadow: none !important; backdrop-filter: none !important; padding: 0 !important; }
-html body section.megsy-checkout[role="dialog"] .checkout-input-wrap input:not([type="checkbox"]):not([type="radio"]) { background: transparent !important; background-image: none !important; border: 0 !important; color: var(--checkout-glass-ink) !important; -webkit-text-fill-color: var(--checkout-glass-ink) !important; box-shadow: none !important; }
-html body section.megsy-checkout[role="dialog"] .checkout-input-wrap, html body section.megsy-checkout[role="dialog"] .checkout-method { backdrop-filter: blur(20px) saturate(1.15) !important; -webkit-backdrop-filter: blur(20px) saturate(1.15) !important; }
-html body section.megsy-checkout[role="dialog"] .checkout-title, html body section.megsy-checkout[role="dialog"] .checkout-field > span, html body section.megsy-checkout[role="dialog"] .checkout-method span { color: var(--checkout-glass-ink) !important; -webkit-text-fill-color: var(--checkout-glass-ink) !important; opacity: 1 !important; }
 
-}
+/* Override the old dialog-wide opaque surfaces only inside this checkout. */
+html body section.megsy-checkout .checkout-methods { background: transparent !important; border: 0 !important; box-shadow: none !important; backdrop-filter: none !important; padding: 0 !important; }
+html body section.megsy-checkout .checkout-input-wrap input:not([type="checkbox"]):not([type="radio"]) { background: transparent !important; background-image: none !important; border: 0 !important; color: var(--checkout-glass-ink) !important; -webkit-text-fill-color: var(--checkout-glass-ink) !important; box-shadow: none !important; }
+html body section.megsy-checkout .checkout-input-wrap, html body section.megsy-checkout .checkout-method { backdrop-filter: blur(20px) saturate(1.15) !important; -webkit-backdrop-filter: blur(20px) saturate(1.15) !important; }
+html body section.megsy-checkout .checkout-title, html body section.megsy-checkout .checkout-field > span, html body section.megsy-checkout .checkout-method span { color: var(--checkout-glass-ink) !important; -webkit-text-fill-color: var(--checkout-glass-ink) !important; opacity: 1 !important; }
+

@@ -181,7 +181,7 @@ export default function CustomCardForm({ open, tier, interval, onClose }: Props)
   const view = hostedUrl ? "hosted" : threeDsUrl ? "verify" : result === "success" ? "done" : stage;
 
   return (
-    <section className="botanical-pricing megsy-checkout z-[120]" dir="ltr" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+    <section className="botanical-pricing megsy-checkout z-[120]" dir="ltr" aria-labelledby="checkout-title">
       <div aria-hidden="true" className="botanical-art">
         <img src={artCoat.url} alt="" fetchPriority="high" width={768} height={1376} />
       </div>
