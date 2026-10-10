@@ -108,7 +108,8 @@ html.dark .megsy-checkout {
 .wallet-input { height: 64px; }
 .wallet-prefix { flex-shrink: 0; white-space: nowrap; padding: 0 16px; border-right: 1px solid var(--checkout-line); font-size: 16px; }
 /* Isolate payment from the legacy chat-wide dialog overrides. */
-[role="dialog"].megsy-checkout { background: var(--glass-bg) !important; color: var(--checkout-text) !important; border: 0 !important; box-shadow: none !important; }
+[role="dialog"].megsy-checkout { background: transparent !important; color: var(--checkout-text) !important; border: 0 !important; box-shadow: none !important; }
+.megsy-checkout .glass-texture { display: none; }
 .megsy-checkout .checkout-title { color: var(--checkout-text) !important; font-weight: 600 !important; letter-spacing: 0; }
 .megsy-checkout .checkout-input-wrap input { background: transparent !important; border: 0 !important; box-shadow: none !important; color: var(--checkout-text) !important; font-weight: 400 !important; }
 .megsy-checkout .checkout-input-wrap input:focus-visible { outline: none !important; border: 0 !important; box-shadow: none !important; }
