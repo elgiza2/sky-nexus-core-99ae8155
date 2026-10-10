@@ -96,3 +96,9 @@ html .botanical-pricing button::before, html .botanical-pricing button::after { 
 .botanical-pricing[data-art="car"] .botanical-benefits li { font-weight: 620; text-shadow: 0 1px 2px oklch(0 0 0 / .9), 0 0 10px oklch(0 0 0 / .75), 0 0 24px oklch(0 0 0 / .6); }
 .botanical-pricing[data-art="car"] .botanical-benefits { position: relative; isolation: isolate; }
 .botanical-pricing[data-art="car"] .botanical-benefits::before { content: ""; position: absolute; inset: -24px -32px; z-index: -1; pointer-events: none; background: radial-gradient(ellipse at center, oklch(0 0 0 / .42), transparent 70%); }
+
+/* Orange-coat: bright marble + white pebbles behind the text, so it needs the strongest soft darkening */
+.botanical-pricing[data-art="coat"] .botanical-benefits li { font-weight: 620; text-shadow: 0 1px 2px oklch(0 0 0 / .95), 0 0 12px oklch(0 0 0 / .8), 0 0 28px oklch(0 0 0 / .65); }
+.botanical-pricing[data-art="coat"] .botanical-benefits { position: relative; isolation: isolate; }
+.botanical-pricing[data-art="coat"] .botanical-benefits::before { content: ""; position: absolute; inset: -26px -34px; z-index: -1; pointer-events: none; background: radial-gradient(ellipse at center, oklch(0 0 0 / .5), transparent 72%); }
+.botanical-pricing[data-art="coat"] .botanical-heading p { text-shadow: 0 1px 3px oklch(0 0 0 / .85), 0 0 16px oklch(0 0 0 / .6); }
