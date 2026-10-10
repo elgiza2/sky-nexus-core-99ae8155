@@ -70,8 +70,8 @@ html.dark .megsy-checkout {
 .megsy-checkout .megsy-back { width: 44px; height: 44px; padding: 0; border-radius: 50%; background: var(--checkout-surface); color: var(--checkout-text); box-shadow: var(--checkout-shadow); }
 .checkout-methods { margin-top: 28px; display: flex; flex-direction: column; flex: 1; gap: 24px; }
 .megsy-pay-list { display: grid; grid-template-rows: repeat(4, minmax(94px, 1fr)); gap: 14px; flex: 1; max-height: 560px; }
-.megsy-checkout .megsy-pay-row { width: 100%; height: auto; min-height: 94px; display: flex; justify-content: flex-start; gap: 16px; padding: 20px; border-radius: 18px; border: 1px solid oklch(.2 0 0 / .1); background: var(--checkout-surface); color: var(--checkout-text); text-align: start; box-shadow: var(--checkout-shadow); transition: border-color .35s ease, box-shadow .35s ease, transform .35s cubic-bezier(.22,1,.36,1); }
-.megsy-checkout .megsy-pay-row[data-selected="true"] { border-color: var(--checkout-text); box-shadow: inset 0 0 0 1px var(--checkout-text), var(--checkout-shadow); transform: translateY(-2px); }
+.megsy-checkout .megsy-pay-row { width: 100%; height: auto; min-height: 94px; display: flex; justify-content: flex-start; gap: 16px; padding: 20px; border-radius: 14px; border: 1px solid oklch(1 0 0 / .38); background: var(--checkout-surface); -webkit-backdrop-filter: blur(16px) saturate(1.15); backdrop-filter: blur(16px) saturate(1.15); box-shadow: inset 0 0 0 1px oklch(1 0 0 / .08); color: var(--checkout-text); text-align: start; text-shadow: 0 1px 2px oklch(0 0 0 / .7), 0 0 18px oklch(0 0 0 / .45); transition: border-color .3s cubic-bezier(.32,.72,.35,1), background .3s cubic-bezier(.32,.72,.35,1), transform .45s cubic-bezier(.34,1.56,.5,1); will-change: transform; }
+.megsy-checkout .megsy-pay-row[data-selected="true"] { border-color: oklch(1 0 0 / .85); background: oklch(1 0 0 / .22); transform: scale(1.02); }
 .megsy-pay-mark { width: 68px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 .megsy-pay-copy { flex: 1; display: flex; flex-direction: column; gap: 6px; }
 .megsy-pay-name { font-size: 16px; line-height: 1.3; font-weight: 600; }
