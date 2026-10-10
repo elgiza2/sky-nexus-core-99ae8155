@@ -113,8 +113,6 @@ export default function WelcomePage() {
         key={i}
         src={IMAGES[i]}
         alt=""
-        width={1024}
-        height={1536}
         initial={{ opacity: 0, scale: 1.04 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0 }}
