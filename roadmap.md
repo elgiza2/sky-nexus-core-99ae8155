@@ -277,3 +277,6 @@
 - [x] Verify pricing page in light/dark themes
 - [x] Pricing pool trimmed to the two restored images (phone-aura-fix, car-girl-fix); fire-hug image and all old variants deleted from CDN
 - [x] Pricing background: the white gradient and bottom glow are gone — the photo reaches every edge; the benefits sit on a soft frosted panel so the lines stay readable in both themes. Verified light/dark at phone width.
+
+## Open
+- [x] iOS-style selection animation on pricing plan cards (spring pop, checkmark bounce)
