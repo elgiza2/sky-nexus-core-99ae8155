@@ -1,11 +1,14 @@
 /** Immersive subscription screen. Prices and checkout stay in the shared catalogue and parent. */
+import { useMemo } from "react";
 import { Check, ChevronRight, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useUserLang } from "@/lib/authI18n";
 import { useUserPlan } from "@/hooks/useUserPlan";
 import { getDisplayPrice, getPlan, type PlanTier } from "@/data/pricingData";
-import artwork from "@/assets/phone-aura.jpg.asset.json";
+import artSky from "@/assets/Explore_Desktop_01-1.avif.asset.json";
+import artStorm from "@/assets/Explore_Desktop_03-1.avif.asset.json";
+import artEmber from "@/assets/desktop-nano-banana-pro-inspiration-gallery-img-6.avif.asset.json";
 import MobileSidebarButton from "@/components/shared/MobileSidebarButton";
 
 interface Props {
