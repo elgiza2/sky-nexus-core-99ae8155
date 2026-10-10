@@ -6,11 +6,11 @@ import { Button } from "@/components/ui/button";
 import { useUserLang } from "@/lib/authI18n";
 import { useUserPlan } from "@/hooks/useUserPlan";
 import { getDisplayPrice, getPlan, type PlanTier } from "@/data/pricingData";
-import artAura from "@/assets/phone-aura-full.jpg.asset.json";
-import artSky from "@/assets/sky-fly-full.jpg.asset.json";
-import artCar from "@/assets/car-girl-full.jpg.asset.json";
+import artAura from "@/assets/phone-aura-fix.png.asset.json";
+import artSky from "@/assets/sky-fly-fix.png.asset.json";
+import artCar from "@/assets/car-girl-fix.png.asset.json";
 import artCoat from "@/assets/orange-coat-full.jpg.asset.json";
-import artGallery from "@/assets/gallery-7-full.jpg.asset.json";
+import artGallery from "@/assets/gallery-7-fix.png.asset.json";
 import MobileSidebarButton from "@/components/shared/MobileSidebarButton";
 
 interface Props {
