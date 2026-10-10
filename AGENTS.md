@@ -57,12 +57,12 @@ used, `FOR UPDATE SKIP LOCKED`).
 <!-- LOVABLE:END -->
 
 - Media runs require a live paid-plan check in both authenticated media routes and signed MCP tools; Higgsfield clones only a configured Hypit template, never substitutes a harness. Why: UI locks alone do not prevent free media spending or misrepresent the requested agent.
-- Auth presentation shares the scoped auth-cue.css reference palette and stacked Megsy lockup across entry, OTP and recovery; keep provider availability checks. Why: consistent account screens without inventing sign-in providers.
+- Auth entry, OTP and recovery share auth-cue.css and the Megsy lockup; retain provider checks. Why: consistent screens without invented providers.
 - Auth reuses existing handlers; Chat aliases use ProtectedRoute with guest Welcome before mount. Why: prevent guest chat exposure.
 
 - Agent pages and guided creation use original ChatPage/AppSidebar; see src/lib/agentsky/AGENTS.md. Why: one transcript and explicit approval.
-- AgentSky turn subscriptions stop on fresh session.status_idle/session.error events, with persisted-event reconciliation and baseline IDs. Why: the standing SSE feed may omit terminal frames or remain open after completion.
-- Provider catalogue uses only explicitly named `Chat · ` templates, cloned into user-owned agents before use; subscription checks cover new sessions and follow-up messages. Why: shared templates must not expose other users' agents or bypass paid switching.
+- AgentSky subscriptions stop on fresh session.status_idle/session.error; reconcile persisted events using baseline IDs. Why: SSE may omit terminal frames or stay open.
+- Catalogue uses only `Chat · ` templates cloned into user-owned agents; check subscriptions on new sessions and follow-ups. Why: prevent cross-user exposure and unpaid switching.
 - Greeting and transcript share AgentOrb states; prior turns suppress repeat awakening. Why: consistent character.
 
 - Light chat follows `loving-bonds-app`; empty desktop chat is cinematic and isolated from mobile.
