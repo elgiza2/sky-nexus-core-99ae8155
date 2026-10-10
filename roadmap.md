@@ -286,7 +286,9 @@
 - [x] Redesign the checkout page completely: full match of the pricing design language (full-bleed photo, glass rows, iOS-style motion, theme-following CTA).
 
 ## Current authentication and checkout refinement (October 10, 2026)
-- [ ] Replace auth buttons in place with email entry and account-aware password flow; bring agents closer with eight distinct blink timings.
+- [x] Replace auth buttons in place with email entry and account-aware password flow; verified live new-account lookup, simulated existing-account response, validation/back/password visibility, moving agents and eight unique blink delays. Real signup/email delivery not exercised.
+- [x] Keep the center subtitle to exactly two clean lines and slightly increase character spacing; phone/desktop screenshots verified.
+- [x] Add soft button-press feedback and polished transitions between auth steps; preview build OK and routing test passed.
 - [x] Match the Grok reference with eight slow circular agents, Google/email buttons and entrance/navigation animation; verified phone/desktop screenshots, orbit movement, reduced motion and email/password/back navigation; routing test passed. Real OAuth and account creation not exercised.
 - [x] Refine auth branding weight, provider controls and spacing to match the re-uploaded reference; phone/desktop, email/password/recovery and routing test verified, preserving configured providers and account flow. Apple remains hidden until configured; no invented SSO.
 - [x] Redesign sign-in and registration presentation to match the supplied white reference; verify email, password and recovery presentation.
