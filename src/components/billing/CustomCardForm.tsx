@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ChevronRight, Check, Loader2 } from "lucide-react";
-import "@/styles/checkout.css";
 import { Button } from "@/components/ui/button";
 import { BrandMark, CardPreview } from "./CardPreview";
 import artCoat from "@/assets/orange-coat.png.asset.json";
