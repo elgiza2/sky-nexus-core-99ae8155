@@ -73,6 +73,7 @@ import {
   ImageModelsPage,
   // marketing
   PricingPage,
+  CheckoutPage,
   LegalPage,
   RestorePurchasePage,
   MegsyLandingPage,
@@ -431,6 +432,9 @@ export const AppRoutes = ({ currentUserId }: { currentUserId: string | null }) =
 
     {/* ── Pricing (only surviving marketing page) ───────────── */}
     <Route path="/pricing" element={<PricingPage />} />
+
+    {/* ── Checkout — dedicated payment page, separate from pricing ── */}
+    <Route path="/checkout" element={<CheckoutPage />} />
 
     {/* ── Security (settings-owned) ─────────────────────────── */}
     <Route path="/security" element={<SecurityPage />} />
