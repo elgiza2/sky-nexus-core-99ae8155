@@ -287,4 +287,4 @@
 
 ## Current authentication and checkout refinement (October 10, 2026)
 - [x] Redesign sign-in and registration presentation to match the supplied white reference; verify email, password and recovery presentation.
-- [ ] Make checkout inputs and payment-method selectors clean frosted glass; verify the result.
+- [x] Make checkout inputs and payment-method selectors clean frosted glass; verified card/wallet switching and computed blur in light/dark on phone/desktop, without a real payment.
