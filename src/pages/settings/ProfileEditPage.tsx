@@ -1,7 +1,7 @@
 /** @doc Profile editor — full name, photo, delete account. Autosaves the name. */
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Check, Camera, ChevronLeft, ChevronRight, Loader2, Trash2, X } from "lucide-react";
+import { Check, Camera, Loader2, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { sanitizeErrorMessage } from "@/lib/sanitizeError";

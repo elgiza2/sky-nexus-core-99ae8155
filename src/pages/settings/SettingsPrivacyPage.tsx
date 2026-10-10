@@ -1,173 +1,75 @@
-/** @doc Privacy settings — mobile-first dark cards matching the native iOS privacy screen. */
-import { useState } from "react";
+/** @doc Data & privacy — opens as a stacked sheet over settings (shares pep styles). */
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { Download } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
-import {
-  SubShell,
-  SubSection,
-  SubCard,
-} from "@/components/settings/SubShell";
-import { downloadUserData } from "@/lib/exportUserData";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { pepCss } from "./ProfileEditPage";
+import { translateExactText, useUserLang } from "@/lib/authI18n";
+
+const privacyCss = `
+.dp-title { margin: 4px 0 18px; font-size: 34px; font-weight: 700; letter-spacing: -.02em; color: var(--settings-ink); }
+.dp-block { padding: 16px 16px 18px; }
+.dp-block h2 { margin: 0 0 6px; font-size: 17px; font-weight: 600; color: var(--settings-ink); }
+.dp-block p { margin: 0 0 10px; font-size: 15px; line-height: 1.5; color: var(--settings-muted); }
+.dp-block p:last-child { margin-bottom: 0; }
+.dp-link { width: 100%; display: flex; align-items: center; justify-content: space-between;
+  min-height: 56px; padding: 0 16px; border: 0; background: transparent; font: inherit;
+  font-size: 16px; color: var(--settings-ink); cursor: pointer; text-align: start; }
+.dp-link + .dp-link { border-top: 1px solid var(--settings-line); }
+.dp-link:active { background: var(--settings-line); }
+.dp-link.dp-red { color: var(--settings-red, #e5484d); }
+.dp-link svg { width: 18px; height: 18px; color: var(--settings-muted); }
+`;
 
 export default function SettingsPrivacyPage() {
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
-  const [isExporting, setIsExporting] = useState(false);
-
-  const handleExportData = async () => {
-    if (isExporting) return;
-    setIsExporting(true);
-    const toastId = toast.loading("Preparing your data export…");
-    try {
-      await downloadUserData(({ table, index, total }) => {
-        toast.loading(`Exporting your data… (${index}/${total}: ${table})`, { id: toastId });
-      });
-      toast.success("Your data export has downloaded.", { id: toastId });
-    } catch (error: any) {
-      toast.error(error?.message || "Couldn't export your data. Please try again.", { id: toastId });
-    } finally {
-      setIsExporting(false);
-    }
-  };
-
-  const DataPrivacyCard = () => (
-    <div className="rounded-[18px] bg-background border border-foreground/[0.07] p-4">
-      <h3 className="text-[17px] font-semibold text-foreground mb-2">Data privacy</h3>
-      <p className="text-[13px] leading-[1.45] text-foreground/55">
-        Megsy believes in transparent data practices.
-      </p>
-      <p className="mt-3 text-[13px] leading-[1.5] text-foreground/55">
-        Keeping your data safe is a priority. Learn how your information is protected when using Megsy products, and visit our{" "}
-        <a
-          href="/privacy"
-          onClick={(e) => {
-            e.preventDefault();
-            navigate("/privacy");
-          }}
-          className="text-foreground underline underline-offset-2 decoration-[#EDE4D8]/30"
-        >
-          Privacy Center
-        </a>{" "}
-        and{" "}
-        <a
-          href="/privacy"
-          onClick={(e) => {
-            e.preventDefault();
-            navigate("/privacy");
-          }}
-          className="text-foreground underline underline-offset-2 decoration-[#EDE4D8]/30"
-        >
-          Privacy Policy
-        </a>{" "}
-        for more details.
-      </p>
-    </div>
-  );
-
-  const ExportDataCard = () => (
-    <div className="rounded-[18px] bg-background border border-foreground/[0.07] p-4 flex items-start gap-3">
-      <div className="flex-1 min-w-0">
-        <h3 className="text-[17px] font-semibold text-foreground leading-tight">
-          Download my data
-        </h3>
-        <p className="mt-1.5 text-[13px] leading-[1.5] text-foreground/55">
-          Get a copy of your profile, conversations, messages, and other account data as a JSON file.
-        </p>
-        <button
-          type="button"
-          onClick={handleExportData}
-          disabled={isExporting}
-          className="mt-3 inline-flex items-center gap-2 rounded-full bg-foreground/[0.08] border border-foreground/[0.1] px-4 py-2 text-[13px] font-medium text-foreground disabled:opacity-50"
-      aria-label="Download"
-    >
-          <Download className="w-[14px] h-[14px]" />
-          {isExporting ? "Exporting…" : "Export my data"}
-        </button>
-      </div>
-    </div>
-  );
-
-  if (!isMobile) {
-    return (
-      <SubShell
-        title="Privacy"
-        subtitle="Control what Megsy stores and how your data is used."
-        backTo="/settings"
-      >
-        <SubSection title="Data privacy">
-          <SubCard>
-            <DataPrivacyCard />
-          </SubCard>
-        </SubSection>
-
-        <SubSection title="Your data">
-          <SubCard>
-            <ExportDataCard />
-          </SubCard>
-        </SubSection>
-      </SubShell>
-    );
-  }
+  const lang = useUserLang();
+  const isAr = lang === "ar-eg";
+  const tx = (t: string) => translateExactText(t, lang);
+  const Chev = isAr ? ChevronLeft : ChevronRight;
+  const ar = (a: string, e: string) => (isAr ? a : e);
 
   return (
-    <div className="min-h-[100dvh] bg-background text-foreground font-sans">
-      <style>{mobileCss}</style>
-      <div className="privacy-root">
-        {/* Topbar */}
-        <header className="privacy-topbar">
-          <button className="privacy-icon-btn" aria-label="Back" onClick={() => navigate("/settings")}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
+    <div className="pep-root" dir={isAr ? "rtl" : "ltr"}>
+      <style>{pepCss + privacyCss}</style>
+      <div className="pep-sheet">
+        <header className="pep-topbar">
+          <button className="pep-icon-btn" aria-label={tx("Close")} onClick={() => navigate("/settings")}>
+            <X className="pep-chev" strokeWidth={1.9} />
           </button>
-          <h1 className="privacy-title">Privacy</h1>
-          <div className="w-11" />
+          <span />
+          <span />
         </header>
+        <main className="pep-main">
+          <h1 className="dp-title">{ar("البيانات والخصوصية", "Data & privacy")}</h1>
 
-        <section className="privacy-main">
-          <DataPrivacyCard />
-          <div className="h-4" />
-          <ExportDataCard />
-        </section>
+          <section className="pep-card dp-block">
+            <h2>{ar("محادثاتك", "Your conversations")}</h2>
+            <p>{ar("بنستخدم رسايلك وملفاتك عشان Megsy يرد عليك وينفذ شغلك بس. محادثاتك خاصة بيك ومحدش غيرك يقدر يشوفها.",
+              "We use your messages and files only to answer you and get your work done. Your chats are private to you.")}</p>
+          </section>
+
+          <section className="pep-card dp-block">
+            <h2>{ar("مشاركة البيانات", "Data sharing")}</h2>
+            <p>{ar("مش بنبيع بياناتك ومش بنستخدمها في إعلانات. بنبعت للمزودين اللي بيشغلوا الذكاء الاصطناعي اللازم بس لتنفيذ طلبك.",
+              "We never sell your data or use it for ads. Only what's needed to run your request is sent to our AI providers.")}</p>
+          </section>
+
+          <section className="pep-card">
+            <button className="dp-link" onClick={() => navigate("/privacy")}>
+              <span>{ar("سياسة الخصوصية", "Privacy policy")}</span><Chev />
+            </button>
+            <button className="dp-link" onClick={() => navigate("/terms")}>
+              <span>{ar("شروط الخدمة", "Terms of service")}</span><Chev />
+            </button>
+          </section>
+
+          <section className="pep-card">
+            <button className="dp-link dp-red" onClick={() => navigate("/settings/delete-account")}>
+              <span>{ar("حذف الحساب", "Delete account")}</span><Chev />
+            </button>
+          </section>
+          <div className="pep-spacer" />
+        </main>
       </div>
     </div>
   );
 }
-
-const mobileCss = `
-.privacy-root {
-  min-height: 100dvh;
-  background: hsl(var(--background));
-  color: hsl(var(--foreground));
-  font-family: "Neue Haas Unica", "Helvetica Now Display", -apple-system, "SF Pro Display", Inter, "Segoe UI", Roboto, sans-serif;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-.privacy-topbar {
-  position: sticky; top: 0; z-index: 5;
-  display: grid; grid-template-columns: 44px 1fr 44px;
-  align-items: center;
-  padding: calc(env(safe-area-inset-top, 0px) + 10px) 14px 12px;
-  background: hsl(var(--background));
-}
-.privacy-title {
-  margin: 0;
-  text-align: center;
-  font-size: 17px; font-weight: 600;
-  letter-spacing: -0.01em;
-  color: hsl(var(--foreground));
-}
-.privacy-icon-btn {
-  width: 40px; height: 40px;
-  display: inline-grid; place-items: center;
-  border-radius: 999px;
-  background: transparent;
-  border: 0;
-  color: hsl(var(--foreground));
-  cursor: pointer;
-  transition: transform 160ms ease;
-}
-.privacy-icon-btn:active { transform: scale(0.94); }
-.privacy-main { padding: 8px 16px 24px; }
-`;
