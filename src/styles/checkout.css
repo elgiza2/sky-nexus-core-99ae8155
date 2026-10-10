@@ -3,8 +3,11 @@
  * legacy !important theme rule. */
 .megsy-checkout.botanical-pricing {
   position: fixed;
+  inset: 0;
+  height: 100dvh;
   overflow: hidden auto;
   overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   /* Brand-mark palette (Visa, Apple, Google, Vodafone). */
   --payment-logo-surface: oklch(1 0 0);
   --payment-visa: oklch(.29 .14 275);
