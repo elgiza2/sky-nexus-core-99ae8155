@@ -43,7 +43,7 @@ const CheckoutPage = () => {
     return () => {
       cancelled = true;
     };
-  }, [navigate]);
+  }, [navigate, preview]);
 
   return (
     <>
