@@ -84,6 +84,8 @@ const ProfileEditPage = () => {
         const err = results.find((r: any) => r?.error)?.error;
         if (err) throw err;
 
+        const { invalidateOwnProfile } = await import("@/lib/ownProfile");
+        invalidateOwnProfile();
         savedRef.current = { fullName };
         setSaveState("saved");
         setTimeout(() => setSaveState("idle"), 1400);
@@ -107,28 +109,25 @@ const ProfileEditPage = () => {
       toast.error("Please choose an image file");
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image is too large (max 5MB)");
+    if (file.size > 15 * 1024 * 1024) {
+      toast.error("Image is too large (max 15MB)");
       return;
     }
     setAvatarBusy(true);
     try {
-      const ext = (file.name.split(".").pop() || "png").toLowerCase();
-      const { uploadToTelegram } = await import("@/lib/telegramStorage");
-      const uploaded = await uploadToTelegram(file, {
-        filename: `avatar-${Date.now()}.${ext}`,
-        kind: "photo",
+      // Telegram links expire, so store a compact, permanent JPEG data URL.
+      const url = await compressAvatar(file);
+      const { error: rpcErr } = await supabase.rpc("update_profile_safe", {
+        p_user_id: userId,
+        p_avatar_url: url,
       });
-      const url = uploaded.url;
-      if (!url) throw new Error("Could not resolve image URL");
-
-      const [profRes, authRes] = await Promise.all([
-        supabase.from("profiles").update({ avatar_url: url }).eq("id", userId),
-        supabase.auth.updateUser({ data: { avatar_url: url } }),
-      ]);
-      if ((profRes as any)?.error) throw (profRes as any).error;
-      if ((authRes as any)?.error) throw (authRes as any).error;
-
+      if (rpcErr) throw rpcErr;
+      await supabase.auth.updateUser({ data: { avatar_url: null } }).catch(() => {});
+      const { data: check } = await supabase
+        .from("profiles").select("avatar_url").eq("id", userId).maybeSingle();
+      if ((check as any)?.avatar_url !== url) throw new Error("Photo was not saved");
+      const { invalidateOwnProfile } = await import("@/lib/ownProfile");
+      invalidateOwnProfile();
       setAvatarUrl(url);
       toast.success("Profile photo updated");
     } catch (err: any) {
@@ -523,3 +522,30 @@ const pepCss = `
 `;
 
 export default ProfileEditPage;
+
+async function compressAvatar(file: File): Promise<string> {
+  const src = URL.createObjectURL(file);
+  try {
+    const img = await new Promise<HTMLImageElement>((res, rej) => {
+      const i = new Image();
+      i.onload = () => res(i);
+      i.onerror = () => rej(new Error("Could not read this image"));
+      i.src = src;
+    });
+    const size = 320;
+    const side = Math.min(img.naturalWidth, img.naturalHeight);
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = size;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("Could not process image");
+    ctx.drawImage(
+      img,
+      (img.naturalWidth - side) / 2,
+      (img.naturalHeight - side) / 2,
+      side, side, 0, 0, size, size,
+    );
+    return canvas.toDataURL("image/jpeg", 0.85);
+  } finally {
+    URL.revokeObjectURL(src);
+  }
+}
