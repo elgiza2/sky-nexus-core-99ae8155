@@ -190,13 +190,13 @@ export default function CustomCardForm({ open, tier, interval, onClose }: Props)
   const view = hostedUrl ? "hosted" : threeDsUrl ? "verify" : result === "success" ? "done" : stage;
 
   return (
-    <section className="megsy-checkout fixed inset-0 z-[120] overflow-y-auto overscroll-contain" dir="ltr" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+    <section className="botanical-pricing megsy-checkout z-[120]" dir="ltr" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
       <div aria-hidden="true" className="botanical-art">
         <img src={artCoat.url} alt="" fetchPriority="high" width={768} height={1376} />
       </div>
       <div aria-hidden="true" className="botanical-scrim" />
-      <div className="checkout-layout">
-        <header className="flex items-center">
+      <div className="botanical-content botanical-checkout-content">
+        <header className="checkout-nav">
           <Button variant="ghost" type="button" onClick={back} disabled={busy && !hostedUrl} aria-label="Back" title="Back" className="megsy-back">
             <ArrowLeft className="h-5 w-5" />
           </Button>
