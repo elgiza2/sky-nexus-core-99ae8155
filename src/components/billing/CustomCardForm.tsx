@@ -181,7 +181,7 @@ export default function CustomCardForm({ open, tier, interval, onClose }: Props)
   const view = hostedUrl ? "hosted" : threeDsUrl ? "verify" : result === "success" ? "done" : stage;
 
   return (
-    <section className="botanical-pricing megsy-checkout z-[120]" dir="ltr" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+    <section className="botanical-pricing megsy-checkout z-[120]" dir="ltr" aria-labelledby="checkout-title">
       <div aria-hidden="true" className="botanical-art">
         <img src={artCoat.url} alt="" fetchPriority="high" width={768} height={1376} />
       </div>
@@ -226,10 +226,10 @@ export default function CustomCardForm({ open, tier, interval, onClose }: Props)
             <div className="checkout-allinone">
               <div className="checkout-methods" role="tablist" aria-label="Payment method">
                 {METHODS.map((m) => (
-                  <button key={m.id} type="button" role="tab" aria-selected={method === m.id} data-selected={method === m.id} disabled={busy || walletWaiting} onClick={() => { setError(null); setMethod(m.id); }} className="checkout-method">
+                  <Button variant="ghost" key={m.id} type="button" role="tab" aria-selected={method === m.id} data-selected={method === m.id} disabled={busy || walletWaiting} onClick={() => { setError(null); setMethod(m.id); }} className="checkout-method">
                     <TileLogo id={m.id} />
                     <span>{m.label}</span>
-                  </button>
+                  </Button>
                 ))}
               </div>
               <div key={method} className="checkout-panel">
@@ -273,9 +273,9 @@ export default function CustomCardForm({ open, tier, interval, onClose }: Props)
                   <div className="checkout-card-form">
                     <p className="checkout-note">Pay securely with {method === "apple_pay" ? "Apple Pay" : "Google Pay"} — no card details needed.</p>
                     {error && <ErrorBox text={error} />}
-                    <button type="button" disabled={busy} onClick={() => void openHostedCheckout("card", method === "apple_pay" ? "Apple Pay" : "Google Pay")} className="wallet-pay-btn">
+                    <Button variant="ghost" type="button" disabled={busy} onClick={() => void openHostedCheckout("card", method === "apple_pay" ? "Apple Pay" : "Google Pay")} className="wallet-pay-btn">
                       {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : <>{method === "apple_pay" ? <TileLogo id="apple_pay" /> : <TileLogo id="google_pay" />}<span>Pay</span></>}
-                    </button>
+                    </Button>
                   </div>
                 )}
               </div>
