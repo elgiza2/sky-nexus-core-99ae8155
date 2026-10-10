@@ -13,7 +13,6 @@ import {
   Puzzle,
   Plug,
   Heart,
-  UserRound,
   HelpCircle,
   Asterisk,
   Info,
