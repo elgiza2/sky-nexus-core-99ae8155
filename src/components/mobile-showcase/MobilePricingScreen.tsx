@@ -61,7 +61,7 @@ export default function MobilePricingScreen({ isYearly, onToggleYearly, onSubscr
           <div className="botanical-options" role="group" aria-label={isAr ? "مدة الاشتراك" : "Billing interval"}>
             {options.map(option => {
               const selected = isYearly === option.yearly;
-              return <Button key={String(option.yearly)} variant="outline" className="botanical-option" data-selected={selected} aria-pressed={selected} onClick={() => onToggleYearly(option.yearly)}>
+              return <Button key={String(option.yearly)} variant="ghost" className="botanical-option" data-selected={selected} aria-pressed={selected} onClick={() => onToggleYearly(option.yearly)}>
                 {selected && <span className="botanical-selection"><Check aria-hidden="true" /></span>}
                 <span className="botanical-option-label">{option.label}</span>
                 <span className="botanical-price" dir="ltr">${option.price.toFixed(2)}</span>
