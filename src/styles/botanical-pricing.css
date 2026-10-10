@@ -58,6 +58,7 @@ html .botanical-pricing button.botanical-subscribe {
   border-radius: 999px !important;
   box-shadow: none !important;
 }
+html .botanical-pricing button.botanical-subscribe * { color: var(--paywall-ink) !important; -webkit-text-fill-color: var(--paywall-ink) !important; }
 html .botanical-pricing button::before, html .botanical-pricing button::after { display: none !important; }
 .botanical-desktop .botanical-pricing, .botanical-desktop .botanical-content { min-height: min(900px,100dvh); }
 .botanical-desktop .botanical-art { left: 50%; transform: translateX(-50%); width: min(100%,720px); height: 78%; max-height: 760px; }
