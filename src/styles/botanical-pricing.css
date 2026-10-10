@@ -71,6 +71,7 @@ html .botanical-pricing button.botanical-subscribe {
   background: var(--paywall-accent) !important;
   background-image: none !important;
   color: var(--paywall-ink) !important;
+  -webkit-text-fill-color: var(--paywall-ink) !important;
   border-radius: 999px !important;
   box-shadow: none !important;
 }
