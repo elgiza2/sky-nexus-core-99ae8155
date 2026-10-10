@@ -7,10 +7,7 @@ import { useUserLang } from "@/lib/authI18n";
 import { useUserPlan } from "@/hooks/useUserPlan";
 import { getDisplayPrice, getPlan, type PlanTier } from "@/data/pricingData";
 import artAura from "@/assets/phone-aura-fix.png.asset.json";
-import artSky from "@/assets/sky-fly-fix.png.asset.json";
 import artCar from "@/assets/car-girl-fix.png.asset.json";
-import artCoat from "@/assets/orange-coat-full.jpg.asset.json";
-import artGallery from "@/assets/gallery-7-fix.png.asset.json";
 import MobileSidebarButton from "@/components/shared/MobileSidebarButton";
 
 interface Props {
@@ -24,7 +21,7 @@ interface Props {
 export default function MobilePricingScreen({ isYearly, onToggleYearly, onSubscribe, loadingTier, onMenuClick }: Props) {
   const isAr = useUserLang() === "ar-eg";
   const navigate = useNavigate();
-  const artwork = useMemo(() => [artAura, artSky, artCar, artCoat, artGallery][Math.floor(Math.random() * 5)], []);
+  const artwork = useMemo(() => [artAura, artCar][Math.floor(Math.random() * 2)], []);
   const { plan } = useUserPlan();
   const subscribed = plan === "pro" || plan === "max" || plan === "elite";
   const pro = getPlan("pro");

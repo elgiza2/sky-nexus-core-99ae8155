@@ -275,3 +275,4 @@
 - [x] Restore the uploaded pricing images via edit_image, extended to full-screen 1024x1920 (img-13 blocked by safety filter, kept its earlier full-screen version)
 - [x] Re-upload restored images as CDN assets and rewire MobilePricingScreen pool
 - [x] Verify pricing page in light/dark themes
+- [x] Pricing pool trimmed to the two restored images (phone-aura-fix, car-girl-fix); fire-hug image and all old variants deleted from CDN
