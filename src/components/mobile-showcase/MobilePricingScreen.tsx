@@ -22,7 +22,7 @@ interface Props {
 export default function MobilePricingScreen({ isYearly, onToggleYearly, onSubscribe, loadingTier, onMenuClick }: Props) {
   const isAr = useUserLang() === "ar-eg";
   const navigate = useNavigate();
-  const { plan } = useUserPlan();
+  const artwork = useMemo(() => [artSky, artStorm, artEmber][Math.floor(Math.random() * 3)], []);
   const subscribed = plan === "pro" || plan === "max" || plan === "elite";
   const pro = getPlan("pro");
   if (!pro) return null;
