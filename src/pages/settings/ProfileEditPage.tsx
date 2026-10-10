@@ -376,7 +376,7 @@ export const pepCss = `
 }
 .pep-topbar {
   position: sticky; top: 0; z-index: 5;
-  display: grid; grid-template-columns: 46px 1fr 46px;
+  display: grid; grid-template-columns: 46px 1fr auto;
   align-items: center;
   padding: max(20px, env(safe-area-inset-top)) 20px 16px;
 }
@@ -404,15 +404,35 @@ export const pepCss = `
 [dir="rtl"] .pep-chev { transform: scaleX(-1); }
 
 .pep-save {
-  width: 40px; height: 40px;
   justify-self: end;
-  display: inline-grid; place-items: center;
-  border-radius: 50%;
+  min-width: 46px;
+  height: 46px;
+  padding: 0 17px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 999px;
   background: var(--settings-surface);
   border: 1px solid var(--settings-glass-edge);
   box-shadow: var(--settings-shadow);
   backdrop-filter: var(--settings-frost);
-  color: var(--settings-ink);
+  color: var(--settings-muted);
+  font: inherit;
+  font-size: 14.5px; font-weight: 600;
+  cursor: pointer;
+  opacity: .8;
+  transition: background .3s ease, color .3s ease, opacity .3s ease, border-color .3s ease, transform .25s cubic-bezier(.22,1,.36,1);
+}
+.pep-save:disabled { cursor: default; }
+.pep-save:not(:disabled):active { transform: scale(.94); }
+.pep-save-live {
+  background: var(--settings-ink);
+  border-color: var(--settings-ink);
+  color: var(--settings-backdrop);
+  opacity: 1;
+  animation: pep-save-pop .35s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes pep-save-pop {
+  from { transform: scale(.9); }
+  to   { transform: scale(1); }
 }
 .pep-save svg { width: 18px; height: 18px; }
 .pep-spin { width: 18px; height: 18px; }
@@ -528,8 +548,8 @@ export const pepCss = `
 .pep-spacer { height: max(24px, env(safe-area-inset-bottom)); }
 
 @media (prefers-reduced-motion: reduce) {
-  .pep-card, .pep-root::before, .pep-root .pep-sheet { animation: none; }
-  .pep-root .pep-icon-btn, .pep-root .pep-danger, .pep-root .pep-row-btn { transition: none; }
+  .pep-card, .pep-root::before, .pep-root .pep-sheet, .pep-root .pep-save-live { animation: none; }
+  .pep-root .pep-icon-btn, .pep-root .pep-danger, .pep-root .pep-row-btn, .pep-root .pep-save { transition: none; }
 }
 `;
 
