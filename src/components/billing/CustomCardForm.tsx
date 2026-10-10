@@ -222,7 +222,7 @@ export default function CustomCardForm({ open, tier, interval, onClose }: Props)
             </div>
           ) : threeDsUrl ? (
             <div className="mt-6 flex-1 space-y-4">
-              <p className="text-sm leading-6 text-muted-foreground">Complete your bank’s verification to finish the payment.</p>
+              <p className="checkout-note">Complete your bank’s verification to finish the payment.</p>
               <iframe title="Bank verification" src={threeDsUrl} className="h-[480px] w-full rounded-2xl bg-card" />
             </div>
           ) : result === "success" ? (
